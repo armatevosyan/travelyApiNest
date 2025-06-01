@@ -106,5 +106,6 @@ dist
 
 # wincompare file
 .bak
+
 .env
 .idea
