@@ -27,7 +27,7 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project import
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 // import { useInputRef } from './index';
 import countries from 'data/countries';
 import MainCard from 'components/MainCard';

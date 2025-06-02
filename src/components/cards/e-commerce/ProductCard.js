@@ -10,9 +10,6 @@ import { Box, Button, CardContent, CardMedia, Chip, Divider, Grid, Rating, Stack
 import MainCard from 'components/MainCard';
 import IconButton from 'components/@extended/IconButton';
 import SkeletonProductPlaceholder from 'components/cards/skeleton/ProductPlaceholder';
-import { useDispatch, useSelector } from 'store';
-import { addProduct } from 'store/reducers/cart';
-import { openSnackbar } from 'store/reducers/snackbar';
 
 // assets
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
@@ -22,42 +19,43 @@ const prodImage = require.context('assets/images/e-commerce', true);
 // ==============================|| PRODUCT CARD ||============================== //
 
 const ProductCard = ({ id, color, name, brand, offer, isStock, image, description, offerPrice, salePrice, rating }) => {
+  console.log(color, 'color');
+  console.log(description, 'description');
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const prodProfile = image && prodImage(`./${image}`);
   const [productRating] = useState(rating);
   const [wishlisted, setWishlisted] = useState(false);
-  const cart = useSelector((state) => state.cart);
+  // const cart = useSelector((state) => state.cart);
 
   const addCart = () => {
-    dispatch(addProduct({ id, name, image, salePrice, offerPrice, color, size: 8, quantity: 1, description }, cart.checkout.products));
-    dispatch(
-      openSnackbar({
-        open: true,
-        message: 'Add To Cart Success',
-        variant: 'alert',
-        alert: {
-          color: 'success'
-        },
-        close: false
-      })
-    );
+    // dispatch(addProduct({ id, name, image, salePrice, offerPrice, color, size: 8, quantity: 1, description }, cart.checkout.products));
+    // dispatch(
+    //   openSnackbar({
+    //     open: true,
+    //     message: 'Add To Cart Success',
+    //     variant: 'alert',
+    //     alert: {
+    //       color: 'success'
+    //     },
+    //     close: false
+    //   })
+    // );
   };
 
   const addToFavourite = () => {
     setWishlisted(!wishlisted);
-    dispatch(
-      openSnackbar({
-        open: true,
-        message: 'Added to favourites',
-        variant: 'alert',
-        alert: {
-          color: 'success'
-        },
-        close: false
-      })
-    );
+    // dispatch(
+    //   openSnackbar({
+    //     open: true,
+    //     message: 'Added to favourites',
+    //     variant: 'alert',
+    //     alert: {
+    //       color: 'success'
+    //     },
+    //     close: false
+    //   })
+    // );
   };
 
   const [isLoading, setLoading] = useState(true);

@@ -12,7 +12,7 @@ import { Formik } from 'formik';
 import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // ============================|| FIREBASE - FORGOT PASSWORD ||============================ //
 

@@ -5,7 +5,7 @@ import { createContext, useEffect, useReducer } from 'react';
 import { Auth0Client } from '@auth0/auth0-spa-js';
 
 // reducer - state management
-import { LOGIN, LOGOUT } from 'store/reducers/actions';
+// import { LOGIN, LOGOUT } from 'store/reducers/actions';
 import authReducer from 'store/reducers/auth';
 
 // project import
@@ -25,7 +25,7 @@ const initialState = {
 const Auth0Context = createContext(null);
 
 export const Auth0Provider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  const [state] = useReducer(authReducer, initialState);
 
   useEffect(() => {
     const init = async () => {
@@ -40,27 +40,26 @@ export const Auth0Provider = ({ children }) => {
         const isLoggedIn = await auth0Client.isAuthenticated();
 
         if (isLoggedIn) {
-          const user = await auth0Client.getUser();
-
-          dispatch({
-            type: LOGIN,
-            payload: {
-              isLoggedIn: true,
-              user: {
-                id: user?.sub,
-                email: user?.email
-              }
-            }
-          });
+          // const user = await auth0Client.getUser();
+          // dispatch({
+          //   type: LOGIN,
+          //   payload: {
+          //     isLoggedIn: true,
+          //     user: {
+          //       id: user?.sub,
+          //       email: user?.email
+          //     }
+          //   }
+          // });
         } else {
-          dispatch({
-            type: LOGOUT
-          });
+          // dispatch({
+          //   type: LOGOUT
+          // });
         }
       } catch (err) {
-        dispatch({
-          type: LOGOUT
-        });
+        // dispatch({
+        //   type: LOGOUT
+        // });
       }
     };
 
@@ -72,29 +71,29 @@ export const Auth0Provider = ({ children }) => {
     const isLoggedIn = await auth0Client.isAuthenticated();
 
     if (isLoggedIn) {
-      const user = await auth0Client.getUser();
-      dispatch({
-        type: LOGIN,
-        payload: {
-          isLoggedIn: true,
-          user: {
-            id: user?.sub,
-            avatar: user?.picture,
-            email: user?.email,
-            name: user?.name,
-            tier: 'Premium'
-          }
-        }
-      });
+      // const user = await auth0Client.getUser();
+      // dispatch({
+      //   type: LOGIN,
+      //   payload: {
+      //     isLoggedIn: true,
+      //     user: {
+      //       id: user?.sub,
+      //       avatar: user?.picture,
+      //       email: user?.email,
+      //       name: user?.name,
+      //       tier: 'Premium'
+      //     }
+      //   }
+      // });
     }
   };
 
   const logout = () => {
     auth0Client.logout();
 
-    dispatch({
-      type: LOGOUT
-    });
+    // dispatch({
+    //   type: LOGOUT
+    // });
   };
 
   const resetPassword = async () => {};

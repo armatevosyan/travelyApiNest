@@ -10,9 +10,9 @@ import { Box, Button, Grid, TextField } from '@mui/material';
 import { Chance } from 'chance';
 
 // project imports
-import { useDispatch, useSelector } from 'store';
-import { addItemComment } from 'store/reducers/kanban';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch, useSelector } from '@/redux/store';
+import { addItemComment } from '@/redux/kanban/reducer';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // assets
 import { AppstoreOutlined, FileAddOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
@@ -25,7 +25,6 @@ const chance = new Chance();
 
 const AddItemComment = ({ itemId }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const { comments, items } = useSelector((state) => state.kanban);
 
   const [comment, setComment] = useState('');

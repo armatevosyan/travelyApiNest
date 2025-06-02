@@ -21,7 +21,7 @@ import {
 // project import
 import MainCard from 'components/MainCard';
 import IconButton from 'components/@extended/IconButton';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 import { isNumber, isLowercaseChar, isUppercaseChar, isSpecialChar, minLength } from 'utils/password-validation';
 
 // third party

@@ -1,16 +1,15 @@
-import { useDispatch } from 'store';
-
 // material-ui
 import { Button, Grid, FormControl, FormControlLabel, FormHelperText, Radio, RadioGroup, Stack } from '@mui/material';
 
 // project imports
 import MainCard from 'components/MainCard';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { openSnackbar } from 'store/reducers/snackbar';
 
 // third-party
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { dispatch } from '@/redux/store';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 /**
  * 'Select your favorite color'
@@ -22,8 +21,6 @@ const validationSchema = yup.object({
 // ==============================|| FORM VALIDATION - RADIO GROUP FORMIK  ||============================== //
 
 const RadioGroupForms = () => {
-  const dispatch = useDispatch();
-
   const formik = useFormik({
     initialValues: {
       color: ''

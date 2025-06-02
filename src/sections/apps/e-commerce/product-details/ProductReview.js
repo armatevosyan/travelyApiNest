@@ -9,13 +9,12 @@ import { Button, Grid, LinearProgress, Rating, Stack, Typography, TextField, Inp
 import ProductReview from 'components/cards/e-commerce/ProductReview';
 import MainCard from 'components/MainCard';
 import Avatar from 'components/@extended/Avatar';
-import { useDispatch, useSelector } from 'store';
-import { getProductReviews } from 'store/reducers/product';
 
 // assets
 import { PaperClipOutlined, PictureOutlined, SmileOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import userItself from 'assets/images/users/avatar-4.png';
 import IconButton from 'components/@extended/IconButton';
+import { useSelector } from '@/redux/store';
 
 // progress
 function LinearProgressWithLabel({ star, color, value, ...others }) {
@@ -45,18 +44,12 @@ LinearProgressWithLabel.propTypes = {
 
 const ProductReviews = ({ product }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const [reviews, setReviews] = useState([]);
   const productState = useSelector((state) => state.product);
 
   useEffect(() => {
     setReviews(productState.reviews);
   }, [productState]);
-
-  useEffect(() => {
-    dispatch(getProductReviews());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Grid container spacing={3}>

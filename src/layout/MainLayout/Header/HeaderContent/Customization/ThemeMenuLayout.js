@@ -5,8 +5,8 @@ import { CardMedia, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography
 // project import
 import MainCard from 'components/MainCard';
 import useConfig from 'hooks/useConfig';
-import { dispatch } from 'store';
-import { openDrawer } from 'store/reducers/menu';
+import { dispatch } from '@/redux/store';
+import { openDrawer } from '@/redux/menu/reducer';
 
 // assets
 import defaultLayout from 'assets/images/customization/default.svg';

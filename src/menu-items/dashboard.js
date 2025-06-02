@@ -2,10 +2,10 @@
 import { FormattedMessage } from 'react-intl';
 
 // project import
-import { useSelector } from 'store';
 
 // assets
 import { DashboardOutlined, GoldOutlined } from '@ant-design/icons';
+import { useSelector } from '@/redux/store';
 
 const icons = {
   dashboardOutlined: DashboardOutlined,

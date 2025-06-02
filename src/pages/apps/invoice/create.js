@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+// import { useNavigate } from 'react-router';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -29,7 +29,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 // third party
 import * as yup from 'yup';
 import { v4 as UIDV4 } from 'uuid';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import { FieldArray, Form, Formik } from 'formik';
 
 // project import
@@ -38,17 +38,16 @@ import InvoiceItem from 'sections/apps/invoice/InvoiceItem';
 import AddressModal from 'sections/apps/invoice/AddressModal';
 import InvoiceModal from 'sections/apps/invoice/InvoiceModal';
 
-import incrementer from 'utils/incrementer';
-import { useDispatch, useSelector } from 'store';
-import { openSnackbar } from 'store/reducers/snackbar';
-import {
-  customerPopup,
-  toggleCustomerPopup,
-  selectCountry,
-  getInvoiceInsert,
-  reviewInvoicePopup,
-  getInvoiceList
-} from 'store/reducers/invoice';
+// import incrementer from 'utils/incrementer';
+// import { useDispatch, useSelector } from 'store';
+// import {
+//   customerPopup,
+//   toggleCustomerPopup,
+//   selectCountry,
+//   getInvoiceInsert,
+//   reviewInvoicePopup,
+//   getInvoiceList
+// } from 'store/reducers/invoice';
 
 // assets
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
@@ -81,52 +80,53 @@ const validationSchema = yup.object({
 
 const Create = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  const { open, isCustomerOpen, countries, country, lists, isOpen } = useSelector((state) => state.invoice);
-  const navigation = useNavigate();
+  // const { open, isCustomerOpen, countries, country, lists, isOpen } = useSelector((state) => state.invoice);
+  // const navigation = useNavigate();
   const notesLimit = 500;
 
   const handlerCreate = (values) => {
-    const NewList = {
-      id: Number(incrementer(lists.length)),
-      invoice_id: Number(values.invoice_id),
-      customer_name: values.cashierInfo?.name,
-      email: values.cashierInfo?.email,
-      avatar: Number(Math.round(Math.random() * 10)),
-      discount: Number(values.discount),
-      tax: Number(values.tax),
-      date: format(values.date, 'MM/dd/yyyy'),
-      due_date: format(values.due_date, 'MM/dd/yyyy'),
-      quantity: Number(
-        values.invoice_detail?.reduce((sum, i) => {
-          return sum + i.qty;
-        }, 0)
-      ),
-      status: values.status,
-      cashierInfo: values.cashierInfo,
-      customerInfo: values.customerInfo,
-      invoice_detail: values.invoice_detail,
-      notes: values.notes
-    };
+    console.log(values, 'values');
+    // const NewList = {
+    //   id: Number(incrementer(lists.length)),
+    //   invoice_id: Number(values.invoice_id),
+    //   customer_name: values.cashierInfo?.name,
+    //   email: values.cashierInfo?.email,
+    //   avatar: Number(Math.round(Math.random() * 10)),
+    //   discount: Number(values.discount),
+    //   tax: Number(values.tax),
+    //   date: format(values.date, 'MM/dd/yyyy'),
+    //   due_date: format(values.due_date, 'MM/dd/yyyy'),
+    //   quantity: Number(
+    //     values.invoice_detail?.reduce((sum, i) => {
+    //       return sum + i.qty;
+    //     }, 0)
+    //   ),
+    //   status: values.status,
+    //   cashierInfo: values.cashierInfo,
+    //   customerInfo: values.customerInfo,
+    //   invoice_detail: values.invoice_detail,
+    //   notes: values.notes
+    // };
 
-    dispatch(getInvoiceList()).then(() => {
-      dispatch(getInvoiceInsert(NewList)).then(() => {
-        dispatch(
-          openSnackbar({
-            open: true,
-            message: 'Invoice Added successfully',
-            anchorOrigin: { vertical: 'top', horizontal: 'right' },
-            variant: 'alert',
-            alert: {
-              color: 'success'
-            },
-            close: false
-          })
-        );
-        navigation('/apps/invoice/list');
-      });
-    });
+    // dispatch(getInvoiceList()).then(() => {
+    //   dispatch(getInvoiceInsert(NewList)).then(() => {
+    //     dispatch(
+    //       openSnackbar({
+    //         open: true,
+    //         message: 'Invoice Added successfully',
+    //         anchorOrigin: { vertical: 'top', horizontal: 'right' },
+    //         variant: 'alert',
+    //         alert: {
+    //           color: 'success'
+    //         },
+    //         close: false
+    //       })
+    //     );
+    //     navigation('/apps/invoice/list');
+    //   });
+    // });
   };
 
   const addNextInvoiceHandler = () => {

@@ -12,9 +12,9 @@ import { Draggable } from 'react-beautiful-dnd';
 
 // project imports
 import AlertItemDelete from '../Board/AlertItemDelete';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { selectItem, deleteItem } from 'store/reducers/kanban';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { dispatch, useSelector } from '@/redux/store';
+import { selectItem, deleteItem } from '@/redux/kanban/reducer';
 import IconButton from 'components/@extended/IconButton';
 
 // assets
@@ -33,7 +33,6 @@ const getDragWrapper = (isDragging, theme) => {
 
 const Items = ({ itemId, index }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const { columns, items, profiles, userStory } = useSelector((state) => state.kanban);
 
   const item = items.filter((data) => data.id === itemId)[0];

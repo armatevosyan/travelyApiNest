@@ -5,8 +5,8 @@ import { Button, Checkbox } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
-import { handlerDense } from 'store/reducers/snackbar';
-import { dispatch } from 'store';
+import { handlerDense } from '@/redux/snakbar/reducer';
+import { dispatch } from '@/redux/store';
 import toast from 'utils/ToastNotistack';
 
 // ==============================|| NOTISTACK - DENSE ||============================== //

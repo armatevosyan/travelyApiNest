@@ -8,14 +8,12 @@ import { Box, Grid } from '@mui/material';
 import ProductFilterDrawer from 'sections/apps/e-commerce/products/ProductFilterDrawer';
 import SkeletonProductPlaceholder from 'components/cards/skeleton/ProductPlaceholder';
 import ProductsHeader from 'sections/apps/e-commerce/products/ProductsHeader';
-import ProductCard from 'components/cards/e-commerce/ProductCard';
-import ProductEmpty from 'sections/apps/e-commerce/products/ProductEmpty';
+// import ProductCard from 'components/cards/e-commerce/ProductCard';
+// import ProductEmpty from 'sections/apps/e-commerce/products/ProductEmpty';
 import FloatingCart from 'components/cards/e-commerce/FloatingCart';
 import useConfig from 'hooks/useConfig';
-import { resetCart } from 'store/reducers/cart';
-import { openDrawer } from 'store/reducers/menu';
-import { useDispatch, useSelector } from 'store';
-import { getProducts, filterProducts } from 'store/reducers/product';
+import { openDrawer } from '@/redux/menu/reducer';
+import { dispatch } from '@/redux/store';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'container' })(({ theme, open, container }) => ({
   flexGrow: 1,
@@ -44,7 +42,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && pr
 
 const ProductsPage = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
@@ -52,25 +50,25 @@ const ProductsPage = () => {
   }, []);
 
   // product data
-  const [products, setProducts] = useState([]);
-  const productState = useSelector((state) => state.product);
-  const cart = useSelector((state) => state.cart);
+  // const [products, setProducts] = useState([]);
+  // const productState = useSelector((state) => state.product);
+  // const cart = useSelector((state) => state.cart);
   const { container } = useConfig();
 
-  useEffect(() => {
-    setProducts(productState.products);
-  }, [productState]);
+  // useEffect(() => {
+  //   setProducts(productState.products);
+  // }, [productState]);
 
   useEffect(() => {
-    dispatch(getProducts());
+    // dispatch(getProducts());
 
     // hide left drawer when email app opens
     dispatch(openDrawer(false));
 
     // clear cart if complete order
-    if (cart.checkout.step > 2) {
-      dispatch(resetCart());
-    }
+    // if (cart.checkout.step > 2) {
+    //   dispatch(resetCart());
+    // }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -92,43 +90,43 @@ const ProductsPage = () => {
   };
   const [filter, setFilter] = useState(initialState);
 
-  const filterData = async () => {
-    await dispatch(filterProducts(filter));
-    setLoading(false);
-  };
+  // const filterData = async () => {
+  //   await dispatch(filterProducts(filter));
+  //   setLoading(false);
+  // };
 
-  useEffect(() => {
-    filterData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  // useEffect(() => {
+  //   filterData();
+  //   eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [filter]);
 
   let productResult = <></>;
-  if (products && products.length > 0) {
-    productResult = products.map((product, index) => (
-      <Grid key={index} item xs={12} sm={6} md={4}>
-        <ProductCard
-          id={product.id}
-          image={product.image}
-          name={product.name}
-          brand={product.brand}
-          offer={product.offer}
-          isStock={product.isStock}
-          description={product.description}
-          offerPrice={product.offerPrice}
-          salePrice={product.salePrice}
-          rating={product.rating}
-          color={product.colors ? product.colors[0] : undefined}
-          open={openFilterDrawer}
-        />
-      </Grid>
-    ));
-  } else {
-    productResult = (
-      <Grid item xs={12} sx={{ mt: 3 }}>
-        <ProductEmpty handelFilter={() => setFilter(initialState)} />
-      </Grid>
-    );
-  }
+  // if (products && products.length > 0) {
+  //   productResult = products.map((product, index) => (
+  //     <Grid key={index} item xs={12} sm={6} md={4}>
+  //       <ProductCard
+  //         id={product.id}
+  //         image={product.image}
+  //         name={product.name}
+  //         brand={product.brand}
+  //         offer={product.offer}
+  //         isStock={product.isStock}
+  //         description={product.description}
+  //         offerPrice={product.offerPrice}
+  //         salePrice={product.salePrice}
+  //         rating={product.rating}
+  //         color={product.colors ? product.colors[0] : undefined}
+  //         open={openFilterDrawer}
+  //       />
+  //     </Grid>
+  //   ));
+  // } else {
+  //   productResult = (
+  //     <Grid item xs={12} sx={{ mt: 3 }}>
+  //       <ProductEmpty handelFilter={() => setFilter(initialState)} />
+  //     </Grid>
+  //   );
+  // }
 
   return (
     <Box sx={{ display: 'flex' }}>

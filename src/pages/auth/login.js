@@ -1,17 +1,17 @@
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 // material-ui
 import { Grid, Stack, Typography } from '@mui/material';
 
 // project import
-import useAuth from 'hooks/useAuth';
 import AuthWrapper from 'sections/auth/AuthWrapper';
 import AuthLogin from 'sections/auth/auth-forms/AuthLogin';
+import { isUserLoggedIn } from '@/utils/methods';
 
 // ================================|| LOGIN ||================================ //
 
 const Login = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = isUserLoggedIn();
 
   return (
     <AuthWrapper>

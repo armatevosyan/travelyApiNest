@@ -40,17 +40,15 @@ import InvoiceItem from 'sections/apps/invoice/InvoiceItem';
 import InvoiceModal from 'sections/apps/invoice/InvoiceModal';
 import AddressModal from 'sections/apps/invoice/AddressModal';
 
-import {
-  reviewInvoicePopup,
-  customerPopup,
-  toggleCustomerPopup,
-  selectCountry,
-  getInvoiceSingleList,
-  getInvoiceUpdate
-} from 'store/reducers/invoice';
-import { useDispatch, useSelector } from 'store';
-import { openSnackbar } from 'store/reducers/snackbar';
-
+// import {
+//   reviewInvoicePopup,
+//   customerPopup,
+//   toggleCustomerPopup,
+//   selectCountry,
+//   getInvoiceSingleList,
+//   getInvoiceUpdate
+// } from 'store/reducers/invoice';
+import { openSnackbar } from '../../../redux/snakbar/reducer';
 //asset
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -531,13 +529,13 @@ const Create = () => {
                         options={countries}
                         defaultValue={countries[2]}
                         value={countries.find((option) => option.code === country?.code)}
-                        onChange={(event, value) => {
-                          dispatch(
-                            selectCountry({
-                              country: value
-                            })
-                          );
-                        }}
+                        // onChange={(event, value) => {
+                        //   dispatch(
+                        //     selectCountry({
+                        //       country: value
+                        //     })
+                        //   );
+                        // }}
                         autoHighlight
                         getOptionLabel={(option) => option.label}
                         renderOption={(props, option) => (

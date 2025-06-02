@@ -5,14 +5,13 @@ import { useTheme } from '@mui/material/styles';
 import { OutlinedInput } from '@mui/material';
 
 // project imports
-import { useDispatch, useSelector } from 'store';
-import { editColumn } from 'store/reducers/kanban';
+import { editColumn } from '@/redux/kanban/reducer';
+import { dispatch, useSelector } from '@/redux/store';
 
 // ==============================|| KANBAN BOARD - COLUMN EDIT ||============================== //
 
 const EditColumn = ({ column }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const { columns } = useSelector((state) => state.kanban);
 

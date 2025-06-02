@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 // material-ui
@@ -26,13 +26,13 @@ import ReactToPrint from 'react-to-print';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 
 // project import
-import Loader from 'components/Loader';
+// import Loader from 'components/Loader';
 import MainCard from 'components/MainCard';
 import LogoSection from 'components/logo';
 import ExportPDFView from 'sections/apps/invoice/export-pdf';
 
-import { dispatch, useSelector } from 'store';
-import { getInvoiceSingleList } from 'store/reducers/invoice';
+// import { useSelector } from 'store';
+// import { getInvoiceSingleList } from 'store/reducers/invoice';
 
 // assets
 import { DownloadOutlined, EditOutlined, PrinterFilled, ShareAltOutlined } from '@ant-design/icons';
@@ -44,13 +44,13 @@ const Details = () => {
   const { id } = useParams();
   const navigation = useNavigate();
 
-  const { list } = useSelector((state) => state.invoice);
-  const [loading, setLoading] = useState(false);
+  // const { list } = useSelector((state) => state.invoice);
+  // const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    dispatch(getInvoiceSingleList(Number(id))).then(() => setLoading(true));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  // useEffect(() => {
+  //   dispatch(getInvoiceSingleList(Number(id))).then(() => setLoading(true));
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [id]);
 
   const today = new Date(`${list?.date}`).toLocaleDateString('en-GB', {
     month: 'numeric',
@@ -74,7 +74,7 @@ const Details = () => {
   const total = subtotal - discountRate + taxRate;
   const componentRef = useRef(null);
 
-  if (!loading) return <Loader />;
+  // if (!loading) return <Loader />;
 
   return (
     <MainCard content={false}>

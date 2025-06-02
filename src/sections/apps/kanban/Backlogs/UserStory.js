@@ -29,9 +29,9 @@ import AddItem from './AddItem';
 import EditStory from './EditStory';
 import AlertStoryDelete from './AlertStoryDelete';
 import Items from './Items';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { deleteStory } from 'store/reducers/kanban';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { dispatch, useSelector } from '@/redux/store';
+import { deleteStory } from '@/redux/kanban/reducer';
 import IconButton from 'components/@extended/IconButton';
 
 // assets
@@ -65,7 +65,6 @@ const getDropWrapper = () => {
 
 const UserStory = ({ story, index }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const kanban = useSelector((state) => state.kanban);
   const { columns, profiles, userStory, userStoryOrder } = kanban;
   const [open, setOpen] = React.useState(index === 0);

@@ -5,9 +5,9 @@ import { Button, Typography, Stack } from '@mui/material';
 
 // project import
 import toast from 'utils/ToastNotistack';
-import { handlerIncrease } from 'store/reducers/snackbar';
+import { handlerIncrease } from '@/redux/snakbar/reducer';
 import MainCard from 'components/MainCard';
-import { dispatch, useSelector } from 'store';
+import { dispatch, useSelector } from '@/redux/store';
 
 //asset
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
@@ -52,7 +52,7 @@ onClick={() => {
           variant="outlined"
           size="small"
           sx={width}
-          disabled={snackbar.maxStack === 0 ? true : false}
+          disabled={snackbar.maxStack === 0}
           onClick={() => setValue((prev) => prev - 1)}
         >
           <MinusOutlined />
@@ -62,7 +62,7 @@ onClick={() => {
           variant="outlined"
           size="small"
           sx={width}
-          disabled={snackbar.maxStack === 4 ? true : false}
+          disabled={snackbar.maxStack === 4}
           onClick={() => setValue((prev) => prev + 1)}
         >
           <PlusOutlined />

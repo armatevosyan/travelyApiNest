@@ -7,9 +7,9 @@ import { useTheme } from '@mui/material/styles';
 import { Box, Button, Grid, TextField } from '@mui/material';
 
 // project imports
-import { useDispatch, useSelector } from 'store';
-import { addStoryComment } from 'store/reducers/kanban';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch, useSelector } from '@/redux/store';
+import { addStoryComment } from '@/redux/kanban/reducer';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // third-party
 import { Chance } from 'chance';
@@ -25,7 +25,6 @@ const chance = new Chance();
 
 const AddStoryComment = ({ storyId }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const { comments, userStory } = useSelector((state) => state.kanban);
 
   const [comment, setComment] = useState('');

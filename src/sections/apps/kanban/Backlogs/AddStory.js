@@ -33,9 +33,9 @@ import { useFormik } from 'formik';
 // project imports
 import UploadMultiFile from 'components/third-party/dropzone/MultiFile';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { addStory } from 'store/reducers/kanban';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { dispatch, useSelector } from '@/redux/store';
+import { addStory } from '@/redux/kanban/reducer';
 import IconButton from 'components/@extended/IconButton';
 import { CloseOutlined } from '@ant-design/icons';
 
@@ -49,7 +49,6 @@ const validationSchema = yup.object({
 // ==============================|| KANBAN BACKLOGS - ADD STORY ||============================== //
 
 const AddStory = ({ open, handleDrawerOpen }) => {
-  const dispatch = useDispatch();
   const kanban = useSelector((state) => state.kanban);
   const { profiles, columns, userStory, userStoryOrder } = kanban;
 

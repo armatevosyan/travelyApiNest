@@ -36,9 +36,7 @@ import InvoiceChart from 'components/cards/invoice/InvoiceChart';
 import { CSVExport, HeaderSort, IndeterminateCheckbox, TablePagination, TableRowSelection } from 'components/third-party/ReactTable';
 import AlertColumnDelete from 'sections/apps/kanban/Board/AlertColumnDelete';
 
-import { dispatch, useSelector } from 'store';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { alertPopupToggle, getInvoiceDelete, getInvoiceList } from 'store/reducers/invoice';
+// import { alertPopupToggle, getInvoiceDelete, getInvoiceList } from 'store/reducers/invoice';
 import { renderFilterTypes, GlobalFilter, DateColumnFilter } from 'utils/react-table';
 
 const avatarImage = require.context('assets/images/users', true);
@@ -282,13 +280,13 @@ const ActionCell = (row, setGetInvoiceId, setInvoiceId, navigation, theme) => {
           color="error"
           onClick={(e) => {
             e.stopPropagation();
-            setInvoiceId(row.values.id);
+            // setInvoiceId(row.values.id);
             setGetInvoiceId(row.original.invoice_id);
-            dispatch(
-              alertPopupToggle({
-                alertToggle: true
-              })
-            );
+            // dispatch(
+            //   alertPopupToggle({
+            //     alertToggle: true
+            //   })
+            // );
           }}
         >
           <DeleteTwoTone twoToneColor={theme.palette.error.main} />
@@ -322,43 +320,44 @@ SelectionHeader.propTypes = {
 
 const List = () => {
   const { lists, alertPopup } = useSelector((state) => state.invoice);
-  useEffect(() => {
-    if (lists.length === 0) {
-      dispatch(getInvoiceList());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   if (lists.length === 0) {
+  //     dispatch(getInvoiceList());
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const [list, setList] = useState([]);
-  const [invoiceId, setInvoiceId] = useState(0);
+  // const [invoiceId, setInvoiceId] = useState(0);
   const [getInvoiceId, setGetInvoiceId] = useState(0);
   useEffect(() => {
     setList(lists);
   }, [lists]);
   const navigation = useNavigate();
 
-  const handleClose = (status) => {
-    if (status) {
-      dispatch(getInvoiceDelete(invoiceId));
-      dispatch(
-        openSnackbar({
-          open: true,
-          message: 'Column deleted successfully',
-          anchorOrigin: { vertical: 'top', horizontal: 'right' },
-          variant: 'alert',
-          alert: {
-            color: 'success'
-          },
-          close: false
-        })
-      );
-    }
-    dispatch(
-      alertPopupToggle({
-        alertToggle: false
-      })
-    );
-  };
+  // const handleClose = (status) => {
+  //   if (status) {
+  //     dispatch(getInvoiceDelete(invoiceId));
+  //     dispatch(
+  //       openSnackbar({
+  //         open: true,
+  //         message: 'Column deleted successfully',
+  //         anchorOrigin: { vertical: 'top', horizontal: 'right' },
+  //         variant: 'alert',
+  //         alert: {
+  //           color: 'success'
+  //         },
+  //         close: false
+  //       })
+  //     );
+  //   }
+  //   dispatch(
+  //     alertPopupToggle({
+  //       alertToggle: false
+  //     })
+  //   );
+  // };
+
   const columns = useMemo(
     () => [
       {

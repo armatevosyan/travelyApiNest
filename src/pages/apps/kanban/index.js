@@ -3,11 +3,11 @@ import { useLocation, Link, Outlet } from 'react-router-dom';
 
 // material-ui
 import { Box, Grid, Tab, Tabs } from '@mui/material';
-import { getUserStory, getUserStoryOrder, getProfiles, getComments, getItems, getColumns, getColumnsOrder } from 'store/reducers/kanban';
+// import { getUserStory, getUserStoryOrder, getProfiles, getComments, getItems, getColumns, getColumnsOrder } from '@/redux/kanban/reducer';
 
 // project imports
-import { useDispatch } from 'store';
-import { openDrawer } from 'store/reducers/menu';
+import { openDrawer } from '@/redux/menu/reducer';
+import { useDispatch } from 'react-redux';
 
 function a11yProps(index) {
   return {
@@ -19,8 +19,8 @@ function a11yProps(index) {
 // ==============================|| APPLICATION - KANBAN ||============================== //
 
 export default function KanbanPage() {
-  const dispatch = useDispatch();
   const { pathname } = useLocation();
+  const dispatch = useDispatch();
 
   let selectedTab = 0;
   switch (pathname) {
@@ -44,13 +44,13 @@ export default function KanbanPage() {
   }, []);
 
   useEffect(() => {
-    dispatch(getItems());
-    dispatch(getColumns());
-    dispatch(getColumnsOrder());
-    dispatch(getProfiles());
-    dispatch(getComments());
-    dispatch(getUserStory());
-    dispatch(getUserStoryOrder());
+    // dispatch(getItems());
+    // dispatch(getColumns());
+    // dispatch(getColumnsOrder());
+    // dispatch(getProfiles());
+    // dispatch(getComments());
+    // dispatch(getUserStory());
+    // dispatch(getUserStoryOrder());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -5,9 +5,9 @@ import { Button, FormControl, Radio, FormControlLabel, RadioGroup } from '@mui/m
 
 // project import
 import toast from 'utils/ToastNotistack';
-import { handlerIconVariants } from 'store/reducers/snackbar';
+import { handlerIconVariants } from '@/redux/snakbar/reducer';
 import MainCard from 'components/MainCard';
-import { dispatch } from 'store';
+import { dispatch } from '@/redux/store';
 
 // ==============================|| NOTISTACK - CUSTOM ICON ||============================== //
 

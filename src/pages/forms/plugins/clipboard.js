@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useDispatch } from 'store';
 
 // material-ui
 import { Button, CardContent, Grid, InputAdornment, InputLabel, Stack, TextField, Tooltip } from '@mui/material';
@@ -10,16 +9,15 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 // project imports
 import MainCard from 'components/MainCard';
 import IconButton from 'components/@extended/IconButton';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '../../../redux/snakbar/reducer';
 
 // assets
 import { CopyOutlined, ScissorOutlined } from '@ant-design/icons';
+import { dispatch } from '@/redux/store';
 
 // ==============================|| PLUGIN - CLIPBOARD ||============================== //
 
 const ClipboardPage = () => {
-  const dispatch = useDispatch();
-
   const [text1, setText1] = useState('https://berrydashboard.io/');
   const [text2, setText2] = useState(
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'

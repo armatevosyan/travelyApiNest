@@ -27,9 +27,8 @@ import * as yup from 'yup';
 // project imports
 import ColorOptions from '../products/ColorOptions';
 import Avatar from 'components/@extended/Avatar';
-import { useDispatch, useSelector } from 'store';
-import { addProduct } from 'store/reducers/cart';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch } from '@/redux/store';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // assets
 import { DownOutlined, StarFilled, StarOutlined, UpOutlined } from '@ant-design/icons';
@@ -88,9 +87,7 @@ const ProductInfo = ({ product }) => {
   const theme = useTheme();
 
   const [value, setValue] = useState(1);
-  const dispatch = useDispatch();
   const history = useNavigate();
-  const cart = useSelector((state) => state.cart);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -107,7 +104,6 @@ const ProductInfo = ({ product }) => {
     validationSchema,
     onSubmit: (values) => {
       values.quantity = value;
-      dispatch(addProduct(values, cart.checkout.products));
       dispatch(
         openSnackbar({
           open: true,
@@ -129,7 +125,6 @@ const ProductInfo = ({ product }) => {
   const addCart = () => {
     values.color = values.color ? values.color : 'primaryDark';
     values.quantity = value;
-    dispatch(addProduct(values, cart.checkout.products));
     dispatch(
       openSnackbar({
         open: true,

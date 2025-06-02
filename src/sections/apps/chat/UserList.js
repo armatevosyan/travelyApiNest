@@ -11,17 +11,16 @@ import { Chance } from 'chance';
 // project imports
 import UserAvatar from './UserAvatar';
 import Dot from 'components/@extended/Dot';
-import { useDispatch, useSelector } from 'store';
-import { getUsers } from 'store/reducers/chat';
+import { getUsers } from '@/redux/chat/reducer';
 
 // assets
 import { CheckOutlined } from '@ant-design/icons';
+import { useSelector, dispatch } from '@/redux/store';
 
 const chance = new Chance();
 
 function UserList({ setUser, search }) {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const { users } = useSelector((state) => state.chat);
 

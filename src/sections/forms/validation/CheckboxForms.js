@@ -1,4 +1,4 @@
-import { useDispatch } from 'store';
+import { dispatch } from '@/redux/store';
 
 // material-ui
 import { Button, Grid, Checkbox, FormHelperText, Stack } from '@mui/material';
@@ -6,7 +6,7 @@ import { Button, Grid, Checkbox, FormHelperText, Stack } from '@mui/material';
 // project imports
 import MainCard from 'components/MainCard';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // third-party
 import { useFormik } from 'formik';
@@ -19,8 +19,6 @@ const validationSchema = yup.object({
 // ==============================|| FORM VALIDATION - CHECKBOX FORMIK  ||============================== //
 
 const CheckboxForms = () => {
-  const dispatch = useDispatch();
-
   const formik = useFormik({
     initialValues: {
       color: []

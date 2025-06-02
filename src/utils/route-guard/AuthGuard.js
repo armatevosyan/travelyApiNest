@@ -1,14 +1,15 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { isUserLoggedIn } from '../methods';
 
 // project import
-import useAuth from 'hooks/useAuth';
+// import useAuth from 'hooks/useAuth';
 
 // ==============================|| AUTH GUARD ||============================== //
 
 const AuthGuard = ({ children }) => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = isUserLoggedIn();
   const navigate = useNavigate();
   const location = useLocation();
 

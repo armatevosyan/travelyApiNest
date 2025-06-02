@@ -38,9 +38,9 @@ import StoryComment from './StoryComment';
 import AlertStoryDelete from './AlertStoryDelete';
 import AnimateButton from 'components/@extended/AnimateButton';
 import UploadMultiFile from 'components/third-party/dropzone/MultiFile';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { editStory, deleteStory } from 'store/reducers/kanban';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { dispatch, useSelector } from '@/redux/store';
+import { editStory, deleteStory } from '@/redux/kanban/reducer';
 
 // assets
 import { CloseOutlined, DeleteFilled } from '@ant-design/icons';
@@ -56,7 +56,6 @@ const validationSchema = yup.object({
 // ==============================|| KANBAN BACKLOGS - EDIT STORY ||============================== //
 
 const EditStory = ({ story, open, handleDrawerOpen }) => {
-  const dispatch = useDispatch();
   const kanban = useSelector((state) => state.kanban);
   const { profiles, columns, comments, userStory, userStoryOrder } = kanban;
 

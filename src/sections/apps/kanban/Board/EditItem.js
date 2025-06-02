@@ -27,9 +27,9 @@ import { useFormik } from 'formik';
 
 // project imports
 import AnimateButton from 'components/@extended/AnimateButton';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { editItem } from 'store/reducers/kanban';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { editItem } from '@/redux/kanban/reducer';
+import { dispatch, useSelector } from '@/redux/store';
 import UploadMultiFile from 'components/third-party/dropzone/MultiFile';
 
 const avatarImage = require.context('assets/images/users', true);
@@ -41,7 +41,6 @@ const validationSchema = yup.object({
 // ==============================|| KANBAN BOARD - ITEM EDIT ||============================== //
 
 const EditItem = ({ item, profiles, userStory, columns, handleDrawerOpen }) => {
-  const dispatch = useDispatch();
   const { items } = useSelector((state) => state.kanban);
   const itemUserStory = userStory.filter((story) => story.itemIds.filter((itemId) => itemId === item.id)[0])[0];
   const itemColumn = columns.filter((column) => column.itemIds.filter((itemId) => itemId === item.id)[0])[0];

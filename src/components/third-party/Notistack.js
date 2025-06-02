@@ -6,11 +6,11 @@ import { styled } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 
 // project import
-import { useSelector } from 'store';
 import { SnackbarUtilsConfigurator } from 'utils/ToastNotistack';
 
 // assets
 import { CheckCircleOutlined, CloseCircleOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { useSelector } from '@/redux/store';
 
 // custom styles
 const StyledSnackbarProvider = styled(SnackbarProvider)(({ theme }) => ({
@@ -31,15 +31,14 @@ const StyledSnackbarProvider = styled(SnackbarProvider)(({ theme }) => ({
   }
 }));
 
-// ===========================|| SNACKBAR - NOTISTACK ||=========================== //
-
 const Notistack = ({ children }) => {
   const snackbar = useSelector((state) => state.snackbar);
+
   const iconSX = { marginRight: 8, fontSize: '1.15rem' };
 
   return (
     <StyledSnackbarProvider
-      maxSnack={snackbar.maxStack}
+      maxSnack={snackbar?.maxStack}
       dense={snackbar.dense}
       iconVariant={
         snackbar.iconVariant === 'useemojis'
@@ -51,7 +50,7 @@ const Notistack = ({ children }) => {
             }
           : undefined
       }
-      hideIconVariant={snackbar.iconVariant === 'hide' ? true : false}
+      hideIconVariant={snackbar.iconVariant === 'hide'}
     >
       <SnackbarUtilsConfigurator />
       {children}

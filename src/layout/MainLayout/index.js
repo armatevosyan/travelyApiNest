@@ -15,7 +15,7 @@ import Breadcrumbs from 'components/@extended/Breadcrumbs';
 
 import navigation from 'menu-items';
 import useConfig from 'hooks/useConfig';
-import { openDrawer } from 'store/reducers/menu';
+import { openDrawer } from '@/redux/menu/reducer';
 import { LAYOUT_CONST } from 'config';
 
 // ==============================|| MAIN LAYOUT ||============================== //

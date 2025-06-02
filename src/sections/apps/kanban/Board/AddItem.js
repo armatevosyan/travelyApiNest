@@ -10,10 +10,10 @@ import { sub } from 'date-fns';
 import { Chance } from 'chance';
 
 // project imports
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { addItem } from '@/redux/kanban/reducer';
 import SubCard from 'components/MainCard';
-import { useDispatch, useSelector } from 'store';
-import { addItem } from 'store/reducers/kanban';
+import { dispatch, useSelector } from '@/redux/store';
 import IconButton from 'components/@extended/IconButton';
 
 // assets
@@ -24,8 +24,6 @@ const chance = new Chance();
 // ==============================|| KANBAN BOARD - ADD ITEM ||============================== //
 
 const AddItem = ({ columnId }) => {
-  const dispatch = useDispatch();
-
   const [addTaskBox, setAddTaskBox] = useState(false);
   const { columns, items, userStory } = useSelector((state) => state.kanban);
   const handleAddTaskChange = () => {

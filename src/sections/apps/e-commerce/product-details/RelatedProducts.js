@@ -20,9 +20,8 @@ import {
 // project imports
 import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
-import { useDispatch, useSelector } from 'store';
-import { getRelatedProducts } from 'store/reducers/product';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch, useSelector } from '@/redux/store';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 import SimpleBar from 'components/third-party/SimpleBar';
 
 // assets
@@ -33,7 +32,6 @@ const prodImage = require.context('assets/images/e-commerce', true);
 const ListProduct = ({ product }) => {
   const theme = useTheme();
   const history = useNavigate();
-  const dispatch = useDispatch();
 
   const [wishlisted, setWishlisted] = useState(false);
   const addToFavourite = () => {
@@ -119,8 +117,8 @@ ListProduct.propTypes = {
 
 // ==============================|| PRODUCT DETAILS - RELATED PRODUCTS ||============================== //
 
-const RelatedProducts = ({ id }) => {
-  const dispatch = useDispatch();
+const RelatedProducts = () => {
+  // const dispatch = useDispatch();
   const [related, setRelated] = useState([]);
   const { relatedProducts } = useSelector((state) => state.product);
 
@@ -128,10 +126,10 @@ const RelatedProducts = ({ id }) => {
     setRelated(relatedProducts);
   }, [relatedProducts]);
 
-  useEffect(() => {
-    dispatch(getRelatedProducts(id));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   dispatch(getRelatedProducts(id));
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   let productResult = <></>;
   if (related) {
