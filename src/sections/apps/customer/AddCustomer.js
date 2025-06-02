@@ -39,7 +39,7 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import AlertCustomerDelete from './AlertCustomerDelete';
 import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // assets
 import { CameraOutlined, DeleteFilled } from '@ant-design/icons';

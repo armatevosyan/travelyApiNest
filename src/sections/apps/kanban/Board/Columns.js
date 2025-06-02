@@ -14,9 +14,9 @@ import EditColumn from './EditColumn';
 import Items from './Items';
 import AddItem from './AddItem';
 import AlertColumnDelete from './AlertColumnDelete';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { deleteColumn } from 'store/reducers/kanban';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { deleteColumn } from '@/redux/kanban/reducer';
+import { dispatch, useSelector } from '@/redux/store';
 import IconButton from 'components/@extended/IconButton';
 
 // assets
@@ -54,7 +54,6 @@ const getDropWrapper = (isDraggingOver, theme, radius) => {
 
 const Columns = ({ column, index }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const { items, columns, columnsOrder } = useSelector((state) => state.kanban);
 

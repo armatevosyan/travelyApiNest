@@ -9,9 +9,10 @@ import { Chance } from 'chance';
 // project imports
 import MainCard from 'components/MainCard';
 import SubCard from 'components/MainCard';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { addColumn } from 'store/reducers/kanban';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { addColumn } from '@/redux/kanban/reducer';
+
+import { dispatch, useSelector } from '@/redux/store';
 import IconButton from 'components/@extended/IconButton';
 import { CloseOutlined } from '@ant-design/icons';
 
@@ -21,7 +22,6 @@ const chance = new Chance();
 
 const AddColumn = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const [title, setTitle] = useState('');
   const [isTitle, setIsTitle] = useState(false);

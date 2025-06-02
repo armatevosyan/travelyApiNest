@@ -12,10 +12,6 @@ import Cart from 'sections/apps/e-commerce/checkout/Cart';
 import CartEmpty from 'sections/apps/e-commerce/checkout/CartEmpty';
 import Payment from 'sections/apps/e-commerce/checkout/Payment';
 import MainCard from 'components/MainCard';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { getAddresses, editAddress } from 'store/reducers/product';
-import { removeProduct, setBackStep, setBillingAddress, setNextStep, setShippingCharge, setStep, updateProduct } from 'store/reducers/cart';
 
 // assets
 import { CheckOutlined } from '@ant-design/icons';
@@ -77,32 +73,34 @@ TabPanel.propTypes = {
 
 const Checkout = () => {
   const theme = useTheme();
-  const cart = useSelector((state) => state.cart);
-  const dispatch = useDispatch();
+  // const cart = useSelector((state) => state.cart);
+  // const dispatch = useDispatch();
 
   const isCart = cart.checkout.products && cart.checkout.products.length > 0;
 
   const [value, setValue] = useState(cart.checkout.step > 2 ? 2 : cart.checkout.step);
-  const [billing, setBilling] = useState(cart.checkout.billing);
-  const [address, setAddress] = useState([]);
-  const { addresses } = useSelector((state) => state.product);
+  // const [billing, setBilling] = useState(cart.checkout.billing);
+  // const [address, setAddress] = useState([]);
+  // const { addresses } = useSelector((state) => state.product);
 
-  useEffect(() => {
-    setAddress(addresses);
-  }, [addresses]);
-
-  useEffect(() => {
-    dispatch(getAddresses());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   setAddress(addresses);
+  // }, [addresses]);
+  //
+  // useEffect(() => {
+  //   dispatch(getAddresses());
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const editBillingAddress = (addressEdit) => {
-    dispatch(editAddress(addressEdit));
+    console.log(addressEdit);
+    // dispatch(editAddress(addressEdit));
   };
 
   const handleChange = (newValue) => {
+    console.log(newValue, 'newValue');
     setValue(newValue);
-    dispatch(setStep(newValue));
+    // dispatch(setStep(newValue));
   };
 
   useEffect(() => {
@@ -111,57 +109,61 @@ const Checkout = () => {
   }, [cart.checkout.step]);
 
   const removeCartProduct = (id) => {
-    dispatch(removeProduct(id, cart.checkout.products));
-    dispatch(
-      openSnackbar({
-        open: true,
-        message: 'Update Cart Success',
-        variant: 'alert',
-        alert: {
-          color: 'success'
-        },
-        close: false
-      })
-    );
+    console.log(id, 'id');
+    // dispatch(removeProduct(id, cart.checkout.products));
+    // dispatch(
+    //   openSnackbar({
+    //     open: true,
+    //     message: 'Update Cart Success',
+    //     variant: 'alert',
+    //     alert: {
+    //       color: 'success'
+    //     },
+    //     close: false
+    //   })
+    // );
   };
 
   const updateQuantity = (id, quantity) => {
-    dispatch(updateProduct(id, quantity, cart.checkout.products));
+    console.log(id, quantity, 'id, quantit');
+    // dispatch(updateProduct(id, quantity, cart.checkout.products));
   };
 
   const onNext = () => {
-    dispatch(setNextStep());
+    // dispatch(setNextStep());
   };
 
   const onBack = () => {
-    dispatch(setBackStep());
+    // dispatch(setBackStep());
   };
 
   const billingAddressHandler = (addressBilling) => {
-    if (billing !== null || addressBilling !== null) {
-      if (addressBilling !== null) {
-        setBilling(addressBilling);
-      }
-
-      dispatch(setBillingAddress(addressBilling !== null ? addressBilling : billing));
-      onNext();
-    } else {
-      dispatch(
-        openSnackbar({
-          open: true,
-          message: 'Please select delivery address',
-          variant: 'alert',
-          alert: {
-            color: 'error'
-          },
-          close: false
-        })
-      );
-    }
+    console.log(addressBilling, 'addressBilling');
+    // if (billing !== null || addressBilling !== null) {
+    //   if (addressBilling !== null) {
+    //     setBilling(addressBilling);
+    //   }
+    //
+    //   dispatch(setBillingAddress(addressBilling !== null ? addressBilling : billing));
+    //   onNext();
+    // } else {
+    //   dispatch(
+    //     openSnackbar({
+    //       open: true,
+    //       message: 'Please select delivery address',
+    //       variant: 'alert',
+    //       alert: {
+    //         color: 'error'
+    //       },
+    //       close: false
+    //     })
+    //   );
+    // }
   };
 
   const handleShippingCharge = (type) => {
-    dispatch(setShippingCharge(type, cart.checkout.shipping));
+    console.log(type, 'type');
+    // dispatch(setShippingCharge(type, cart.checkout.shipping));
   };
 
   return (

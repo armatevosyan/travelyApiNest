@@ -4,12 +4,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // project import
 import { APP_DEFAULT_PATH } from 'config';
-import useAuth from 'hooks/useAuth';
+import { isUserLoggedIn } from '@/utils/methods';
+
+// import useAuth from 'hooks/useAuth';
 
 // ==============================|| GUEST GUARD ||============================== //
 
 const GuestGuard = ({ children }) => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = isUserLoggedIn();
+
   const navigate = useNavigate();
   const location = useLocation();
 

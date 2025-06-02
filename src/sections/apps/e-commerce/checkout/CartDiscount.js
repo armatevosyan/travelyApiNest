@@ -9,9 +9,8 @@ import * as yup from 'yup';
 
 // project imports
 import CouponCode from './CouponCode';
-import { useDispatch, useSelector } from 'store';
-import { setDiscount } from 'store/reducers/cart';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch } from '@/redux/store';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 const validationSchema = yup.object({
   code: yup.string().oneOf(['MANTIS50', 'FLAT05', 'SUB150', 'UPTO200'], 'Coupon expired').required('Coupon code is required')
@@ -20,11 +19,8 @@ const validationSchema = yup.object({
 // ==============================|| CHECKOUT CART - CART DISCOUNT ||============================== //
 
 const CartDiscount = () => {
-  const dispatch = useDispatch();
-
   const [open, setOpen] = useState(false);
   const [coupon, setCoupon] = useState('');
-  const cart = useSelector((state) => state.cart);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -39,8 +35,7 @@ const CartDiscount = () => {
       code: coupon
     },
     validationSchema,
-    onSubmit: (values) => {
-      dispatch(setDiscount(values.code, cart.checkout.total));
+    onSubmit: () => {
       dispatch(
         openSnackbar({
           open: true,

@@ -27,8 +27,8 @@ import IconButton from 'components/@extended/IconButton';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { PopupTransition } from 'components/@extended/Transitions';
 
-import { useDispatch } from 'store';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch } from '@/redux/store';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // assets
 import { CloseCircleTwoTone } from '@ant-design/icons';
@@ -48,7 +48,6 @@ const validationSchema = yup.object({
 
 const AddAddress = ({ address, open, handleClose, editAddress }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const edit = address && address.id;
 

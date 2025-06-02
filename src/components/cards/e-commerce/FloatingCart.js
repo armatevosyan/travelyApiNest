@@ -6,10 +6,10 @@ import { useTheme } from '@mui/material/styles';
 import { Fab, Badge } from '@mui/material';
 
 // project import
-import { useSelector } from 'store';
 
 // assets
 import { ShoppingCartOutlined } from '@ant-design/icons';
+import { useSelector } from '@/redux/store';
 
 // ==============================|| CART ITEMS - FLOATING BUTTON ||============================== //
 

@@ -30,10 +30,10 @@ import IconButton from 'components/@extended/IconButton';
 import SimpleBar from 'components/third-party/SimpleBar';
 import { PopupTransition } from 'components/@extended/Transitions';
 
-import { dispatch, useSelector } from 'store';
-import { openDrawer } from 'store/reducers/menu';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { getUser, getUserChats, insertChat } from 'store/reducers/chat';
+import { dispatch, useSelector } from '@/redux/store';
+import { openDrawer } from '@/redux/menu/reducer';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+import { getUser, getUserChats, insertChat } from '@/redux/chat/reducer';
 
 // assets
 import {

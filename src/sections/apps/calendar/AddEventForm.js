@@ -32,8 +32,8 @@ import { useFormik, Form, FormikProvider } from 'formik';
 // project imports
 import ColorPalette from './ColorPalette';
 import IconButton from 'components/@extended/IconButton';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { createEvent, deleteEvent, updateEvent } from 'store/reducers/calendar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+// import { createEvent, deleteEvent, updateEvent } from 'store/reducers/calendar';
 
 // assets
 import { CalendarOutlined, DeleteFilled } from '@ant-design/icons';
@@ -164,7 +164,7 @@ const AddEventFrom = ({ event, range, onCancel }) => {
   });
 
   const deleteHandler = () => {
-    dispatch(deleteEvent(event?.id));
+    // dispatch(deleteEvent(event?.id));
     dispatch(
       openSnackbar({
         open: true,
@@ -183,18 +183,18 @@ const AddEventFrom = ({ event, range, onCancel }) => {
     validationSchema: EventSchema,
     onSubmit: (values, { setSubmitting }) => {
       try {
-        const newEvent = {
-          title: values.title,
-          description: values.description,
-          color: values.color,
-          textColor: values.textColor,
-          allDay: values.allDay,
-          start: values.start,
-          end: values.end
-        };
+        // const newEvent = {
+        //   title: values.title,
+        //   description: values.description,
+        //   color: values.color,
+        //   textColor: values.textColor,
+        //   allDay: values.allDay,
+        //   start: values.start,
+        //   end: values.end
+        // };
 
         if (event) {
-          dispatch(updateEvent(event.id, newEvent));
+          // dispatch(updateEvent(event.id, newEvent));
           dispatch(
             openSnackbar({
               open: true,
@@ -207,7 +207,7 @@ const AddEventFrom = ({ event, range, onCancel }) => {
             })
           );
         } else {
-          dispatch(createEvent(newEvent));
+          // dispatch(createEvent(newEvent));
           dispatch(
             openSnackbar({
               open: true,

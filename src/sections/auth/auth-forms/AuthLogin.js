@@ -1,15 +1,15 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+// import { Link as RouterLink } from 'react-router-dom';
 
 // material-ui
 import {
   Button,
   Checkbox,
-  Divider,
+  // Divider,
   FormControlLabel,
   FormHelperText,
   Grid,
-  Link,
+  // Link,
   InputAdornment,
   InputLabel,
   OutlinedInput,
@@ -22,14 +22,16 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project import
-import useAuth from 'hooks/useAuth';
+// import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
-import FirebaseSocial from './FirebaseSocial';
+// import FirebaseSocial from './FirebaseSocial';
 import IconButton from 'components/@extended/IconButton';
 import AnimateButton from 'components/@extended/AnimateButton';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { loginRequest } from '@/redux/auth/actions';
+import { dispatch } from '@/redux/store';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -37,7 +39,7 @@ const AuthLogin = () => {
   const [checked, setChecked] = React.useState(false);
   const [capsWarning, setCapsWarning] = React.useState(false);
 
-  const { isLoggedIn, firebaseEmailPasswordSignIn } = useAuth();
+  // const isLoggedIn = useAuth();
   const scriptedRef = useScriptRef();
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -57,42 +59,37 @@ const AuthLogin = () => {
     }
   };
 
+  const onSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
+    try {
+      dispatch(
+        loginRequest({
+          email: values.email,
+          password: values.password
+        })
+      );
+    } catch (err) {
+      console.error(err);
+      if (scriptedRef.current) {
+        setStatus({ success: false });
+        setErrors({ submit: err.message });
+        setSubmitting(false);
+      }
+    }
+  };
+
   return (
     <>
       <Formik
         initialValues={{
-          email: 'info@codedthemes.com',
-          password: '123456',
+          email: 'admin@example.com',
+          password: 'password123',
           submit: null
         }}
         validationSchema={Yup.object().shape({
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          try {
-            await firebaseEmailPasswordSignIn(values.email, values.password).then(
-              () => {
-                // WARNING: do not set any formik state here as formik might be already destroyed here. You may get following error by doing so.
-                // Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application.
-                // To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-                // github issue: https://github.com/formium/formik/issues/2430
-              },
-              (err) => {
-                setStatus({ success: false });
-                setErrors({ submit: err.message });
-                setSubmitting(false);
-              }
-            );
-          } catch (err) {
-            console.error(err);
-            if (scriptedRef.current) {
-              setStatus({ success: false });
-              setErrors({ submit: err.message });
-              setSubmitting(false);
-            }
-          }
-        }}
+        onSubmit={onSubmit}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
@@ -177,14 +174,14 @@ const AuthLogin = () => {
                     }
                     label={<Typography variant="h6">Keep me sign in</Typography>}
                   />
-                  <Link
-                    variant="h6"
-                    component={RouterLink}
-                    to={isLoggedIn ? '/auth/forgot-password' : '/forgot-password'}
-                    color="text.primary"
-                  >
-                    Forgot Password?
-                  </Link>
+                  {/*<Link*/}
+                  {/*  variant="h6"*/}
+                  {/*  component={RouterLink}*/}
+                  {/*  to={isLoggedIn ? '/auth/forgot-password' : '/forgot-password'}*/}
+                  {/*  color="text.primary"*/}
+                  {/*>*/}
+                  {/*  Forgot Password?*/}
+                  {/*</Link>*/}
                 </Stack>
               </Grid>
               {errors.submit && (
@@ -199,14 +196,14 @@ const AuthLogin = () => {
                   </Button>
                 </AnimateButton>
               </Grid>
-              <Grid item xs={12}>
-                <Divider>
-                  <Typography variant="caption"> Login with</Typography>
-                </Divider>
-              </Grid>
-              <Grid item xs={12}>
-                <FirebaseSocial />
-              </Grid>
+              {/*<Grid item xs={12}>*/}
+              {/*  <Divider>*/}
+              {/*    <Typography variant="caption"> Login with</Typography>*/}
+              {/*  </Divider>*/}
+              {/*</Grid>*/}
+              {/*<Grid item xs={12}>*/}
+              {/*  <FirebaseSocial />*/}
+              {/*</Grid>*/}
             </Grid>
           </form>
         )}

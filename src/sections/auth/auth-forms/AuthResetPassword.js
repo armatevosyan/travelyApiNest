@@ -21,15 +21,16 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project import
-import useAuth from 'hooks/useAuth';
+// import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
 import IconButton from 'components/@extended/IconButton';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { isUserLoggedIn } from '@/utils/methods';
 
 // ============================|| STATIC - RESET PASSWORD ||============================ //
 
@@ -38,7 +39,7 @@ const AuthResetPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = isUserLoggedIn();
 
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);

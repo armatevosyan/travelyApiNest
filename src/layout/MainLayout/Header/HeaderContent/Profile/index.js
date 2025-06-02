@@ -48,6 +48,7 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const { logout, user } = useAuth();
+
   const handleLogout = async () => {
     try {
       await logout();

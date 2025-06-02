@@ -5,13 +5,13 @@ import { useTheme } from '@mui/material/styles';
 import { Box, Typography, useMediaQuery } from '@mui/material';
 import { DashboardMenu } from 'menu-items/dashboard';
 
-import { useSelector } from 'store';
 import useConfig from 'hooks/useConfig';
 import { HORIZONTAL_MAX_ITEM, LAYOUT_CONST } from 'config';
 
 // project import
 import NavGroup from './NavGroup';
 import menuItem from 'menu-items';
+import { useSelector } from '@/redux/store';
 
 // ==============================|| DRAWER CONTENT - NAVIGATION ||============================== //
 

@@ -1,5 +1,3 @@
-import { useDispatch } from 'store';
-
 // material-ui
 import { createFilterOptions, Autocomplete, Box, Button, Grid, InputAdornment, Stack, TextField, Typography, Chip } from '@mui/material';
 
@@ -10,10 +8,11 @@ import * as yup from 'yup';
 // project imports
 import MainCard from 'components/MainCard';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // assets
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
+import { dispatch } from '@/redux/store';
 
 const roles = ['User', 'Admin', 'Staff', 'Manager'];
 
@@ -47,8 +46,6 @@ const validationSchema = yup.object({
 // ==============================|| FORM VALIDATION - AUTOCOMPLETE FORMIK  ||============================== //
 
 const AutocompleteForms = () => {
-  const dispatch = useDispatch();
-
   const formik = useFormik({
     initialValues: {
       role: '',
