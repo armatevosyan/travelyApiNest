@@ -27,8 +27,8 @@ import NavCollapse from './NavCollapse';
 import Transitions from 'components/@extended/Transitions';
 
 import useConfig from 'hooks/useConfig';
-import { dispatch } from 'store';
-import { activeID } from 'store/reducers/menu';
+import { dispatch } from '@/redux/store';
+import { activeID } from '@/redux/menu/reducer';
 import { LAYOUT_CONST } from 'config';
 
 // assets

@@ -24,12 +24,12 @@ import Dot from 'components/@extended/Dot';
 import Transitions from 'components/@extended/Transitions';
 
 import useConfig from 'hooks/useConfig';
-import { dispatch, useSelector } from 'store';
-import { activeItem } from 'store/reducers/menu';
+import { activeItem } from '@/redux/menu/reducer';
 import { LAYOUT_CONST } from 'config';
 
 // assets
 import { BorderOutlined, DownOutlined, UpOutlined, RightOutlined } from '@ant-design/icons';
+import { useSelector } from '@/redux/store';
 
 // mini-menu - wrapper
 const PopperStyled = styled(Popper)(({ theme }) => ({

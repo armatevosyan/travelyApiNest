@@ -9,8 +9,9 @@ import Columns from './Columns';
 import AddColumn from './AddColumn';
 import ItemDetails from './ItemDetails';
 import MainCard from 'components/MainCard';
-import { useDispatch, useSelector } from 'store';
-import { updateColumnOrder, updateColumnItemOrder } from 'store/reducers/kanban';
+import { updateColumnOrder, updateColumnItemOrder } from '@/redux/kanban/reducer';
+import { dispatch } from '@/redux/store';
+import { useSelector } from 'react-redux';
 
 const getDragWrapper = () => ({
   p: 2.5,
@@ -23,10 +24,8 @@ const getDragWrapper = () => ({
 // ==============================|| KANBAN - BOARD ||============================== //
 
 const Board = () => {
-  const dispatch = useDispatch();
-
   const { columns, columnsOrder } = useSelector((state) => state.kanban);
-  console.log('columns', columns);
+
   // handle drag & drop
   const onDragEnd = (result) => {
     let newColumn;

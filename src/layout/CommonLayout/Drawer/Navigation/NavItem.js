@@ -8,7 +8,7 @@ import { useTheme } from '@mui/material/styles';
 import { useMediaQuery, Avatar, Chip, ListItemButton, ListItemText, Typography } from '@mui/material';
 
 // project imports
-import { activeComponent, openComponentDrawer } from 'store/reducers/menu';
+import { activeComponent, openComponentDrawer } from '@/redux/menu/reducer';
 
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 

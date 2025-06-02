@@ -11,8 +11,8 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import AddStory from './AddStory';
 import UserStory from './UserStory';
 import ItemDetails from '../Board/ItemDetails';
-import { useDispatch, useSelector } from 'store';
-import { updateStoryOrder, updateStoryItemOrder } from 'store/reducers/kanban';
+import { dispatch, useSelector } from '@/redux/store';
+import { updateStoryOrder, updateStoryItemOrder } from '@/redux/kanban/reducer';
 
 // assets
 import { PlusOutlined } from '@ant-design/icons';
@@ -27,7 +27,6 @@ const getDropWrapper = (isDraggingOver, theme) => ({
 
 const Backlogs = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const kanban = useSelector((state) => state.kanban);
   const { userStory, userStoryOrder } = kanban;
 

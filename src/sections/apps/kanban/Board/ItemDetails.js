@@ -8,9 +8,10 @@ import ItemComment from './ItemComment';
 import EditItem from './EditItem';
 import AddItemComment from './AddItemComment';
 import AlertItemDelete from './AlertItemDelete';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch, useSelector } from 'store';
-import { selectItem, deleteItem } from 'store/reducers/kanban';
+import { openSnackbar } from '@/redux/snakbar/reducer';
+
+import { useSelector, dispatch } from '@/redux/store';
+import { selectItem, deleteItem } from '@/redux/kanban/reducer';
 
 // assets
 import { CloseOutlined, DeleteFilled } from '@ant-design/icons';
@@ -23,7 +24,6 @@ const ItemDetails = () => {
   let selectedData;
   let commentList = <></>;
 
-  const dispatch = useDispatch();
   const kanban = useSelector((state) => state.kanban);
   const { columns, comments, profiles, items, selectedItem, userStory } = kanban;
 

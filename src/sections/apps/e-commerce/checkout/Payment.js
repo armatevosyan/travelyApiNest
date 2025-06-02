@@ -33,9 +33,7 @@ import PaymentSelect from './PaymentSelect';
 import MainCard from 'components/MainCard';
 import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
-import { setPaymentCard, setPaymentMethod } from 'store/reducers/cart';
-import { openSnackbar } from 'store/reducers/snackbar';
-import { useDispatch } from 'store';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // assets
 import { LeftOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -43,6 +41,7 @@ import cvv from 'assets/images/e-commerce/cvv.png';
 import lock from 'assets/images/e-commerce/lock.png';
 import master from 'assets/images/e-commerce/master-card.png';
 import paypalcard from 'assets/images/e-commerce/paypal.png';
+import { useDispatch } from 'react-redux';
 
 const prodImage = require.context('assets/images/e-commerce', true);
 
@@ -85,7 +84,6 @@ const Payment = ({ checkout, onBack, onNext, editAddress }) => {
   const cardHandler = (card) => {
     if (payment === 'card') {
       setCards(card);
-      dispatch(setPaymentCard(card));
     }
   };
 
@@ -98,7 +96,6 @@ const Payment = ({ checkout, onBack, onNext, editAddress }) => {
       setType('cod');
     }
     setPayment(value);
-    dispatch(setPaymentMethod(value));
   };
 
   const completeHandler = () => {

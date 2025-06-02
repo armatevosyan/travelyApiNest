@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 // material-ui
@@ -15,9 +15,6 @@ import ProductReview from 'sections/apps/e-commerce/product-details/ProductRevie
 import ProductSpecifications from 'sections/apps/e-commerce/product-details/ProductSpecifications';
 import RelatedProducts from 'sections/apps/e-commerce/product-details/RelatedProducts';
 import MainCard from 'components/MainCard';
-import { useDispatch, useSelector } from 'store';
-import { getProduct } from 'store/reducers/product';
-import { resetCart } from 'store/reducers/cart';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -52,9 +49,6 @@ const ProductDetails = () => {
   const theme = useTheme();
   const { id } = useParams();
 
-  const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
-
   // product description tabs
   const [value, setValue] = useState(0);
 
@@ -62,17 +56,6 @@ const ProductDetails = () => {
     setValue(newValue);
   };
   const { product } = useSelector((state) => state.product);
-
-  useEffect(() => {
-    dispatch(getProduct(id));
-
-    // clear cart if complete order
-    if (cart.checkout.step > 2) {
-      dispatch(resetCart());
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
 
   return (
     <>

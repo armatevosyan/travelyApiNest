@@ -28,7 +28,7 @@ import { Formik } from 'formik';
 import NumberFormat from 'react-number-format';
 
 // project import
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 import IconButton from 'components/@extended/IconButton';
 import MainCard from 'components/MainCard';
 

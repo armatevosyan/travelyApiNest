@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 // material-ui
 import { Alert, Button, Fade, Grow, Slide } from '@mui/material';
@@ -6,10 +6,11 @@ import MuiSnackbar from '@mui/material/Snackbar';
 
 // project import
 import IconButton from './IconButton';
-import { closeSnackbar } from 'store/reducers/snackbar';
 
 // assets
 import { CloseOutlined } from '@ant-design/icons';
+import { closeSnackbar } from '@/redux/snakbar/reducer';
+import { dispatch } from '@/redux/store';
 
 // animation function
 function TransitionSlideLeft(props) {
@@ -45,7 +46,7 @@ const animation = {
 // ==============================|| SNACKBAR ||============================== //
 
 const Snackbar = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const snackbar = useSelector((state) => state.snackbar);
   const { actionButton, anchorOrigin, alert, close, message, open, transition, variant } = snackbar;
 

@@ -21,7 +21,7 @@ import {
   SnackBarAction,
   TransitionBar
 } from 'sections/components-overview/notistack';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // ==============================|| COMPONENTS - SNACKBAR ||============================== //
 

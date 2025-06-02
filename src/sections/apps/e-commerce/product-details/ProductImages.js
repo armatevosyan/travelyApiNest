@@ -8,8 +8,8 @@ import { Box, CardMedia, Grid, Stack, useMediaQuery } from '@mui/material';
 import MainCard from 'components/MainCard';
 import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
-import { useDispatch, useSelector } from 'store';
-import { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch, useSelector } from '@/redux/store';
+import { openSnackbar } from '@/redux/snakbar/reducer';
 
 // third-party
 import Slider from 'react-slick';
@@ -52,8 +52,6 @@ const ProductImages = () => {
 
   const [selected, setSelected] = useState(initialImage);
   const [modal, setModal] = useState(false);
-
-  const dispatch = useDispatch();
 
   const [wishlisted, setWishlisted] = useState(false);
   const addToFavourite = () => {

@@ -10,8 +10,7 @@ import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography, u
 // project import
 import Dot from 'components/@extended/Dot';
 import useConfig from 'hooks/useConfig';
-// import { dispatch, useSelector } from 'store';
-import { activeItem, openDrawer } from 'store/reducers/menu';
+import { activeItem, openDrawer } from '@/redux/menu/reducer';
 import { LAYOUT_CONST } from 'config';
 
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //

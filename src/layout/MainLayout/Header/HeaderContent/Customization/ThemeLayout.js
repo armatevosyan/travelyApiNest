@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { dispatch, useSelector } from '@/redux/store';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -8,7 +8,7 @@ import { CardMedia, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography
 // project import
 import MainCard from 'components/MainCard';
 import useConfig from 'hooks/useConfig';
-import { openDrawer } from 'store/reducers/menu';
+import { openDrawer } from '@/redux/menu/reducer';
 import { LAYOUT_CONST } from 'config';
 
 // assets
@@ -20,7 +20,6 @@ import miniMenu from 'assets/images/customization/mini-menu.svg';
 
 const ThemeLayout = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const downLG = useMediaQuery(theme.breakpoints.down('lg'));
 

@@ -13,8 +13,8 @@ import Card from 'sections/charts/org-chart/Card';
 import { data } from 'data/org-chart';
 import DataCard from 'sections/charts/org-chart/DataCard';
 import MainCard from 'components/MainCard';
-import { openDrawer } from 'store/reducers/menu';
-import { useDispatch } from 'store';
+import { openDrawer } from '@/redux/menu/reducer';
+import { dispatch } from '@/redux/store';
 
 // ==============================|| ORGANIZATION CHARTS ||============================== //
 
@@ -66,7 +66,6 @@ TreeCard.propTypes = {
 
 const OrgChartPage = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(openDrawer(false));

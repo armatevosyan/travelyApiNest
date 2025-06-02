@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useMemo, Fragment } from 'react';
+import { useCallback, useMemo, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // material-ui
@@ -31,8 +31,7 @@ import IconButton from 'components/@extended/IconButton';
 import { HeaderSort, IndeterminateCheckbox, SortingSelect, TablePagination, TableRowSelection } from 'components/third-party/ReactTable';
 import ProductView from 'sections/apps/e-commerce/product-list/ProductView';
 
-import { useDispatch, useSelector } from 'store';
-import { getProducts } from 'store/reducers/product';
+import { useSelector } from '@/redux/store';
 import { renderFilterTypes, GlobalFilter } from 'utils/react-table';
 
 // assets
@@ -286,14 +285,8 @@ ActionCell.propTypes = {
 
 const ProductList = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const { products } = useSelector((state) => state.product);
-
-  useEffect(() => {
-    dispatch(getProducts());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const columns = useMemo(
     () => [
