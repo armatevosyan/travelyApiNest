@@ -15,6 +15,9 @@ const WidgetStatistics = Loadable(lazy(() => import('pages/widget/statistics')))
 const WidgetData = Loadable(lazy(() => import('pages/widget/data')));
 const WidgetChart = Loadable(lazy(() => import('pages/widget/chart')));
 
+// render - users
+const AppUsers = Loadable(lazy(() => import('pages/apps/users')));
+
 // render - applications
 const AppChat = Loadable(lazy(() => import('pages/apps/chat')));
 const AppCalendar = Loadable(lazy(() => import('pages/apps/calendar')));
@@ -129,6 +132,10 @@ const MainRoutes = {
         {
           path: 'dashboard',
           children: [
+            {
+              path: 'users',
+              element: <AppUsers />
+            },
             {
               path: 'default',
               element: <DashboardDefault />

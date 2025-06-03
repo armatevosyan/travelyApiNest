@@ -1,4 +1,5 @@
 // project import
+import users from './users';
 import applications from './applications';
 import widget from './widget';
 import formsTables from './forms-tables';
@@ -9,7 +10,7 @@ import pages from './pages';
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [widget, applications, formsTables, chartsMap, pages, other]
+  items: [users, widget, applications, formsTables, chartsMap, pages, other]
 };
 
 export default menuItems;
