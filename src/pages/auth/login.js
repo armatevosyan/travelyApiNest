@@ -6,12 +6,12 @@ import { Grid, Stack, Typography } from '@mui/material';
 // project import
 import AuthWrapper from 'sections/auth/AuthWrapper';
 import AuthLogin from 'sections/auth/auth-forms/AuthLogin';
-import { isUserLoggedIn } from '@/utils/methods';
+// import { isUserLoggedIn } from '@/utils/methods';
 
 // ================================|| LOGIN ||================================ //
 
 const Login = () => {
-  const { isLoggedIn } = isUserLoggedIn();
+  // const { isLoggedIn } = isUserLoggedIn();
 
   return (
     <AuthWrapper>
@@ -19,15 +19,15 @@ const Login = () => {
         <Grid item xs={12}>
           <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
             <Typography variant="h3">Login</Typography>
-            <Typography
-              component={Link}
-              to={isLoggedIn ? '/auth/register' : '/register'}
-              variant="body1"
-              sx={{ textDecoration: 'none' }}
-              color="primary"
-            >
-              Don&apos;t have an account?
-            </Typography>
+            {/*<Typography*/}
+            {/*  component={Link}*/}
+            {/*  to={isLoggedIn ? '/auth/register' : '/register'}*/}
+            {/*  variant="body1"*/}
+            {/*  sx={{ textDecoration: 'none' }}*/}
+            {/*  color="primary"*/}
+            {/*>*/}
+            {/*  Don&apos;t have an account?*/}
+            {/*</Typography>*/}
           </Stack>
         </Grid>
         <Grid item xs={12}>
