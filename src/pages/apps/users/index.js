@@ -216,7 +216,7 @@ const NumberFormatCell = ({ value }) => <NumberFormat displayType="text" format=
 const StatusCell = (deactivatedAt, verifiedAt) => {
   if (deactivatedAt) {
     return <Chip color="error" label="Deactivated" size="small" variant="light" />;
-  } else if (verifiedAt) {
+  } else if (!verifiedAt) {
     return <Chip color="info" label="Not verifed" size="small" variant="light" />;
   } else {
     return <Chip color="success" label="Verified" size="small" variant="light" />;
