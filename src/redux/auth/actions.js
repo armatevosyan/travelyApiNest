@@ -4,6 +4,10 @@ export const loginRequest = createAction('LOGIN_REQUEST');
 export const loginSuccess = createAction('LOGIN_SUCCESS');
 export const loginFailure = createAction('LOGIN_FAILURE');
 
+export const meRequest = createAction('ME_REQUEST');
+export const meSuccess = createAction('ME_SUCCESS');
+export const meFailure = createAction('ME_FAILURE');
+
 export const enterAccountRequest = createAction('ENTER_ACCOUNT_REQUEST');
 export const enterAccountSuccess = createAction('ENTER_ACCOUNT_SUCCESS');
 export const enterAccountFailure = createAction('ENTER_ACCOUNT_FAILURE');
