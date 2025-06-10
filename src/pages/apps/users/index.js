@@ -22,10 +22,12 @@ import AlertCustomerDelete from 'sections/apps/customer/AlertCustomerDelete';
 import { GlobalFilter } from 'utils/react-table';
 
 // assets
-import { DeleteTwoTone } from '@ant-design/icons';
+import { DeleteTwoTone, LoginOutlined } from '@ant-design/icons';
 import { dispatch } from '@/redux/store';
 import { findAllRequest } from '@/redux/users/actions';
 import { useSelector } from 'react-redux';
+import { enterAccountRequest } from '@/redux/auth/actions';
+import { roles } from '@/utils/constants';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -223,9 +225,21 @@ const StatusCell = (deactivatedAt, verifiedAt) => {
   }
 };
 
-const ActionCell = (row, setCustomerDeleteId, handleClose, theme) => {
+const ActionCell = (row, setCustomerDeleteId, handleClose, theme, role) => {
+  const onLogin = (e) => {
+    e.stopPropagation();
+    dispatch(enterAccountRequest(row.values?.id));
+  };
+
   return (
     <Stack direction="row" alignItems="center" justifyContent="center" spacing={0}>
+      {role !== roles.MODERATOR && (
+        <Tooltip title="Login">
+          <IconButton color="primary" onClick={onLogin}>
+            <LoginOutlined />
+          </IconButton>
+        </Tooltip>
+      )}
       <Tooltip title="Delete">
         <IconButton
           color="error"
@@ -266,6 +280,7 @@ const UsersPage = () => {
   const theme = useTheme();
 
   const { usersList, usersCount } = useSelector((state) => state.users);
+  const { user } = useSelector((state) => state.auth);
 
   const [open, setOpen] = useState(false);
   const [customerDeleteId, setCustomerDeleteId] = useState();
@@ -331,7 +346,7 @@ const UsersPage = () => {
         Header: 'Actions',
         className: 'cell-center',
         disableSortBy: true,
-        Cell: ({ row }) => ActionCell(row, setCustomerDeleteId, handleClose, theme)
+        Cell: ({ row }) => ActionCell(row, setCustomerDeleteId, handleClose, theme, user.role)
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

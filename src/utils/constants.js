@@ -1,3 +1,11 @@
+export const roles = {
+  SUPER_ADMIN: 'super-admin',
+  ADMIN: 'admin',
+  MODERATOR: 'moderator',
+  BUSINESS: 'business',
+  USER: 'user'
+};
+
 export const removeEmptyItemsFromObject = (obj) => {
   if (typeof obj !== 'object') {
     return obj;

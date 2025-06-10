@@ -1,4 +1,4 @@
-import { loginRequest, loginSuccess, loginFailure } from './actions';
+import { loginRequest, loginSuccess, loginFailure, enterAccountRequest, enterAccountSuccess, enterAccountFailure } from './actions';
 import { axiosApiInstance, config } from 'custom-configs';
 
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -24,6 +24,21 @@ function* auth({ payload }) {
   }
 }
 
+function* enterAccount({ payload }) {
+  try {
+    const response = yield call(() => axiosApiInstance.post(`${URL}/admin/auth/enter-account/${payload}`, payload));
+    if (response?.status === 200) {
+      yield put(enterAccountSuccess(response.data));
+    }
+  } catch (e) {
+    console.log(`Catch for auth, error`, e);
+    if (e?.response?.data) {
+      yield put(enterAccountFailure(catchResponseMessages(e)));
+    }
+  }
+}
+
 export default function* () {
   yield takeLatest(loginRequest, auth);
+  yield takeLatest(enterAccountRequest, enterAccount);
 }
