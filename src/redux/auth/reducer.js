@@ -77,8 +77,9 @@ const reducer = handleActions(
       isUserLoggingIn: false,
       isUserLoggedInSuccess: (() => {
         const currentUserToken = localStorage.getItem('accessToken');
+        const currentUserData = localStorage.getItem('userData');
         localStorage.setItem(`${state.user?.role}-token`, currentUserToken);
-        localStorage.setItem(`${state.user?.role}-user-data`, state.user?.userData);
+        localStorage.setItem(`${state.user?.role}-user-data`, currentUserData);
 
         localStorage.setItem('accessToken', payload.token);
         localStorage.setItem('userData', JSON.stringify(payload.data));
