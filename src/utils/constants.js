@@ -6,6 +6,8 @@ export const roles = {
   USER: 'user'
 };
 
+export const adminRoles = [roles.SUPER_ADMIN, roles.ADMIN, roles.MODERATOR];
+
 export const removeEmptyItemsFromObject = (obj) => {
   if (typeof obj !== 'object') {
     return obj;
