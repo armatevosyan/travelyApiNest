@@ -59,7 +59,8 @@ axiosApiInstance.interceptors.response.use(
         originalRequest._retry = true;
         const access_token = localStorage.getItem('refresh_token');
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
-        return axiosApiInstance(originalRequest);
+        // OPEN IF NEEDED
+        // return axiosApiInstance(originalRequest);
       }
       if (error?.response?.status === 401) {
         localStorage.removeItem('accessToken');
