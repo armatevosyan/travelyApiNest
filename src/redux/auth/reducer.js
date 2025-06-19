@@ -1,23 +1,10 @@
 import { handleActions } from 'redux-actions';
-import {
-  loginRequest,
-  loginSuccess,
-  loginFailure,
-  meRequest,
-  meSuccess,
-  meFailure,
-  enterAccountRequest,
-  enterAccountSuccess,
-  enterAccountFailure
-} from './actions';
+import { loginRequest, loginSuccess, loginFailure, enterAccountRequest, enterAccountSuccess, enterAccountFailure } from './actions';
 
 const initialState = {
   isUserLoggingIn: false,
   isUserLoggedInSuccess: false,
   isUserLoggedInFailure: false,
-  isMe: false,
-  isMeSuccess: false,
-  isMeFailure: false,
   user: JSON.parse(localStorage.getItem('userData') || JSON.stringify({})) || {},
   errorMessage: '',
   successMessage: '',
@@ -44,25 +31,6 @@ const reducer = handleActions(
       ...state,
       isUserLoggingIn: false,
       isUserLoggedInFailure: true,
-      errorMessage: payload
-    }),
-    [meRequest]: (state) => ({
-      ...state,
-      isMe: true,
-      isMeSuccess: false,
-      isMeFailure: false
-    }),
-    [meSuccess]: (state, { payload }) => ({
-      ...state,
-      user: payload.data,
-      isMe: false,
-      isMeSuccess: true,
-      successMessage: payload.message
-    }),
-    [meFailure]: (state, { payload }) => ({
-      ...state,
-      isMe: false,
-      isMeFailure: true,
       errorMessage: payload
     }),
     [enterAccountRequest]: (state) => ({

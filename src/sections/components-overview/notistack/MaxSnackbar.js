@@ -48,23 +48,11 @@ onClick={() => {
   return (
     <MainCard title="Maximum snackbars" codeString={NotiStackMaxSnackbarCodeString}>
       <Stack justifyContent={'space-between'} flexDirection={'row'}>
-        <Button
-          variant="outlined"
-          size="small"
-          sx={width}
-          disabled={snackbar.maxStack === 0}
-          onClick={() => setValue((prev) => prev - 1)}
-        >
+        <Button variant="outlined" size="small" sx={width} disabled={snackbar.maxStack === 0} onClick={() => setValue((prev) => prev - 1)}>
           <MinusOutlined />
         </Button>
         <Typography variant="body1">stack up to {value}</Typography>
-        <Button
-          variant="outlined"
-          size="small"
-          sx={width}
-          disabled={snackbar.maxStack === 4}
-          onClick={() => setValue((prev) => prev + 1)}
-        >
+        <Button variant="outlined" size="small" sx={width} disabled={snackbar.maxStack === 4} onClick={() => setValue((prev) => prev + 1)}>
           <PlusOutlined />
         </Button>
       </Stack>
