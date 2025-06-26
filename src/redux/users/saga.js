@@ -4,7 +4,7 @@ import { catchResponseMessages } from 'utils/methods';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { findAllSuccess, findAllFailure, findAllRequest } from './actions';
 
-const ADMIN_URL = `${config.API_URL}`;
+const ADMIN_URL = `${config.API_URL}/api`;
 
 function* findAllUsers({ payload }) {
   try {

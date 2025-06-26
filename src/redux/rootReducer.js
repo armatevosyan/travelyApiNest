@@ -8,6 +8,7 @@ import chat from './chat/reducer';
 import menu from './menu/reducer';
 import auth from './auth/reducer';
 import users from './users/reducer';
+import products from '@/redux/products/reducer';
 
 const rootReducer = combineReducers({
   snackbar,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   chat,
   menu,
   auth,
-  users
+  users,
+  products
 });
 
 export default rootReducer;

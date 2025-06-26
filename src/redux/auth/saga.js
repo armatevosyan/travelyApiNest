@@ -4,7 +4,7 @@ import { axiosApiInstance, config } from 'custom-configs';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { catchResponseMessages } from 'utils/methods';
 
-const URL = `${config.API_URL}`;
+const URL = `${config.API_URL}/api`;
 
 function* auth({ payload }) {
   try {

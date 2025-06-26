@@ -11,7 +11,8 @@ import {
   ShoppingCartOutlined,
   UserOutlined,
   AppstoreAddOutlined,
-  TeamOutlined
+  TeamOutlined,
+  AppstoreOutlined
 } from '@ant-design/icons';
 
 // icons
@@ -24,22 +25,31 @@ const icons = {
   ShoppingCartOutlined,
   UserOutlined,
   AppstoreAddOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  AppstoreOutlined
 };
 // ==============================|| MENU ITEMS - APPLICATIONS ||============================== //
 
 const users = {
-  id: 'group-users',
-  title: <FormattedMessage id="Users" />,
+  id: 'group-working-pages',
+  title: <FormattedMessage id="Working Pages" />,
   icon: icons.AppstoreAddOutlined,
   type: 'group',
   children: [
     {
       id: 'users',
-      title: <FormattedMessage id="users" />,
+      title: <FormattedMessage id="Users" />,
       type: 'item',
       url: '/dashboard/users',
       icon: icons.TeamOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'products',
+      title: <FormattedMessage id="Products" />,
+      type: 'item',
+      url: '/dashboard/products',
+      icon: icons.AppstoreOutlined,
       breadcrumbs: false
     }
   ]

@@ -5,6 +5,7 @@ import MainLayout from 'layout/MainLayout';
 import CommonLayout from 'layout/CommonLayout';
 import Loadable from 'components/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
+import Products from '@/pages/apps/products/products';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -135,6 +136,10 @@ const MainRoutes = {
             {
               path: 'users',
               element: <AppUsers />
+            },
+            {
+              path: 'products',
+              element: <Products />
             },
             {
               path: 'default',
