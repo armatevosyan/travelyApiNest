@@ -10,26 +10,40 @@ export class UserService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  findAll() {
-    return this.userRepo.find();
+  async create(data: Partial<User>) {
+    return this.userRepo.save(data).then((res) => {
+      return {
+        id: res.id,
+        role: res.role,
+        email: res.email,
+        fullName: res.fullName,
+      };
+    });
   }
 
-  findOne(id: number) {
-    return this.userRepo.findOneBy({ id });
+  async findById(id: number) {
+    return this.userRepo
+      .findOneBy({ id })
+      .then((user) => this.runUserData(user));
   }
 
-  create(data: Partial<User>) {
-    const user = this.userRepo.create(data);
-    return this.userRepo.save(user);
+  async findByEmail(email: string) {
+    return await this.userRepo.findOneBy({ email });
   }
 
-  async update(id: number, data: Partial<User>) {
-    await this.userRepo.update(id, data);
-    return this.userRepo.findOneBy({ id });
-  }
-
-  async remove(id: number) {
-    await this.userRepo.delete(id);
-    return { deleted: true };
+  runUserData(user: User | null) {
+    return {
+      id: user?.id,
+      fullName: user?.fullName,
+      email: user?.email,
+      image: user?.image,
+      phone: user?.phone,
+      website: user?.website,
+      role: user?.role,
+      description: user?.description,
+      language: user?.language,
+      createdAt: user?.createdAt,
+      updatedAt: user?.updatedAt,
+    };
   }
 }

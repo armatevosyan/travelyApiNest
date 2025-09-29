@@ -7,7 +7,7 @@ import {
   DeleteDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { Role } from '../roles/role.entity';
+import { Role } from 'modules/roles/role.entity';
 
 @Entity('users')
 export class User {
@@ -50,8 +50,11 @@ export class User {
   @Column({ nullable: true })
   appleId: string;
 
-  @ManyToOne(() => Role, (role) => role.users, { eager: true })
+  @ManyToOne(() => Role, { eager: true })
   role: Role;
+
+  @Column()
+  roleId: number;
 
   @Column({ nullable: true })
   otp: string;

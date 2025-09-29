@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import * as dotenv from 'dotenv';
+import { ERoles } from '@/modules/roles/role.types';
+
+dotenv.config();
 
 export interface JwtPayload {
-  sub: string;
-  role: string;
+  sub: number; // user ID
+  role: ERoles; // user role
+  iat?: number; // issued at
+  exp?: number; // expiration
 }
 
 @Injectable()
@@ -18,7 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: JwtPayload) {
-    console.log('validate', 22222);
     return { userId: payload.sub, role: payload.role };
   }
 }

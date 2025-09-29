@@ -1,7 +1,7 @@
 import { Seeder } from 'typeorm-extension';
 import { DataSource } from 'typeorm';
-import { Role } from '../../modules/roles/role.entity';
-import { ERoles } from '../../modules/roles/role.types';
+import { Role } from '@/modules/roles/role.entity';
+import { ERoles } from '@/modules/roles/role.types';
 
 type RoleData = Omit<Role, 'id' | 'users'>;
 
@@ -37,14 +37,21 @@ export default class RoleSeeder implements Seeder {
   async run(dataSource: DataSource): Promise<void> {
     const roleRepo = dataSource.getRepository(Role);
 
+    console.log('🟢 Seeding roles...');
+
     for (const role of roles) {
       const exists = await roleRepo.findOne({ where: { name: role.name } });
-      if (!exists) {
-        const createdRole = roleRepo.create(role);
-        await roleRepo.save(createdRole);
+
+      if (exists) {
+        console.log(`⚠ Role "${role.name}" already exists, skipping.`);
+        continue;
       }
+
+      const newRole = roleRepo.create(role);
+      await roleRepo.save(newRole);
+      console.log(`✅ Role "${role.name}" created.`);
     }
 
-    console.log('Roles seeded!');
+    console.log('🎉 Role seeding completed!');
   }
 }

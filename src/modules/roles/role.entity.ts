@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { User } from '../users/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('roles')
 export class Role {
@@ -7,12 +6,8 @@ export class Role {
   id: number;
 
   @Column({ unique: true })
-  name: string; // e.g. "admin", "user", "manager"
+  name: string;
 
   @Column({ nullable: true })
   description: string;
-
-  // One role can belong to many users
-  @OneToMany(() => User, (user) => user.role)
-  users: User[];
 }
