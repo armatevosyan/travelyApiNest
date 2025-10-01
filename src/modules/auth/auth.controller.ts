@@ -10,7 +10,7 @@ import { UserService } from 'modules/users/user.service';
 import { RoleService } from 'modules/roles/role.service';
 import { ERoles } from 'modules/roles/role.types';
 
-import * as authTypes from './auth.types';
+import { SignInDto, SignUpDto } from './auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +21,7 @@ export class AuthController {
   ) {}
 
   @Post('sign-up')
-  async signUp(@Body() data: authTypes.SignUpData) {
+  async signUp(@Body() data: SignUpDto) {
     const existingUser = await this.userService.findByEmail(data.email);
     if (existingUser) {
       throw new BadRequestException('User already exists');
@@ -33,9 +33,8 @@ export class AuthController {
     }
 
     data.password = await this.authService.hashPassword(data.password);
-    data.roleId = role.id;
 
-    const newUser = await this.userService.create(data);
+    const newUser = await this.userService.create(data, role.id);
     const accessToken = this.authService.accessToken(newUser.id, role);
 
     return {
@@ -45,7 +44,7 @@ export class AuthController {
   }
 
   @Post('sign-in')
-  async signIn(@Body() data: authTypes.SignInData) {
+  async signIn(@Body() data: SignInDto) {
     const user = await this.userService.findByEmail(data.email);
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
