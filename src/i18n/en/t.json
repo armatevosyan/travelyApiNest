@@ -1,0 +1,11 @@
+{
+  "HELLO": "Hello word!",
+  "SIGNUP_SUCCESS": "User registered successfully",
+  "INVALID_EMAIL_OR_PASSWORD": "Invalid email or password",
+  "DEFAULT_ROLE_NOT_FOUND": "Default role not found",
+  "USER_ALREADY_EXISTS": "User already exists",
+  "EMAIL_INVALID": "Email must be a valid email address",
+  "PASSWORD_REQUIRED": "Password is required",
+  "FULL_NAME_REQUIRED": "Full Name is required",
+  "PASSWORD_MIN_LENGTH": "Password must be at least 6 characters long"
+}

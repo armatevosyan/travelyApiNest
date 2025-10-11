@@ -1,15 +1,15 @@
 import {
   Body,
-  Controller,
   Post,
+  Controller,
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 import { AuthService } from './auth.service';
 import { UserService } from 'modules/users/user.service';
 import { RoleService } from 'modules/roles/role.service';
 import { ERoles } from 'modules/roles/role.types';
-
 import { SignInDto, SignUpDto } from './auth.dto';
 
 @Controller('auth')
@@ -18,18 +18,23 @@ export class AuthController {
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly roleService: RoleService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Post('sign-up')
   async signUp(@Body() data: SignUpDto) {
     const existingUser = await this.userService.findByEmail(data.email);
     if (existingUser) {
-      throw new BadRequestException('User already exists');
+      throw new BadRequestException(
+        this.i18n.translate('t.USER_ALREADY_EXISTS'),
+      );
     }
 
     const role = await this.roleService.findByName(ERoles.USER);
     if (!role) {
-      throw new BadRequestException('Default role not found');
+      throw new BadRequestException(
+        this.i18n.translate('t.DEFAULT_ROLE_NOT_FOUND'),
+      );
     }
 
     data.password = await this.authService.hashPassword(data.password);
@@ -47,7 +52,9 @@ export class AuthController {
   async signIn(@Body() data: SignInDto) {
     const user = await this.userService.findByEmail(data.email);
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException(
+        this.i18n.translate('t.INVALID_EMAIL_OR_PASSWORD'),
+      );
     }
 
     const isPasswordValid = await this.authService.comparePassword(
@@ -55,7 +62,9 @@ export class AuthController {
       user.password,
     );
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException(
+        this.i18n.translate('t.INVALID_EMAIL_OR_PASSWORD'),
+      );
     }
 
     const accessToken = this.authService.accessToken(user.id, user.role);
