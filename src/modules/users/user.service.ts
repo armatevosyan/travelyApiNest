@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 
+import { SignUpDto } from '@/modules/auth/auth.dto';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -10,8 +12,8 @@ export class UserService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async create(data: Partial<User>) {
-    return this.userRepo.save(data).then((res) => {
+  async create(data: SignUpDto, roleId: number) {
+    return this.userRepo.save({ ...data, roleId }).then((res) => {
       return {
         id: res.id,
         role: res.role,
