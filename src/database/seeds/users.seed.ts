@@ -33,32 +33,32 @@ const defaultUsers: IUser[] = [
     role: ERoles.SUPER_ADMIN,
   },
   {
-    fullName: 'Super Administrator',
-    email: 'armen@travely.life',
+    fullName: 'Moderator',
+    email: 'moderator@travely.life',
     password: 'Travely123#', // This will be hashed
     language: 'en',
     isActive: true,
     role: ERoles.MODERATOR,
   },
   {
-    fullName: 'Super Administrator',
-    email: 'armen@travely.life',
+    fullName: 'Business',
+    email: 'business@travely.life',
     password: 'Travely123#', // This will be hashed
     language: 'en',
     isActive: true,
     role: ERoles.BUSINESS,
   },
   {
-    fullName: 'Super Administrator',
-    email: 'armen@travely.life',
+    fullName: 'Administrator',
+    email: 'admin@travely.life',
     password: 'Travely123#', // This will be hashed
     language: 'en',
     isActive: true,
     role: ERoles.ADMIN,
   },
   {
-    fullName: 'Super Administrator',
-    email: 'armen@travely.life',
+    fullName: 'User',
+    email: 'user@travely.life',
     password: 'Travely123#', // This will be hashed
     language: 'en',
     isActive: true,
