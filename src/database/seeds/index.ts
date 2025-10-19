@@ -3,6 +3,7 @@ import { runSeeder } from 'typeorm-extension';
 import { DataSource } from 'typeorm';
 
 import RoleSeeder from './roles.seed';
+import UserSeeder from './users.seed';
 import { databaseConfig } from '../db.config';
 
 async function bootstrap() {
@@ -16,8 +17,8 @@ async function bootstrap() {
 
     // Run all seeders here
     await runSeeder(AppDataSource, RoleSeeder);
+    await runSeeder(AppDataSource, UserSeeder);
     // Example for additional seeders:
-    // await runSeeder(AppDataSource, UserSeeder);
     // await runSeeder(AppDataSource, ProductSeeder);
   } catch (err) {
     console.error('❌ Error seeding database:', err);
