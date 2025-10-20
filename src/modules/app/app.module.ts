@@ -1,4 +1,6 @@
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import {
   I18nModule,
@@ -7,16 +9,23 @@ import {
   AcceptLanguageResolver,
 } from 'nestjs-i18n';
 
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AppController } from './app.controller';
+import { LoggerMiddleware } from 'common/middleware/logger.middleware';
+
 import { UsersModule } from '@/modules/users/users.module';
 import { AuthModule } from '@/modules/auth/auth.module';
-import { LoggerMiddleware } from 'common/middleware/logger.middleware';
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { EmailModule } from '@/modules/email/email.module';
+
 import { databaseConfig } from 'database/db.config';
+import emailConfig from 'config/email.config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [emailConfig],
+    }),
     TypeOrmModule.forRoot(databaseConfig),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
@@ -35,6 +44,7 @@ import { databaseConfig } from 'database/db.config';
     }),
     UsersModule,
     AuthModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -43,6 +53,6 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL }); // logs all routes
+      .forRoutes({ path: '*path', method: RequestMethod.ALL }); // logs all routes
   }
 }

@@ -14,7 +14,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   fullName: string;
 
   @Column({ unique: true })
@@ -23,32 +23,32 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   image: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   phone: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   website: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   description: string;
 
   @Column({ default: 'en' })
   language: string;
 
-  @Column({ nullable: true })
-  verifyCode: string;
+  @Column({ type: 'varchar', nullable: true })
+  verifyCode: string | null;
 
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ nullable: true })
-  googleId: string;
+  @Column({ type: 'varchar', nullable: true })
+  googleId: string | null;
 
-  @Column({ nullable: true })
-  appleId: string;
+  @Column({ type: 'varchar', nullable: true })
+  appleId: string | null;
 
   @ManyToOne(() => Role, { eager: true })
   role: Role;
@@ -56,20 +56,20 @@ export class User {
   @Column()
   roleId: number;
 
-  @Column({ nullable: true })
-  otp: string;
+  @Column({ type: 'varchar', nullable: true })
+  otp: string | null;
 
-  @Column({ nullable: true })
-  otpExpiration: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  otpExpiration: Date | null;
 
-  @Column({ nullable: true })
-  verifiedAt: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  verifiedAt: Date | null;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date | null;
 
-  @Column({ nullable: true })
-  deactivatedAt: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  deactivatedAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;
