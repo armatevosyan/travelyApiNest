@@ -14,6 +14,8 @@ import {
   SignInDto,
   SignUpDto,
   ForgotPasswordDto,
+  ResetPasswordDto,
+  VerifyOtpDto,
 } from './auth.dto';
 
 @Controller('auth')
@@ -205,6 +207,68 @@ export class AuthController {
       message: this.i18n.translate('t.PASSWORD_RESET_EMAIL_SENT'),
     };
   }
+
+  @Post('verify-otp')
+  async verifyOtp(@Body() data: VerifyOtpDto) {
+    const user = await this.userService.findByEmail(data.email);
+    if (!user) {
+      throw new BadRequestException(
+        this.i18n.translate('t.INVALID_RESET_TOKEN'),
+      );
+    }
+
+    if (!user.otp || user.otp !== data.code) {
+      throw new BadRequestException(
+        this.i18n.translate('t.INVALID_VERIFICATION_CODE'),
+      );
+    }
+
+    if (user.otpExpiration && new Date() > user.otpExpiration) {
+      throw new BadRequestException(
+        this.i18n.translate('t.VERIFICATION_CODE_EXPIRED'),
+      );
+    }
+
+    return {
+      message: this.i18n.translate('t.OTP_VERIFIED_SUCCESS'),
+      success: true,
+    };
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() data: ResetPasswordDto) {
+    const user = await this.userService.findByEmail(data.email);
+    if (!user) {
+      throw new BadRequestException(
+        this.i18n.translate('t.INVALID_RESET_TOKEN'),
+      );
+    }
+
+    if (!user.otp || user.otp !== data.code) {
+      throw new BadRequestException(
+        this.i18n.translate('t.INVALID_VERIFICATION_CODE'),
+      );
+    }
+
+    if (user.otpExpiration && new Date() > user.otpExpiration) {
+      throw new BadRequestException(
+        this.i18n.translate('t.VERIFICATION_CODE_EXPIRED'),
+      );
+    }
+
+    const hashedPassword = await this.authService.hashPassword(
+      data.newPassword,
+    );
+
+    const updatedUser = await this.userService.update(user.id, {
+      password: hashedPassword,
+      otp: null,
+      otpExpiration: null,
+    });
+
+    return {
+      message: this.i18n.translate('t.PASSWORD_RESET_SUCCESS'),
+      user: updatedUser,
     };
   }
 }

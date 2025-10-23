@@ -20,3 +20,25 @@ export class ForgotPasswordDto {
   @IsEmail({}, { message: 't.EMAIL_INVALID' })
   email: string;
 }
+
+export class VerifyOtpDto {
+  @IsEmail({}, { message: 't.EMAIL_INVALID' })
+  email: string;
+
+  @IsNotEmpty({ message: 't.RESET_TOKEN_REQUIRED' })
+  @IsString({ message: 't.RESET_TOKEN_INVALID' })
+  code: string;
+}
+
+export class ResetPasswordDto {
+  @IsEmail({}, { message: 't.EMAIL_INVALID' })
+  email: string;
+
+  @IsNotEmpty({ message: 't.RESET_TOKEN_REQUIRED' })
+  @IsString({ message: 't.RESET_TOKEN_INVALID' })
+  code: string;
+
+  @IsNotEmpty({ message: 't.NEW_PASSWORD_REQUIRED' })
+  @MinLength(6, { message: 't.PASSWORD_MIN_LENGTH' })
+  newPassword: string;
+}

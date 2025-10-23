@@ -29,5 +29,7 @@
   "VERIFY_EMAIL_FIRST": "Please verify your email first",
   "ACCOUNT_IS_DEACTIVATED": "Account is deactivated",
   "INVALID_RESET_TOKEN": "Invalid reset token",
-  "PASSWORD_RESET_SUCCESS": "Password reset successfully"
+  "PASSWORD_RESET_SUCCESS": "Password reset successfully",
+  "OTP_VERIFIED_SUCCESS": "OTP verified successfully. You can now reset your password.",
+  "OTP_VERIFICATION_SUCCESS": "OTP verification successful"
 }

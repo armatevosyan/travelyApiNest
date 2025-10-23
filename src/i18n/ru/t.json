@@ -29,5 +29,7 @@
   "VERIFY_EMAIL_FIRST": "Пожалуйста, сначала подтвердите email",
   "ACCOUNT_IS_DEACTIVATED": "Аккаунт деактивирован",
   "INVALID_RESET_TOKEN": "Неверный токен сброса",
-  "PASSWORD_RESET_SUCCESS": "Пароль успешно сброшен"
+  "PASSWORD_RESET_SUCCESS": "Пароль успешно сброшен",
+  "OTP_VERIFIED_SUCCESS": "OTP успешно подтвержден. Теперь вы можете сбросить пароль.",
+  "OTP_VERIFICATION_SUCCESS": "OTP подтверждение успешно"
 }
