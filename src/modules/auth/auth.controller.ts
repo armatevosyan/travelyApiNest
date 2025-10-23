@@ -10,7 +10,11 @@ import { AuthService } from './auth.service';
 import { UserService } from 'modules/users/user.service';
 import { RoleService } from 'modules/roles/role.service';
 import { ERoles } from 'modules/roles/role.types';
-import { SignInDto, SignUpDto } from './auth.dto';
+import {
+  SignInDto,
+  SignUpDto,
+  ForgotPasswordDto,
+} from './auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -51,8 +55,7 @@ export class AuthController {
     await this.authService.sendVerificationEmail(data.email, otp);
 
     return {
-      message:
-        'User registered successfully. Please check your email for verification code.',
+      message: this.i18n.translate('t.USER_REGISTERED_SUCCESS'),
       user: {
         id: newUser.id,
         email: newUser.email,
@@ -83,13 +86,13 @@ export class AuthController {
 
     if (!user.verifiedAt) {
       throw new UnauthorizedException(
-        'Please verify your email before signing in. Check your email for verification code.',
+        this.i18n.translate('t.EMAIL_VERIFICATION_REQUIRED'),
       );
     }
 
     if (!user.isActive) {
       throw new UnauthorizedException(
-        'Your account is deactivated. Please contact support.',
+        this.i18n.translate('t.ACCOUNT_DEACTIVATED'),
       );
     }
 
@@ -105,19 +108,25 @@ export class AuthController {
   async verifyEmail(@Body() data: { email: string; code: string }) {
     const user = await this.userService.findByEmail(data.email);
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException(this.i18n.translate('t.USER_NOT_FOUND'));
     }
 
     if (user.verifiedAt) {
-      throw new BadRequestException('Email already verified');
+      throw new BadRequestException(
+        this.i18n.translate('t.EMAIL_ALREADY_VERIFIED'),
+      );
     }
 
     if (!user.verifyCode || user.verifyCode !== data.code) {
-      throw new BadRequestException('Invalid verification code');
+      throw new BadRequestException(
+        this.i18n.translate('t.INVALID_VERIFICATION_CODE'),
+      );
     }
 
     if (user.otpExpiration && new Date() > user.otpExpiration) {
-      throw new BadRequestException('Verification code has expired');
+      throw new BadRequestException(
+        this.i18n.translate('t.VERIFICATION_CODE_EXPIRED'),
+      );
     }
 
     const updatedUser = await this.userService.update(user.id, {
@@ -131,7 +140,7 @@ export class AuthController {
     await this.authService.sendWelcomeEmail(data.email, user.fullName);
 
     return {
-      message: 'Email verified successfully',
+      message: this.i18n.translate('t.EMAIL_VERIFIED_SUCCESS'),
       user: updatedUser,
       accessToken,
     };
@@ -141,11 +150,13 @@ export class AuthController {
   async resendVerification(@Body() data: { email: string }) {
     const user = await this.userService.findByEmail(data.email);
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException(this.i18n.translate('t.USER_NOT_FOUND'));
     }
 
     if (user.verifiedAt) {
-      throw new BadRequestException('Email already verified');
+      throw new BadRequestException(
+        this.i18n.translate('t.EMAIL_ALREADY_VERIFIED'),
+      );
     }
 
     const { otp, otpExpiration } = this.authService.generateOtp();
@@ -157,7 +168,43 @@ export class AuthController {
     await this.authService.sendVerificationEmail(data.email, otp);
 
     return {
-      message: 'Verification code sent successfully',
+      message: this.i18n.translate('t.VERIFICATION_CODE_SENT'),
+    };
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() data: ForgotPasswordDto) {
+    const user = await this.userService.findByEmail(data.email);
+    if (!user) {
+      return {
+        message: this.i18n.translate('t.PASSWORD_RESET_EMAIL_SENT'),
+      };
+    }
+
+    if (!user.verifiedAt) {
+      throw new BadRequestException(
+        this.i18n.translate('t.VERIFY_EMAIL_FIRST'),
+      );
+    }
+
+    if (!user.isActive) {
+      throw new BadRequestException(
+        this.i18n.translate('t.ACCOUNT_IS_DEACTIVATED'),
+      );
+    }
+
+    const { otp, otpExpiration } = this.authService.generateOtp();
+    await this.userService.update(user.id, {
+      otp,
+      otpExpiration,
+    });
+
+    await this.authService.sendPasswordResetEmail(data.email, otp);
+
+    return {
+      message: this.i18n.translate('t.PASSWORD_RESET_EMAIL_SENT'),
+    };
+  }
     };
   }
 }

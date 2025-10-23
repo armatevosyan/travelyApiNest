@@ -60,11 +60,8 @@ export class AuthService {
   /**
    * Send password reset email
    */
-  async sendPasswordResetEmail(
-    email: string,
-    resetToken: string,
-  ): Promise<boolean> {
-    return this.emailService.sendPasswordResetEmail(email, resetToken);
+  async sendPasswordResetEmail(email: string, otp: string): Promise<boolean> {
+    return this.emailService.sendPasswordResetEmail(email, otp);
   }
 
   /**

@@ -146,21 +146,18 @@ export class EmailService {
     });
   }
 
-  async sendPasswordResetEmail(
-    to: string,
-    resetToken: string,
-  ): Promise<boolean> {
+  async sendPasswordResetEmail(to: string, otp: string): Promise<boolean> {
     const subject = 'Password Reset Request';
-    const emailConfig = this.configService.get<EmailConfig>('email');
-    const resetUrl = `${emailConfig?.frontendUrl || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #333;">Password Reset Request</h1>
         <p>You requested a password reset for your Travely account.</p>
-        <p>Click the button below to reset your password:</p>
-        <a href="${resetUrl}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
-        <p>This link will expire in 1 hour.</p>
+        <p>Please use the following code to reset your password:</p>
+        <h2 style="color: #007bff; text-align: center; background-color: #f8f9fa; padding: 20px; border-radius: 8px; font-size: 32px; letter-spacing: 4px;">
+          ${otp}
+        </h2>
+        <p>This code will expire in 10 minutes.</p>
         <p>If you didn't request this, please ignore this email.</p>
         <br>
         <p>Best regards,<br>The Travely Team</p>
