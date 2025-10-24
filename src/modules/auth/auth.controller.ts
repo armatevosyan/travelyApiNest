@@ -98,11 +98,11 @@ export class AuthController {
       );
     }
 
-    const accessToken = this.authService.accessToken(user.id, user.role);
+    const token = this.authService.accessToken(user.id, user.role);
 
     return {
       user: this.userService.runUserData(user),
-      accessToken,
+      token,
     };
   }
 
@@ -137,14 +137,14 @@ export class AuthController {
       verifyCode: null,
       otpExpiration: null,
     });
-    const accessToken = this.authService.accessToken(user.id, user.role);
+    const token = this.authService.accessToken(user.id, user.role);
 
     await this.authService.sendWelcomeEmail(data.email, user.fullName);
 
     return {
       message: this.i18n.translate('t.EMAIL_VERIFIED_SUCCESS'),
-      user: updatedUser,
-      accessToken,
+      user: this.userService.runUserData(updatedUser),
+      token,
     };
   }
 
@@ -268,7 +268,7 @@ export class AuthController {
 
     return {
       message: this.i18n.translate('t.PASSWORD_RESET_SUCCESS'),
-      user: updatedUser,
+      user: this.userService.runUserData(updatedUser),
     };
   }
 }

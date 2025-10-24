@@ -24,9 +24,7 @@ export class UserService {
   }
 
   async findById(id: number) {
-    return this.userRepo
-      .findOneBy({ id })
-      .then((user) => this.runUserData(user));
+    return this.userRepo.findOneBy({ id });
   }
 
   async findByEmail(email: string) {

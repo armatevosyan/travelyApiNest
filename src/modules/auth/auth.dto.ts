@@ -42,3 +42,9 @@ export class ResetPasswordDto {
   @MinLength(6, { message: 't.PASSWORD_MIN_LENGTH' })
   newPassword: string;
 }
+
+export class ChangePasswordDto {
+  @IsNotEmpty({ message: 't.NEW_PASSWORD_REQUIRED' })
+  @MinLength(6, { message: 't.PASSWORD_MIN_LENGTH' })
+  password: string;
+}
