@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 
@@ -31,11 +31,13 @@ export interface EmailOptions {
 }
 
 @Injectable()
-export class EmailService {
+export class EmailService implements OnModuleInit {
   private readonly logger = new Logger(EmailService.name);
   private transporter: nodemailer.Transporter;
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService) {}
+
+  onModuleInit() {
     this.createTransporter();
     this.testConnectionOnStartup();
   }
@@ -72,14 +74,9 @@ export class EmailService {
   private createTransporter() {
     const emailConfig = this.configService.get<EmailConfig>('email');
     // Log configuration (without sensitive data)
-    this.logger.log('Email configuration:', {
-      host: emailConfig?.host || 'smtp.gmail.com',
-      port: emailConfig?.port || 587,
-      secure: emailConfig?.secure || false,
-      user: emailConfig?.user
-        ? `${emailConfig.user.substring(0, 3)}***`
-        : 'not set',
-    });
+    this.logger.log(
+      `Email configuration: host=${emailConfig?.host || 'smtp.gmail.com'}, port=${emailConfig?.port || 587}, secure=${emailConfig?.secure || false}, user=${emailConfig?.user ? `${emailConfig.user.substring(0, 3)}***` : 'not set'}`,
+    );
 
     // Use port 465 with SSL for Gmail (more reliable)
     const port = emailConfig?.port || 465;

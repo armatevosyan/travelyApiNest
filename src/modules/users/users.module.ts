@@ -15,11 +15,11 @@ import { JwtService } from '@nestjs/jwt';
 
 import { Role } from '@/modules/roles/role.entity';
 import { AuthService } from '@/modules/auth/auth.service';
-import { EmailService } from '@/modules/email/email.service';
+import { EmailModule } from '@/modules/email/email.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Role])],
-  providers: [UserService, JwtService, AuthService, EmailService],
+  imports: [TypeOrmModule.forFeature([User, Role]), EmailModule],
+  providers: [UserService, JwtService, AuthService],
   controllers: [UserController],
   exports: [TypeOrmModule, UserService],
 })
