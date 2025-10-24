@@ -10,13 +10,16 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 
-import { Role } from '@/modules/roles/role.entity';
 import { AuthMiddleware } from 'common/middleware/auth.middleware';
 import { JwtService } from '@nestjs/jwt';
 
+import { Role } from '@/modules/roles/role.entity';
+import { AuthService } from '@/modules/auth/auth.service';
+import { EmailModule } from '@/modules/email/email.module';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Role])],
-  providers: [UserService, JwtService],
+  imports: [TypeOrmModule.forFeature([User, Role]), EmailModule],
+  providers: [UserService, JwtService, AuthService],
   controllers: [UserController],
   exports: [TypeOrmModule, UserService],
 })
@@ -24,6 +27,10 @@ export class UsersModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware) // middleware chain
-      .forRoutes({ path: 'users/me', method: RequestMethod.GET });
+      .forRoutes(
+        { path: 'users/me', method: RequestMethod.GET },
+        { path: 'users/change-password', method: RequestMethod.POST },
+        { path: 'users/deactivate-account', method: RequestMethod.POST },
+      );
   }
 }

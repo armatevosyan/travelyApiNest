@@ -8,11 +8,13 @@ import { JwtStrategy } from './jwt.strategy';
 
 import { UsersModule } from '@/modules/users/users.module';
 import { RolesModule } from '@/modules/roles/role.module';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
     UsersModule,
     RolesModule,
+    EmailModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,

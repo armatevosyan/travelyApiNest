@@ -4,10 +4,14 @@ import * as bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
 import { Role } from '@/modules/roles/role.entity';
+import { EmailService } from '@/modules/email/email.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
+  ) {}
 
   /**
    * Hash a plain password using bcrypt
@@ -44,5 +48,29 @@ export class AuthService {
     otpExpiration.setMinutes(otpExpiration.getMinutes() + expirationMinutes);
 
     return { otp, otpExpiration };
+  }
+
+  /**
+   * Send welcome email to new user
+   */
+  async sendWelcomeEmail(email: string, fullName: string): Promise<boolean> {
+    return this.emailService.sendWelcomeEmail(email, fullName);
+  }
+
+  /**
+   * Send password reset email
+   */
+  async sendPasswordResetEmail(email: string, otp: string): Promise<boolean> {
+    return this.emailService.sendPasswordResetEmail(email, otp);
+  }
+
+  /**
+   * Send email verification code
+   */
+  async sendVerificationEmail(
+    email: string,
+    verificationCode: string,
+  ): Promise<boolean> {
+    return this.emailService.sendVerificationEmail(email, verificationCode);
   }
 }
