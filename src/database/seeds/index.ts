@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 
 import RoleSeeder from './roles.seed';
 import UserSeeder from './users.seed';
+import CategorySeeder from './category.seed';
 import { databaseConfig } from '../db.config';
 
 async function bootstrap() {
@@ -18,8 +19,7 @@ async function bootstrap() {
     // Run all seeders here
     await runSeeder(AppDataSource, RoleSeeder);
     await runSeeder(AppDataSource, UserSeeder);
-    // Example for additional seeders:
-    // await runSeeder(AppDataSource, ProductSeeder);
+    await runSeeder(AppDataSource, CategorySeeder);
   } catch (err) {
     console.error('❌ Error seeding database:', err);
     process.exit(1); // Exit with error code
