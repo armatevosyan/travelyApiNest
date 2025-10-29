@@ -44,6 +44,9 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: false })
+  isPro: boolean;
+
   @Column({ type: 'varchar', nullable: true })
   googleId: string | null;
 
