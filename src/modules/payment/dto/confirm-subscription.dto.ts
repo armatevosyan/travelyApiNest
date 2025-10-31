@@ -1,5 +1,14 @@
-import { IsEnum, IsISO8601, IsObject, IsOptional, IsString } from 'class-validator';
-import { SubscriptionPlan, SubscriptionStatus } from '@/modules/subscriptions/subscription.entity';
+import {
+  IsEnum,
+  IsISO8601,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import {
+  SubscriptionPlan,
+  SubscriptionStatus,
+} from '@/modules/subscriptions/subscription.entity';
 
 export class ConfirmSubscriptionDto {
   @IsString()

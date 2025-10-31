@@ -48,6 +48,7 @@ import emailConfig from 'config/email.config';
     AuthModule,
     EmailModule,
     CategoryModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

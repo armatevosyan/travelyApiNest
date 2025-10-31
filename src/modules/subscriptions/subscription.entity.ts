@@ -67,7 +67,7 @@ export class Subscription {
   status: SubscriptionStatus;
 
   @Column({ type: 'json', nullable: true })
-  rawReceipt: any | null;
+  rawReceipt: any;
 
   @CreateDateColumn()
   createdAt: Date;
