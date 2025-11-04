@@ -28,7 +28,10 @@ export interface IPlace {
   twitterUrl?: string | null;
   slug?: string | null; // URL-friendly name (auto-generated if not provided)
   tags?: string | null; // Comma-separated tags: "italian, pizza, family-friendly"
-  priceRange?: string | null; // "$", "$$", "$$$", "$$$$"
+  price?: number | null; // Main/base price
+  minPrice?: number | null; // Minimum price (for price ranges)
+  maxPrice?: number | null; // Maximum price (for price ranges)
+  isPriceOnRequest?: boolean; // When price is negotiable/on request
 
   // AUTO-CALCULATED
   averageRating: number; // Default: 0

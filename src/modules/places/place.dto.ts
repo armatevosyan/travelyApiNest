@@ -105,6 +105,7 @@ export class CreatePlaceDto {
   @IsString({ each: true, message: 't.PLACE_IMAGES_INVALID' })
   images?: string[];
 
+  // TODO: Need to work Opening Hours Object, validations
   // Operating Hours
   @IsOptional()
   openingHours?: placeTypes.OpeningHours;
@@ -137,9 +138,40 @@ export class CreatePlaceDto {
 
   // Pricing
   @IsOptional()
-  @IsString({ message: 't.PLACE_PRICE_RANGE_INVALID' })
-  @MaxLength(10, { message: 't.PLACE_PRICE_RANGE_MAX_LENGTH' })
-  priceRange?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_PRICE_INVALID' })
+  price?: number | null;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_MIN_PRICE_INVALID' })
+  minPrice?: number | null;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_MAX_PRICE_INVALID' })
+  maxPrice?: number | null;
+
+  @IsOptional()
+  @Transform(({ value }): boolean => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean({ message: 't.PLACE_IS_PRICE_ON_REQUEST_INVALID' })
+  isPriceOnRequest?: boolean;
 }
 
 export class UpdatePlaceDto {
@@ -230,6 +262,7 @@ export class UpdatePlaceDto {
   @IsString({ each: true, message: 't.PLACE_IMAGES_INVALID' })
   images?: string[];
 
+  // TODO: Need to work Opening Hours Object, validations
   @IsOptional()
   openingHours?: placeTypes.OpeningHours;
 
@@ -258,10 +291,42 @@ export class UpdatePlaceDto {
   @IsString({ message: 't.PLACE_TAGS_INVALID' })
   tags?: string;
 
+  // Pricing
   @IsOptional()
-  @IsString({ message: 't.PLACE_PRICE_RANGE_INVALID' })
-  @MaxLength(10, { message: 't.PLACE_PRICE_RANGE_MAX_LENGTH' })
-  priceRange?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_PRICE_INVALID' })
+  price?: number | null;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_MIN_PRICE_INVALID' })
+  minPrice?: number | null;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_MAX_PRICE_INVALID' })
+  maxPrice?: number | null;
+
+  @IsOptional()
+  @Transform(({ value }): boolean => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean({ message: 't.PLACE_IS_PRICE_ON_REQUEST_INVALID' })
+  isPriceOnRequest?: boolean;
 }
 
 export class PlaceQueryDto {
@@ -309,9 +374,33 @@ export class PlaceQueryDto {
   @IsBoolean()
   isFeatured?: boolean;
 
+  // Price filtering
   @IsOptional()
-  @IsString({ message: 't.PLACE_PRICE_RANGE_INVALID' })
-  priceRange?: string; // Filter by price range: "$", "$$", "$$$", "$$$$"
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_MIN_PRICE_FILTER_INVALID' })
+  minPrice?: number; // Filter places with price >= minPrice
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_MAX_PRICE_FILTER_INVALID' })
+  maxPrice?: number; // Filter places with price <= maxPrice
+
+  @IsOptional()
+  @Transform(({ value }): boolean => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean({ message: 't.PLACE_IS_PRICE_ON_REQUEST_FILTER_INVALID' })
+  isPriceOnRequest?: boolean; // Filter places where price is on request
 
   @IsOptional()
   @Transform(({ value }) => {
