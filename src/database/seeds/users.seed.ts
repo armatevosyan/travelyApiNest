@@ -12,6 +12,7 @@ interface IUser {
   password: string;
   language: string;
   isActive: boolean;
+  verifiedAt?: Date;
   role: ERoles;
 }
 
@@ -23,6 +24,7 @@ const defaultUsers: IUser[] = [
     language: 'en',
     isActive: true,
     role: ERoles.SUPER_ADMIN,
+    verifiedAt: new Date(),
   },
   {
     fullName: 'Super Administrator',
@@ -31,6 +33,7 @@ const defaultUsers: IUser[] = [
     language: 'en',
     isActive: true,
     role: ERoles.SUPER_ADMIN,
+    verifiedAt: new Date(),
   },
   {
     fullName: 'Moderator',
@@ -39,6 +42,7 @@ const defaultUsers: IUser[] = [
     language: 'en',
     isActive: true,
     role: ERoles.MODERATOR,
+    verifiedAt: new Date(),
   },
   {
     fullName: 'Business',
@@ -47,6 +51,7 @@ const defaultUsers: IUser[] = [
     language: 'en',
     isActive: true,
     role: ERoles.BUSINESS,
+    verifiedAt: new Date(),
   },
   {
     fullName: 'Administrator',
@@ -55,6 +60,7 @@ const defaultUsers: IUser[] = [
     language: 'en',
     isActive: true,
     role: ERoles.ADMIN,
+    verifiedAt: new Date(),
   },
   {
     fullName: 'User',
@@ -63,6 +69,34 @@ const defaultUsers: IUser[] = [
     language: 'en',
     isActive: true,
     role: ERoles.USER,
+    verifiedAt: new Date(),
+  },
+  {
+    fullName: 'Arman',
+    email: 'armann.davtyan@gmail.com',
+    password: 'Travely123#', // This will be hashed
+    language: 'en',
+    isActive: true,
+    role: ERoles.USER,
+    verifiedAt: new Date(),
+  },
+  {
+    fullName: 'Davtyan',
+    email: 'armann.davtyan+1@gmail.com',
+    password: 'Travely123#', // This will be hashed
+    language: 'en',
+    isActive: true,
+    role: ERoles.USER,
+    verifiedAt: new Date(),
+  },
+  {
+    fullName: 'Davtyan',
+    email: 'armann.davtyan+3@gmail.com',
+    password: 'Travely123#', // This will be hashed
+    language: 'en',
+    isActive: true,
+    role: ERoles.USER,
+    verifiedAt: new Date(),
   },
 ];
 

@@ -18,6 +18,7 @@ import { AuthModule } from '@/modules/auth/auth.module';
 import { EmailModule } from '@/modules/email/email.module';
 import { CategoryModule } from '@/modules/categories/category.module';
 import { PaymentModule } from '@/modules/payment/payment.module';
+import { PlaceModule } from '@/modules/places/place.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -48,6 +49,8 @@ import emailConfig from 'config/email.config';
     AuthModule,
     EmailModule,
     CategoryModule,
+    PaymentModule,
+    PlaceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

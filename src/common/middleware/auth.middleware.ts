@@ -15,7 +15,7 @@ export class AuthMiddleware implements NestMiddleware {
     private readonly userService: UserService,
   ) {}
 
-  use(req: Request, res: Response, next: NextFunction) {
+  async use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
       throw new UnauthorizedException('Missing token');
@@ -35,7 +35,11 @@ export class AuthMiddleware implements NestMiddleware {
 
       // Attach user info to request
       req['role'] = payload.role;
-      req.user = this.userService.findById(payload.sub);
+      const user = await this.userService.findById(payload.sub);
+      if (!user) {
+        throw new UnauthorizedException('Invalid user');
+      }
+      req.user = user;
 
       next();
     } catch (e) {

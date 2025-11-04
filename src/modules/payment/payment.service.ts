@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Subscription, SubscriptionStatus } from '@/modules/subscriptions/subscription.entity';
+import {
+  Subscription,
+  SubscriptionStatus,
+} from '@/modules/subscriptions/subscription.entity';
 import { User } from '@/modules/users/user.entity';
 import { ConfirmSubscriptionDto } from './dto/confirm-subscription.dto';
 import { FailSubscriptionDto } from './dto/fail-subscription.dto';
@@ -15,7 +18,7 @@ export class PaymentService {
     private readonly usersRepo: Repository<User>,
   ) {}
 
-  async getPaymentSettings() {
+  getPaymentSettings() {
     // No Payment settings entities in Nest app yet; return default structure like Express fallback
     return {
       use: false,
@@ -48,19 +51,21 @@ export class PaymentService {
       rawReceipt,
     } = dto;
 
-    let subscription = await this.subscriptionsRepo.findOne({ where: { transactionId } });
+    let subscription = await this.subscriptionsRepo.findOne({
+      where: { transactionId },
+    });
 
     if (subscription) {
       subscription.userId = userId;
       subscription.productId = productId ?? null;
       subscription.platform = platform ?? null;
-      subscription.plan = plan ?? null as any;
+      subscription.plan = plan ?? null;
       subscription.price = price ?? null;
       subscription.currency = currency ?? null;
       subscription.purchaseDate = this.parseDate(purchaseDate);
       subscription.expiryDate = this.parseDate(expiryDate);
       subscription.status = status;
-      subscription.rawReceipt = rawReceipt ?? null;
+      subscription.rawReceipt = rawReceipt;
       await this.subscriptionsRepo.save(subscription);
     } else {
       subscription = this.subscriptionsRepo.create({
@@ -68,7 +73,7 @@ export class PaymentService {
         transactionId,
         productId: productId ?? null,
         platform: platform ?? null,
-        plan: plan ?? null as any,
+        plan: plan ?? null,
         price: price ?? null,
         currency: currency ?? null,
         purchaseDate: this.parseDate(purchaseDate),
@@ -89,15 +94,15 @@ export class PaymentService {
     return { subscription, user };
   }
 
-  async failSubscription(userId: number | null, dto: FailSubscriptionDto) {
+  async failSubscription(userId: number, dto: FailSubscriptionDto) {
     const { transactionId, rawReceipt, productId, platform, plan } = dto;
 
     const subscription = this.subscriptionsRepo.create({
-      userId: userId ?? (null as any),
+      userId: userId,
       transactionId,
       productId: productId ?? null,
       platform: platform ?? null,
-      plan: plan ?? null as any,
+      plan: plan ?? null,
       status: SubscriptionStatus.FAILED,
       rawReceipt: rawReceipt ?? null,
     });

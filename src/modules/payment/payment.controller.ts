@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '@/modules/auth/jwt-auth.guard';
 import { PaymentService } from './payment.service';
 import { ConfirmSubscriptionDto } from './dto/confirm-subscription.dto';
 import { FailSubscriptionDto } from './dto/fail-subscription.dto';
+import { User } from '@/common/decorators/user.decorators';
+import { User as IUser } from '@/modules/users/user.entity';
 
 @Controller()
 export class PaymentController {
@@ -11,29 +12,27 @@ export class PaymentController {
 
   // GET /payment
   @Get('payment')
-  async getPayment() {
-    const data = await this.paymentService.getPaymentSettings();
+  getPayment() {
+    const data = this.paymentService.getPaymentSettings();
     return { success: true, data };
   }
 
   // POST /subscription/confirm
   @UseGuards(JwtAuthGuard)
   @Post('subscription/confirm')
-  async confirm(@Req() req: Request, @Body() dto: ConfirmSubscriptionDto) {
-    const userId = (req.user as any)?.userId as number | undefined;
-    if (!userId) {
-      return { success: false, message: 'Unauthorized' };
-    }
-    const result = await this.paymentService.confirmSubscription(userId, dto);
+  async confirm(@User() user: IUser, @Body() dto: ConfirmSubscriptionDto) {
+    const result = await this.paymentService.confirmSubscription(user.id, dto);
     return { success: true, data: result };
   }
 
   // POST /subscription/fail
   @UseGuards(JwtAuthGuard)
   @Post('subscription/fail')
-  async fail(@Req() req: Request, @Body() dto: FailSubscriptionDto) {
-    const userId = (req.user as any)?.userId as number | undefined;
-    const result = await this.paymentService.failSubscription(userId ?? null, dto);
+  async fail(@User() user: IUser, @Body() dto: FailSubscriptionDto) {
+    const result = await this.paymentService.failSubscription(
+      user?.id ?? null,
+      dto,
+    );
     return { success: true, data: result };
   }
 }
