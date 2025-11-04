@@ -89,7 +89,9 @@ export class PlaceService {
       country,
       isActive,
       isFeatured,
-      priceRange,
+      minPrice,
+      maxPrice,
+      isPriceOnRequest,
       page = 0,
       limit = 10,
     } = query;
@@ -132,13 +134,29 @@ export class PlaceService {
         isFeatured,
       });
     }
-    // TODO: Need to change priceRange
-    // TODO: Need to work on priceRange
-    // TODO: Need to work Opening Hours Object, validations
-    if (priceRange) {
-      queryBuilder = queryBuilder.andWhere('place.priceRange = :priceRange', {
-        priceRange,
-      });
+    // Price filtering
+    // Filter by minimum price: find places where price or price range starts at or below minPrice
+    if (minPrice !== undefined) {
+      queryBuilder = queryBuilder.andWhere(
+        '(place.price >= :minPrice OR (place.minPrice IS NOT NULL AND place.minPrice >= :minPrice) OR (place.maxPrice IS NOT NULL AND place.maxPrice >= :minPrice))',
+        { minPrice },
+      );
+    }
+
+    // Filter by maximum price: find places where price or price range ends at or above maxPrice
+    if (maxPrice !== undefined) {
+      queryBuilder = queryBuilder.andWhere(
+        '(place.price <= :maxPrice OR (place.maxPrice IS NOT NULL AND place.maxPrice <= :maxPrice) OR (place.minPrice IS NOT NULL AND place.minPrice <= :maxPrice))',
+        { maxPrice },
+      );
+    }
+
+    // Filter by price on request
+    if (isPriceOnRequest !== undefined) {
+      queryBuilder = queryBuilder.andWhere(
+        'place.isPriceOnRequest = :isPriceOnRequest',
+        { isPriceOnRequest },
+      );
     }
 
     queryBuilder = queryBuilder

@@ -16,7 +16,8 @@ import { Category } from '../categories/category.entity';
 @Index(['latitude', 'longitude'])
 @Index(['categoryId'])
 @Index(['userId'])
-@Index(['priceRange'])
+@Index(['price'])
+@Index(['minPrice', 'maxPrice'])
 export class Place {
   @PrimaryGeneratedColumn()
   id: number;
@@ -121,8 +122,17 @@ export class Place {
   tags: string | null;
 
   // Pricing
-  @Column({ type: 'varchar', length: 10, nullable: true })
-  priceRange: string | null; // $, $$, $$$, $$$$
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  price: number | null; // Main/base price
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  minPrice: number | null; // Minimum price (for price ranges)
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  maxPrice: number | null; // Maximum price (for price ranges)
+
+  @Column({ default: false })
+  isPriceOnRequest: boolean; // When price is negotiable/on request
 
   // Metadata
   @Column({ type: 'int', default: 0 })
