@@ -1,0 +1,333 @@
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  IsArray,
+  MinLength,
+  MaxLength,
+  IsLatitude,
+  IsLongitude,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
+import * as placeTypes from '@/modules/places/place.types';
+
+export class CreatePlaceDto {
+  @IsNotEmpty({ message: 't.PLACE_NAME_REQUIRED' })
+  @IsString({ message: 't.PLACE_NAME_INVALID' })
+  @MinLength(2, { message: 't.PLACE_NAME_MIN_LENGTH' })
+  @MaxLength(255, { message: 't.PLACE_NAME_MAX_LENGTH' })
+  name: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_DESCRIPTION_INVALID' })
+  description?: string | null;
+
+  // Location
+  @IsOptional()
+  @IsString({ message: 't.PLACE_ADDRESS_INVALID' })
+  @MaxLength(255, { message: 't.PLACE_ADDRESS_MAX_LENGTH' })
+  address?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_CITY_INVALID' })
+  @MaxLength(100, { message: 't.PLACE_CITY_MAX_LENGTH' })
+  city?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_STATE_INVALID' })
+  @MaxLength(100, { message: 't.PLACE_STATE_MAX_LENGTH' })
+  state?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_COUNTRY_INVALID' })
+  @MaxLength(100, { message: 't.PLACE_COUNTRY_MAX_LENGTH' })
+  country?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_POSTAL_CODE_INVALID' })
+  @MaxLength(20, { message: 't.PLACE_POSTAL_CODE_MAX_LENGTH' })
+  postalCode?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsLatitude({ message: 't.PLACE_LATITUDE_INVALID' })
+  latitude?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsLongitude({ message: 't.PLACE_LONGITUDE_INVALID' })
+  longitude?: number;
+
+  // Contact
+  @IsOptional()
+  @IsString({ message: 't.PLACE_PHONE_INVALID' })
+  @MaxLength(50, { message: 't.PLACE_PHONE_MAX_LENGTH' })
+  phone?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_EMAIL_INVALID' })
+  @MaxLength(255, { message: 't.PLACE_EMAIL_MAX_LENGTH' })
+  email?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_WEBSITE_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_WEBSITE_MAX_LENGTH' })
+  website?: string;
+
+  // Category
+  @IsNotEmpty({ message: 't.PLACE_CATEGORY_REQUIRED' })
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_CATEGORY_INVALID' })
+  categoryId: number;
+
+  // Media
+  @IsOptional()
+  @IsString({ message: 't.PLACE_COVER_IMAGE_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_COVER_IMAGE_MAX_LENGTH' })
+  coverImage?: string;
+
+  @IsOptional()
+  @IsArray({ message: 't.PLACE_IMAGES_INVALID' })
+  @IsString({ each: true, message: 't.PLACE_IMAGES_INVALID' })
+  images?: string[];
+
+  // Operating Hours
+  @IsOptional()
+  openingHours?: placeTypes.OpeningHours;
+
+  // Social Media
+  @IsOptional()
+  @IsString({ message: 't.PLACE_FACEBOOK_URL_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_FACEBOOK_URL_MAX_LENGTH' })
+  facebookUrl?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_INSTAGRAM_URL_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_INSTAGRAM_URL_MAX_LENGTH' })
+  instagramUrl?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_TWITTER_URL_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_TWITTER_URL_MAX_LENGTH' })
+  twitterUrl?: string;
+
+  // SEO
+  @IsOptional()
+  @IsString({ message: 't.PLACE_SLUG_INVALID' })
+  @MaxLength(255, { message: 't.PLACE_SLUG_MAX_LENGTH' })
+  slug?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_TAGS_INVALID' })
+  tags?: string;
+
+  // Pricing
+  @IsOptional()
+  @IsString({ message: 't.PLACE_PRICE_RANGE_INVALID' })
+  @MaxLength(10, { message: 't.PLACE_PRICE_RANGE_MAX_LENGTH' })
+  priceRange?: string;
+}
+
+export class UpdatePlaceDto {
+  @IsOptional()
+  @IsString({ message: 't.PLACE_NAME_INVALID' })
+  @MinLength(2, { message: 't.PLACE_NAME_MIN_LENGTH' })
+  @MaxLength(255, { message: 't.PLACE_NAME_MAX_LENGTH' })
+  name?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_DESCRIPTION_INVALID' })
+  description?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_ADDRESS_INVALID' })
+  @MaxLength(255, { message: 't.PLACE_ADDRESS_MAX_LENGTH' })
+  address?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_CITY_INVALID' })
+  @MaxLength(100, { message: 't.PLACE_CITY_MAX_LENGTH' })
+  city?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_STATE_INVALID' })
+  @MaxLength(100, { message: 't.PLACE_STATE_MAX_LENGTH' })
+  state?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_COUNTRY_INVALID' })
+  @MaxLength(100, { message: 't.PLACE_COUNTRY_MAX_LENGTH' })
+  country?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_POSTAL_CODE_INVALID' })
+  @MaxLength(20, { message: 't.PLACE_POSTAL_CODE_MAX_LENGTH' })
+  postalCode?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsLatitude({ message: 't.PLACE_LATITUDE_INVALID' })
+  latitude?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsLongitude({ message: 't.PLACE_LONGITUDE_INVALID' })
+  longitude?: number;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_PHONE_INVALID' })
+  @MaxLength(50, { message: 't.PLACE_PHONE_MAX_LENGTH' })
+  phone?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_EMAIL_INVALID' })
+  @MaxLength(255, { message: 't.PLACE_EMAIL_MAX_LENGTH' })
+  email?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_WEBSITE_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_WEBSITE_MAX_LENGTH' })
+  website?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_CATEGORY_INVALID' })
+  categoryId?: number;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_COVER_IMAGE_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_COVER_IMAGE_MAX_LENGTH' })
+  coverImage?: string;
+
+  @IsOptional()
+  @IsArray({ message: 't.PLACE_IMAGES_INVALID' })
+  @IsString({ each: true, message: 't.PLACE_IMAGES_INVALID' })
+  images?: string[];
+
+  @IsOptional()
+  openingHours?: placeTypes.OpeningHours;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_FACEBOOK_URL_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_FACEBOOK_URL_MAX_LENGTH' })
+  facebookUrl?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_INSTAGRAM_URL_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_INSTAGRAM_URL_MAX_LENGTH' })
+  instagramUrl?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_TWITTER_URL_INVALID' })
+  @MaxLength(500, { message: 't.PLACE_TWITTER_URL_MAX_LENGTH' })
+  twitterUrl?: string;
+
+  // SEO
+  @IsOptional()
+  @IsString({ message: 't.PLACE_SLUG_INVALID' })
+  @MaxLength(255, { message: 't.PLACE_SLUG_MAX_LENGTH' })
+  slug?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_TAGS_INVALID' })
+  tags?: string;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_PRICE_RANGE_INVALID' })
+  @MaxLength(10, { message: 't.PLACE_PRICE_RANGE_MAX_LENGTH' })
+  priceRange?: string;
+}
+
+export class PlaceQueryDto {
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  categoryId?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  userId?: number;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @IsString()
+  country?: string;
+
+  @IsOptional()
+  @Transform(({ value }): boolean => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean({ message: 't.PLACE_IS_ACTIVE_INVALID' })
+  isActive?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }): boolean => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  isFeatured?: boolean;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_PRICE_RANGE_INVALID' })
+  priceRange?: string; // Filter by price range: "$", "$$", "$$$", "$$$$"
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  page?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  limit?: number;
+}
