@@ -5,9 +5,15 @@ import { PlaceController } from './place.controller';
 import { Place } from './place.entity';
 import { CategoryModule } from '@/modules/categories/category.module';
 import { LocationModule } from '@/modules/locations/location.module';
+import { TagModule } from '@/modules/tags/tag.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Place]), CategoryModule, LocationModule],
+  imports: [
+    TypeOrmModule.forFeature([Place]),
+    CategoryModule,
+    LocationModule,
+    TagModule,
+  ],
   providers: [PlaceService],
   controllers: [PlaceController],
   exports: [PlaceService, TypeOrmModule],

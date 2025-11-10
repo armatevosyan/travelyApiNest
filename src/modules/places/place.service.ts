@@ -1,7 +1,7 @@
 import {
   BadRequestException,
-  NotFoundException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,6 +13,8 @@ import { User } from '@/modules/users/user.entity';
 import { Category } from '@/modules/categories/category.entity';
 import { LocationService } from '@/modules/locations/location.service';
 import { Location } from '@/modules/locations/location.entity';
+import { TagService } from '@/modules/tags/tag.service';
+import { Tag } from '@/modules/tags/tag.entity';
 
 @Injectable()
 export class PlaceService {
@@ -21,6 +23,7 @@ export class PlaceService {
     private readonly placeRepository: Repository<Place>,
     private readonly i18n: I18nService,
     private readonly locationService: LocationService,
+    private readonly tagService: TagService,
   ) {}
 
   private filterRelationFields<T extends Place>(place: T): T {
@@ -67,6 +70,14 @@ export class PlaceService {
       } as Location;
     }
 
+    if (place.tags && Array.isArray(place.tags)) {
+      filteredPlace.tags = place.tags.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+        slug: tag.slug,
+      })) as Tag[];
+    }
+
     return filteredPlace;
   }
 
@@ -75,20 +86,17 @@ export class PlaceService {
   }
 
   async create(userId: number, data: CreatePlaceData): Promise<Place> {
-    // Validate location hierarchy
     await this.locationService.validateLocationHierarchy(
       data.countryId,
       data.stateId,
       data.cityId,
     );
 
-    // Generate slug if not provided
     let slug = data.slug;
     if (!slug && data.name) {
       slug = this.generateSlug(data.name);
     }
 
-    // Check if slug already exists
     if (slug) {
       const existingPlace = await this.placeRepository.findOne({
         where: { slug },
@@ -98,17 +106,29 @@ export class PlaceService {
       }
     }
 
+    let tags: Tag[] = [];
+    const tagIds = data.tagIds;
+    if (tagIds && tagIds.length > 0) {
+      tags = await Promise.all(
+        tagIds.map(async (tagId) => {
+          return await this.tagService.findOne(tagId);
+        }),
+      );
+    }
+
+    const { tagIds: _, ...placeData } = data;
     const place = this.placeRepository.create({
-      ...data,
+      ...placeData,
       userId,
       slug,
+      tags,
     });
 
     const savedPlace = await this.placeRepository.save(place);
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
-      relations: ['category', 'user', 'country', 'state', 'city'],
+      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
     });
 
     return this.filterRelationFields(reloadedPlace!);
@@ -139,7 +159,8 @@ export class PlaceService {
       .leftJoinAndSelect('place.category', 'category')
       .leftJoinAndSelect('place.country', 'country')
       .leftJoinAndSelect('place.state', 'state')
-      .leftJoinAndSelect('place.city', 'city');
+      .leftJoinAndSelect('place.city', 'city')
+      .leftJoinAndSelect('place.tags', 'tags');
 
     // Apply filters
     if (categoryId) {
@@ -212,7 +233,7 @@ export class PlaceService {
   async findOne(id: number): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { id },
-      relations: ['category', 'user', 'country', 'state', 'city'],
+      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
     });
 
     if (!place) {
@@ -228,7 +249,7 @@ export class PlaceService {
   async findBySlug(slug: string): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { slug },
-      relations: ['category', 'user', 'country', 'state', 'city'],
+      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
     });
 
     if (!place) {
@@ -248,7 +269,7 @@ export class PlaceService {
   ): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { id },
-      relations: ['category', 'user', 'country', 'state', 'city'],
+      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
     });
 
     if (!place) {
@@ -291,12 +312,27 @@ export class PlaceService {
       }
     }
 
-    Object.assign(place, updatePlaceDto);
+    // Handle tags if tagIds is provided
+    const tagIds = updatePlaceDto.tagIds;
+    if (tagIds !== undefined) {
+      if (tagIds && tagIds.length > 0) {
+        place.tags = await Promise.all(
+          tagIds.map(async (tagId) => {
+            return await this.tagService.findOne(tagId);
+          }),
+        );
+      } else {
+        place.tags = [];
+      }
+    }
+
+    const { tagIds: _, ...placeUpdateData } = updatePlaceDto;
+    Object.assign(place, placeUpdateData);
     const updatedPlace = await this.placeRepository.save(place);
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
-      relations: ['category', 'user', 'country', 'state', 'city'],
+      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
     });
 
     return this.filterRelationFields(reloadedPlace!);
@@ -315,7 +351,7 @@ export class PlaceService {
   async findByUser(userId: number): Promise<Place[]> {
     const places = await this.placeRepository.find({
       where: { userId },
-      relations: ['category', 'user', 'country', 'state', 'city'],
+      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
       order: { createdAt: 'DESC' },
     });
 
@@ -325,7 +361,7 @@ export class PlaceService {
   async findByCategory(categoryId: number): Promise<Place[]> {
     const places = await this.placeRepository.find({
       where: { categoryId, isActive: true },
-      relations: ['category', 'user', 'country', 'state', 'city'],
+      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
       order: { createdAt: 'DESC' },
     });
 
