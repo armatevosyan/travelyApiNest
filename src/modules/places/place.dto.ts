@@ -31,19 +31,31 @@ export class CreatePlaceDto {
   address?: string;
 
   @IsOptional()
-  @IsString({ message: 't.PLACE_CITY_INVALID' })
-  @MaxLength(100, { message: 't.PLACE_CITY_MAX_LENGTH' })
-  city?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_COUNTRY_ID_INVALID' })
+  countryId?: number | null;
 
   @IsOptional()
-  @IsString({ message: 't.PLACE_STATE_INVALID' })
-  @MaxLength(100, { message: 't.PLACE_STATE_MAX_LENGTH' })
-  state?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_STATE_ID_INVALID' })
+  stateId?: number | null;
 
   @IsOptional()
-  @IsString({ message: 't.PLACE_COUNTRY_INVALID' })
-  @MaxLength(100, { message: 't.PLACE_COUNTRY_MAX_LENGTH' })
-  country?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_CITY_ID_INVALID' })
+  cityId?: number | null;
 
   @IsOptional()
   @IsString({ message: 't.PLACE_POSTAL_CODE_INVALID' })
@@ -112,19 +124,12 @@ export class CreatePlaceDto {
 
   // Social Media
   @IsOptional()
-  @IsString({ message: 't.PLACE_FACEBOOK_URL_INVALID' })
-  @MaxLength(500, { message: 't.PLACE_FACEBOOK_URL_MAX_LENGTH' })
-  facebookUrl?: string;
-
-  @IsOptional()
-  @IsString({ message: 't.PLACE_INSTAGRAM_URL_INVALID' })
-  @MaxLength(500, { message: 't.PLACE_INSTAGRAM_URL_MAX_LENGTH' })
-  instagramUrl?: string;
-
-  @IsOptional()
-  @IsString({ message: 't.PLACE_TWITTER_URL_INVALID' })
-  @MaxLength(500, { message: 't.PLACE_TWITTER_URL_MAX_LENGTH' })
-  twitterUrl?: string;
+  social?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    twitter?: string | null;
+    linkedin?: string | null;
+  };
 
   // SEO
   @IsOptional()
@@ -191,19 +196,31 @@ export class UpdatePlaceDto {
   address?: string;
 
   @IsOptional()
-  @IsString({ message: 't.PLACE_CITY_INVALID' })
-  @MaxLength(100, { message: 't.PLACE_CITY_MAX_LENGTH' })
-  city?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_COUNTRY_ID_INVALID' })
+  countryId?: number | null;
 
   @IsOptional()
-  @IsString({ message: 't.PLACE_STATE_INVALID' })
-  @MaxLength(100, { message: 't.PLACE_STATE_MAX_LENGTH' })
-  state?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_STATE_ID_INVALID' })
+  stateId?: number | null;
 
   @IsOptional()
-  @IsString({ message: 't.PLACE_COUNTRY_INVALID' })
-  @MaxLength(100, { message: 't.PLACE_COUNTRY_MAX_LENGTH' })
-  country?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_CITY_ID_INVALID' })
+  cityId?: number | null;
 
   @IsOptional()
   @IsString({ message: 't.PLACE_POSTAL_CODE_INVALID' })
@@ -267,19 +284,12 @@ export class UpdatePlaceDto {
   openingHours?: placeTypes.OpeningHours;
 
   @IsOptional()
-  @IsString({ message: 't.PLACE_FACEBOOK_URL_INVALID' })
-  @MaxLength(500, { message: 't.PLACE_FACEBOOK_URL_MAX_LENGTH' })
-  facebookUrl?: string;
-
-  @IsOptional()
-  @IsString({ message: 't.PLACE_INSTAGRAM_URL_INVALID' })
-  @MaxLength(500, { message: 't.PLACE_INSTAGRAM_URL_MAX_LENGTH' })
-  instagramUrl?: string;
-
-  @IsOptional()
-  @IsString({ message: 't.PLACE_TWITTER_URL_INVALID' })
-  @MaxLength(500, { message: 't.PLACE_TWITTER_URL_MAX_LENGTH' })
-  twitterUrl?: string;
+  social?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    twitter?: string | null;
+    linkedin?: string | null;
+  };
 
   // SEO
   @IsOptional()
@@ -320,6 +330,19 @@ export class UpdatePlaceDto {
   maxPrice?: number | null;
 
   @IsOptional()
+  @IsString({ message: 't.PLACE_PRICE_TYPE_INVALID' })
+  priceType?: string | null; // 'range', 'fixed', 'onRequest', 'free', 'discounted'
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_OLD_PRICE_INVALID' })
+  oldPrice?: number | null;
+
+  @IsOptional()
   @Transform(({ value }): boolean => {
     if (value === 'true') return true;
     if (value === 'false') return false;
@@ -349,12 +372,22 @@ export class PlaceQueryDto {
   userId?: number;
 
   @IsOptional()
-  @IsString()
-  city?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  cityId?: number;
 
   @IsOptional()
-  @IsString()
-  country?: string;
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  countryId?: number;
 
   @IsOptional()
   @Transform(({ value }): boolean => {

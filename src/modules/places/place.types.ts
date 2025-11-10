@@ -8,9 +8,9 @@ export interface IPlace {
   name: string;
   description?: string | null;
   address?: string | null; // "123 Main Street"
-  city?: string | null; // "New York"
-  state?: string | null; // "NY" or "New York"
-  country?: string | null; // "United States"
+  countryId?: number | null; // Country ID
+  stateId?: number | null; // State ID
+  cityId?: number | null; // City ID
   postalCode?: string | null; // "10001"
   latitude?: number | null; // 40.7128 (decimal, 10,8 precision)
   longitude?: number | null; // -74.0060 (decimal, 11,8 precision)
@@ -23,14 +23,19 @@ export interface IPlace {
   isFeatured: boolean;
   openingHours?: OpeningHours | null;
   website?: string | null;
-  facebookUrl?: string | null;
-  instagramUrl?: string | null;
-  twitterUrl?: string | null;
+  social?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    twitter?: string | null;
+    linkedin?: string | null;
+  } | null;
   slug?: string | null; // URL-friendly name (auto-generated if not provided)
   tags?: string | null; // Comma-separated tags: "italian, pizza, family-friendly"
-  price?: number | null; // Main/base price
+  priceType?: string | null; // 'range', 'fixed', 'onRequest', 'free', 'discounted'
+  price?: number | null; // Main/base price (for fixed price)
   minPrice?: number | null; // Minimum price (for price ranges)
   maxPrice?: number | null; // Maximum price (for price ranges)
+  oldPrice?: number | null; // Old price (for discounted items)
   isPriceOnRequest?: boolean; // When price is negotiable/on request
 
   // AUTO-CALCULATED

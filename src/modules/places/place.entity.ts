@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Category } from '../categories/category.entity';
+import { Location } from '../locations/location.entity';
 
 @Entity('places')
 @Index(['latitude', 'longitude'])
@@ -33,14 +34,26 @@ export class Place {
   @Column({ type: 'varchar', length: 255, nullable: true })
   address: string | null;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  city: string | null;
+  @Column({ type: 'int', nullable: true })
+  countryId: number | null;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  state: string | null;
+  @ManyToOne(() => Location, { nullable: true })
+  @JoinColumn({ name: 'countryId' })
+  country: Location | null;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  country: string | null;
+  @Column({ type: 'int', nullable: true })
+  stateId: number | null;
+
+  @ManyToOne(() => Location, { nullable: true })
+  @JoinColumn({ name: 'stateId' })
+  state: Location | null;
+
+  @Column({ type: 'int', nullable: true })
+  cityId: number | null;
+
+  @ManyToOne(() => Location, { nullable: true })
+  @JoinColumn({ name: 'cityId' })
+  city: Location | null;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
   postalCode: string | null;
@@ -104,15 +117,14 @@ export class Place {
   @Column({ type: 'json', nullable: true })
   openingHours: Record<string, any> | null;
 
-  // Social Media Links
-  @Column({ type: 'varchar', length: 500, nullable: true })
-  facebookUrl: string | null;
-
-  @Column({ type: 'varchar', length: 500, nullable: true })
-  instagramUrl: string | null;
-
-  @Column({ type: 'varchar', length: 500, nullable: true })
-  twitterUrl: string | null;
+  // Social Media Links (stored as JSON)
+  @Column({ type: 'json', nullable: true })
+  social: {
+    facebook?: string | null;
+    instagram?: string | null;
+    twitter?: string | null;
+    linkedin?: string | null;
+  } | null;
 
   // SEO & Search
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -122,14 +134,20 @@ export class Place {
   tags: string | null;
 
   // Pricing
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  priceType: string | null; // 'range', 'fixed', 'onRequest', 'free', 'discounted'
+
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  price: number | null; // Main/base price
+  price: number | null; // Main/base price (for fixed price)
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   minPrice: number | null; // Minimum price (for price ranges)
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   maxPrice: number | null; // Maximum price (for price ranges)
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  oldPrice: number | null; // Old price (for discounted items)
 
   @Column({ default: false })
   isPriceOnRequest: boolean; // When price is negotiable/on request
