@@ -11,6 +11,8 @@ import { I18nService } from 'nestjs-i18n';
 import { CreatePlaceData } from '@/modules/places/place.types';
 import { User } from '@/modules/users/user.entity';
 import { Category } from '@/modules/categories/category.entity';
+import { LocationService } from '@/modules/locations/location.service';
+import { Location } from '@/modules/locations/location.entity';
 
 @Injectable()
 export class PlaceService {
@@ -18,6 +20,7 @@ export class PlaceService {
     @InjectRepository(Place)
     private readonly placeRepository: Repository<Place>,
     private readonly i18n: I18nService,
+    private readonly locationService: LocationService,
   ) {}
 
   private filterRelationFields<T extends Place>(place: T): T {
@@ -39,6 +42,31 @@ export class PlaceService {
       } as Category;
     }
 
+    // Filter location fields
+    if (place.country) {
+      filteredPlace.country = {
+        id: place.country.id,
+        name: place.country.name,
+        type: place.country.type,
+      } as Location;
+    }
+
+    if (place.state) {
+      filteredPlace.state = {
+        id: place.state.id,
+        name: place.state.name,
+        type: place.state.type,
+      } as Location;
+    }
+
+    if (place.city) {
+      filteredPlace.city = {
+        id: place.city.id,
+        name: place.city.name,
+        type: place.city.type,
+      } as Location;
+    }
+
     return filteredPlace;
   }
 
@@ -47,6 +75,13 @@ export class PlaceService {
   }
 
   async create(userId: number, data: CreatePlaceData): Promise<Place> {
+    // Validate location hierarchy
+    await this.locationService.validateLocationHierarchy(
+      data.countryId,
+      data.stateId,
+      data.cityId,
+    );
+
     // Generate slug if not provided
     let slug = data.slug;
     if (!slug && data.name) {
@@ -73,7 +108,7 @@ export class PlaceService {
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
-      relations: ['category', 'user'],
+      relations: ['category', 'user', 'country', 'state', 'city'],
     });
 
     return this.filterRelationFields(reloadedPlace!);
@@ -85,8 +120,8 @@ export class PlaceService {
     const {
       categoryId,
       userId,
-      city,
-      country,
+      cityId,
+      countryId,
       isActive,
       isFeatured,
       minPrice,
@@ -101,7 +136,10 @@ export class PlaceService {
     // Load relations
     queryBuilder = queryBuilder
       .leftJoinAndSelect('place.user', 'user')
-      .leftJoinAndSelect('place.category', 'category');
+      .leftJoinAndSelect('place.category', 'category')
+      .leftJoinAndSelect('place.country', 'country')
+      .leftJoinAndSelect('place.state', 'state')
+      .leftJoinAndSelect('place.city', 'city');
 
     // Apply filters
     if (categoryId) {
@@ -114,14 +152,14 @@ export class PlaceService {
         userId,
       });
     }
-    if (city) {
-      queryBuilder = queryBuilder.andWhere('place.city ILIKE :city', {
-        city: `%${city}%`,
+    if (cityId) {
+      queryBuilder = queryBuilder.andWhere('place.cityId = :cityId', {
+        cityId,
       });
     }
-    if (country) {
-      queryBuilder = queryBuilder.andWhere('place.country ILIKE :country', {
-        country: `%${country}%`,
+    if (countryId) {
+      queryBuilder = queryBuilder.andWhere('place.countryId = :countryId', {
+        countryId,
       });
     }
     if (isActive !== undefined) {
@@ -174,7 +212,7 @@ export class PlaceService {
   async findOne(id: number): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { id },
-      relations: ['category', 'user'],
+      relations: ['category', 'user', 'country', 'state', 'city'],
     });
 
     if (!place) {
@@ -190,7 +228,7 @@ export class PlaceService {
   async findBySlug(slug: string): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { slug },
-      relations: ['category', 'user'],
+      relations: ['category', 'user', 'country', 'state', 'city'],
     });
 
     if (!place) {
@@ -210,7 +248,7 @@ export class PlaceService {
   ): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { id },
-      relations: ['category', 'user'],
+      relations: ['category', 'user', 'country', 'state', 'city'],
     });
 
     if (!place) {
@@ -220,6 +258,26 @@ export class PlaceService {
     if (place.userId !== userId) {
       throw new BadRequestException(this.i18n.translate('t.PLACE_NOT_OWNER'));
     }
+
+    // Validate location hierarchy if location fields are being updated
+    const countryId =
+      updatePlaceDto.countryId !== undefined
+        ? updatePlaceDto.countryId
+        : place.countryId;
+    const stateId =
+      updatePlaceDto.stateId !== undefined
+        ? updatePlaceDto.stateId
+        : place.stateId;
+    const cityId =
+      updatePlaceDto.cityId !== undefined
+        ? updatePlaceDto.cityId
+        : place.cityId;
+
+    await this.locationService.validateLocationHierarchy(
+      countryId,
+      stateId,
+      cityId,
+    );
 
     if (updatePlaceDto.name && !updatePlaceDto.slug) {
       const newSlug = this.generateSlug(updatePlaceDto.name);
@@ -238,7 +296,7 @@ export class PlaceService {
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
-      relations: ['category', 'user'],
+      relations: ['category', 'user', 'country', 'state', 'city'],
     });
 
     return this.filterRelationFields(reloadedPlace!);
@@ -257,7 +315,7 @@ export class PlaceService {
   async findByUser(userId: number): Promise<Place[]> {
     const places = await this.placeRepository.find({
       where: { userId },
-      relations: ['category', 'user'],
+      relations: ['category', 'user', 'country', 'state', 'city'],
       order: { createdAt: 'DESC' },
     });
 
@@ -267,7 +325,7 @@ export class PlaceService {
   async findByCategory(categoryId: number): Promise<Place[]> {
     const places = await this.placeRepository.find({
       where: { categoryId, isActive: true },
-      relations: ['category', 'user'],
+      relations: ['category', 'user', 'country', 'state', 'city'],
       order: { createdAt: 'DESC' },
     });
 
