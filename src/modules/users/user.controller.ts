@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@/common/decorators/user.decorators';
 import { User as IUser } from '@/modules/users/user.entity';
@@ -8,6 +17,7 @@ import { ERoles } from '@/modules/roles/role.types';
 import { AuthService } from '@/modules/auth/auth.service';
 import { I18nService } from 'nestjs-i18n';
 import { ChangePasswordDto } from '@/modules/auth/auth.dto';
+import { UpdateProfileDto } from './user.dto';
 
 @Controller('users')
 @UseGuards(RolesGuard) // Protect all routes in this controller
@@ -23,6 +33,21 @@ export class UserController {
   me(@User() user: IUser, @User('role') role: ERoles) {
     console.log(role, 'role');
     return user;
+  }
+
+  @Patch('profile')
+  @Roles(ERoles.USER, ERoles.ADMIN, ERoles.SUPER_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  async updateProfile(@User() user: IUser, @Body() data: UpdateProfileDto) {
+    const updatedUser = await this.userService.update(user.id, {
+      ...data,
+      description: data.description ?? undefined,
+    });
+
+    return {
+      message: this.i18n.translate('t.PROFILE_UPDATED_SUCCESSFULLY'),
+      data: updatedUser,
+    };
   }
 
   @Get('public')

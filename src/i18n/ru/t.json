@@ -104,5 +104,14 @@
   "PLACE_UPDATED_SUCCESSFULLY": "Место успешно обновлено",
   "PLACE_DELETED_SUCCESSFULLY": "Место успешно удалено",
   "PLACE_NOT_FOUND": "Место не найдено",
-  "PLACE_NOT_OWNER": "Вы не являетесь владельцем этого места"
+  "PLACE_NOT_OWNER": "Вы не являетесь владельцем этого места",
+  "PROFILE_UPDATED_SUCCESSFULLY": "Профиль успешно обновлен",
+  "EMAIL_ALREADY_EXISTS": "Email уже существует",
+  "USER_FULL_NAME_INVALID": "Полное имя должно быть строкой",
+  "USER_FULL_NAME_MAX_LENGTH": "Полное имя не может превышать 255 символов",
+  "USER_EMAIL_INVALID": "Email должен быть действительным адресом",
+  "USER_EMAIL_MAX_LENGTH": "Email не может превышать 255 символов",
+  "USER_WEBSITE_INVALID": "Веб-сайт должен быть действительным URL",
+  "USER_WEBSITE_MAX_LENGTH": "Веб-сайт не может превышать 500 символов",
+  "USER_DESCRIPTION_INVALID": "Описание должно быть строкой"
 }

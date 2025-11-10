@@ -29,6 +29,7 @@ export class UsersModule implements NestModule {
       .apply(AuthMiddleware) // middleware chain
       .forRoutes(
         { path: 'users/me', method: RequestMethod.GET },
+        { path: 'users/profile', method: RequestMethod.PATCH },
         { path: 'users/change-password', method: RequestMethod.POST },
         { path: 'users/deactivate-account', method: RequestMethod.POST },
       );

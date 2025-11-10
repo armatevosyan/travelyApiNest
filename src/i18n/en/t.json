@@ -104,5 +104,14 @@
   "PLACE_UPDATED_SUCCESSFULLY": "Place updated successfully",
   "PLACE_DELETED_SUCCESSFULLY": "Place deleted successfully",
   "PLACE_NOT_FOUND": "Place not found",
-  "PLACE_NOT_OWNER": "You are not the owner of this place"
+  "PLACE_NOT_OWNER": "You are not the owner of this place",
+  "PROFILE_UPDATED_SUCCESSFULLY": "Profile updated successfully",
+  "EMAIL_ALREADY_EXISTS": "Email already exists",
+  "USER_FULL_NAME_INVALID": "Full name must be a string",
+  "USER_FULL_NAME_MAX_LENGTH": "Full name cannot exceed 255 characters",
+  "USER_EMAIL_INVALID": "Email must be a valid email address",
+  "USER_EMAIL_MAX_LENGTH": "Email cannot exceed 255 characters",
+  "USER_WEBSITE_INVALID": "Website must be a valid URL",
+  "USER_WEBSITE_MAX_LENGTH": "Website cannot exceed 500 characters",
+  "USER_DESCRIPTION_INVALID": "Description must be a string"
 }
