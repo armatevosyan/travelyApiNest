@@ -3,7 +3,7 @@ import {
   Module,
   NestModule,
   RequestMethod,
- } from '@nestjs/common';
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogService } from './blog.service';
 import { BlogController } from './blog.controller';
@@ -11,10 +11,11 @@ import { Blog } from './blog.entity';
 import { AuthMiddleware } from '@/common/middleware/auth.middleware';
 import { UsersModule } from '@/modules/users/users.module';
 import { CategoryModule } from '@/modules/categories/category.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Blog]), UsersModule, CategoryModule],
-  providers: [BlogService],
+  providers: [BlogService, JwtService],
   controllers: [BlogController],
   exports: [BlogService, TypeOrmModule],
 })
