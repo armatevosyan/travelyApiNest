@@ -43,7 +43,6 @@ export class EmailService implements OnModuleInit {
   }
 
   private testConnectionOnStartup() {
-    // Test connection after a short delay to allow the service to fully initialize
     setTimeout(() => {
       this.testConnection()
         .then((isConnected) => {
@@ -73,19 +72,17 @@ export class EmailService implements OnModuleInit {
 
   private createTransporter() {
     const emailConfig = this.configService.get<EmailConfig>('email');
-    // Log configuration (without sensitive data)
     this.logger.log(
       `Email configuration: host=${emailConfig?.host || 'smtp.gmail.com'}, port=${emailConfig?.port || 587}, secure=${emailConfig?.secure || false}, user=${emailConfig?.user ? `${emailConfig.user.substring(0, 3)}***` : 'not set'}`,
     );
 
-    // Use port 465 with SSL for Gmail (more reliable)
     const port = emailConfig?.port || 465;
     const isSecure = port === 465;
 
     this.transporter = nodemailer.createTransport({
       host: emailConfig?.host || 'smtp.gmail.com',
       port: port,
-      secure: isSecure, // true for 465, false for 587
+      secure: isSecure,
       auth: {
         user: emailConfig?.user,
         pass: emailConfig?.pass,
