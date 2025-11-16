@@ -45,7 +45,6 @@ export class PlaceService {
       } as Category;
     }
 
-    // Filter location fields
     if (place.country) {
       filteredPlace.country = {
         id: place.country.id,
@@ -193,8 +192,6 @@ export class PlaceService {
         isFeatured,
       });
     }
-    // Price filtering
-    // Filter by minimum price: find places where price or price range starts at or below minPrice
     if (minPrice !== undefined) {
       queryBuilder = queryBuilder.andWhere(
         '(place.price >= :minPrice OR (place.minPrice IS NOT NULL AND place.minPrice >= :minPrice) OR (place.maxPrice IS NOT NULL AND place.maxPrice >= :minPrice))',
@@ -202,7 +199,6 @@ export class PlaceService {
       );
     }
 
-    // Filter by maximum price: find places where price or price range ends at or above maxPrice
     if (maxPrice !== undefined) {
       queryBuilder = queryBuilder.andWhere(
         '(place.price <= :maxPrice OR (place.maxPrice IS NOT NULL AND place.maxPrice <= :maxPrice) OR (place.minPrice IS NOT NULL AND place.minPrice <= :maxPrice))',
@@ -210,7 +206,6 @@ export class PlaceService {
       );
     }
 
-    // Filter by price on request
     if (isPriceOnRequest !== undefined) {
       queryBuilder = queryBuilder.andWhere(
         'place.isPriceOnRequest = :isPriceOnRequest',

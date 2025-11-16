@@ -13,16 +13,6 @@ export class LoggerMiddleware implements NestMiddleware {
 
     console.log(`[${timestamp}] ${method} ${originalUrl}`);
 
-    // Optional Log sanitized body for POST/PUT/PATCH
-    // if (['POST', 'PUT', 'PATCH'].includes(method)) {
-    //   const body = { ...req.body };
-    //
-    //   if ('password' in body && body?.password) {
-    //     delete body.password;
-    //   }
-    //   console.log('Body:', body);
-    // }
-
     next();
   }
 }

@@ -20,6 +20,7 @@ import { CategoryModule } from '@/modules/categories/category.module';
 import { PaymentModule } from '@/modules/payment/payment.module';
 import { PlaceModule } from '@/modules/places/place.module';
 import { LocationModule } from '@/modules/locations/location.module';
+import { BlogModule } from '@/modules/blog/blog.module';
 import { TagModule } from '@/modules/tags/tag.module';
 import { FilesModule } from '@/modules/files/files.module';
 
@@ -55,6 +56,7 @@ import emailConfig from 'config/email.config';
     PaymentModule,
     PlaceModule,
     LocationModule,
+    BlogModule,
     TagModule,
     FilesModule,
   ],

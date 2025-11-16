@@ -21,19 +21,16 @@ export class AuthMiddleware implements NestMiddleware {
       throw new UnauthorizedException('Missing token');
     }
 
-    // Expect header format: "Bearer <token>"
     const token = authHeader.split(' ')[1];
     if (!token) {
       throw new UnauthorizedException('Invalid token format');
     }
 
     try {
-      // Verify token
       const payload: JwtPayload = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
 
-      // Attach user info to request
       req['role'] = payload.role;
       const user = await this.userService.findById(payload.sub);
       if (!user) {
