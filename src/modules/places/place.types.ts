@@ -30,7 +30,7 @@ export interface IPlace {
     linkedin?: string | null;
   } | null;
   slug?: string | null; // URL-friendly name (auto-generated if not provided)
-  tags?: string | null; // Comma-separated tags: "italian, pizza, family-friendly"
+  tagIds?: number[]; // Array of tag IDs for many-to-many relationship
   priceType?: string | null; // 'range', 'fixed', 'onRequest', 'free', 'discounted'
   price?: number | null; // Main/base price (for fixed price)
   minPrice?: number | null; // Minimum price (for price ranges)

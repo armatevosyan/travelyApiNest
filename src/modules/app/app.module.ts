@@ -21,6 +21,8 @@ import { PaymentModule } from '@/modules/payment/payment.module';
 import { PlaceModule } from '@/modules/places/place.module';
 import { LocationModule } from '@/modules/locations/location.module';
 import { BlogModule } from '@/modules/blog/blog.module';
+import { TagModule } from '@/modules/tags/tag.module';
+import { FilesModule } from '@/modules/files/files.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -55,6 +57,8 @@ import emailConfig from 'config/email.config';
     PlaceModule,
     LocationModule,
     BlogModule,
+    TagModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

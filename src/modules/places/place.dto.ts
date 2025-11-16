@@ -137,9 +137,31 @@ export class CreatePlaceDto {
   @MaxLength(255, { message: 't.PLACE_SLUG_MAX_LENGTH' })
   slug?: string;
 
+  // Tags
   @IsOptional()
-  @IsString({ message: 't.PLACE_TAGS_INVALID' })
-  tags?: string;
+  @Transform(({ value }): number[] => {
+    if (Array.isArray(value)) {
+      return value
+        .map((v) => {
+          const num = Number(v);
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((v) => {
+          const num = Number(v.trim());
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    return value;
+  })
+  @IsArray({ message: 't.PLACE_TAG_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.PLACE_TAG_ID_INVALID' })
+  tagIds?: number[];
 
   // Pricing
   @IsOptional()
@@ -297,9 +319,31 @@ export class UpdatePlaceDto {
   @MaxLength(255, { message: 't.PLACE_SLUG_MAX_LENGTH' })
   slug?: string;
 
+  // Tags
   @IsOptional()
-  @IsString({ message: 't.PLACE_TAGS_INVALID' })
-  tags?: string;
+  @Transform(({ value }): number[] => {
+    if (Array.isArray(value)) {
+      return value
+        .map((v) => {
+          const num = Number(v);
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((v) => {
+          const num = Number(v.trim());
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    return value;
+  })
+  @IsArray({ message: 't.PLACE_TAG_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.PLACE_TAG_ID_INVALID' })
+  tagIds?: number[];
 
   // Pricing
   @IsOptional()

@@ -6,12 +6,15 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  ManyToMany,
   JoinColumn,
+  JoinTable,
   Index,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Category } from '../categories/category.entity';
 import { Location } from '../locations/location.entity';
+import { Tag } from '../tags/tag.entity';
 
 @Entity('places')
 @Index(['latitude', 'longitude'])
@@ -130,8 +133,14 @@ export class Place {
   @Column({ type: 'varchar', length: 255, nullable: true })
   slug: string | null;
 
-  @Column({ type: 'text', nullable: true })
-  tags: string | null;
+  // Tags (Many-to-Many relationship)
+  @ManyToMany(() => Tag, (tag) => tag.places)
+  @JoinTable({
+    name: 'place_tags',
+    joinColumn: { name: 'placeId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tagId', referencedColumnName: 'id' },
+  })
+  tags: Tag[];
 
   // Pricing
   @Column({ type: 'varchar', length: 20, nullable: true })
