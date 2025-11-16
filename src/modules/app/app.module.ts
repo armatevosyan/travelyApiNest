@@ -20,6 +20,7 @@ import { CategoryModule } from '@/modules/categories/category.module';
 import { PaymentModule } from '@/modules/payment/payment.module';
 import { PlaceModule } from '@/modules/places/place.module';
 import { LocationModule } from '@/modules/locations/location.module';
+import { BlogModule } from '@/modules/blog/blog.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -53,6 +54,7 @@ import emailConfig from 'config/email.config';
     PaymentModule,
     PlaceModule,
     LocationModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
