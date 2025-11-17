@@ -16,8 +16,7 @@ export interface IPlace {
   longitude?: number | null; // -74.0060 (decimal, 11,8 precision)
   phone?: string | null;
   email?: string | null;
-  coverImage?: string | null;
-  images?: string[];
+  imageIds?: number[] | null;
   isActive: boolean;
   isVerified: boolean;
   isFeatured: boolean;

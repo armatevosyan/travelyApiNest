@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Delete,
   Param,
@@ -14,6 +15,7 @@ import {
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { FilesService } from './files.service';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { User } from '@/common/decorators/user.decorators';
 import { I18nService } from 'nestjs-i18n';
 
 @Controller('files')
@@ -28,6 +30,7 @@ export class FilesController {
   @UseInterceptors(AnyFilesInterceptor()) // Accepts any field name
   @HttpCode(HttpStatus.CREATED)
   async createFile(
+    @User('id') userId: number,
     @UploadedFiles() files: Express.Multer.File[],
     @Query('folder') folder?: string,
   ) {
@@ -41,13 +44,25 @@ export class FilesController {
     // Upload all files
     const uploadedFiles = await Promise.all(
       files.map((file) =>
-        this.filesService.uploadFileDirectly(file, uploadFolder),
+        this.filesService.uploadFileDirectly(file, userId, uploadFolder),
       ),
     );
 
     return {
       message: this.i18n.translate('t.FILE_UPLOADED_SUCCESSFULLY'),
       data: uploadedFiles.length === 1 ? uploadedFiles[0] : uploadedFiles,
+    };
+  }
+
+  @Get('my')
+  @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  async getMyFiles(@User('id') userId: number) {
+    const files = await this.filesService.findByUserId(userId);
+    return {
+      message: this.i18n.translate('t.FILES_RETRIEVED_SUCCESSFULLY'),
+      data: files,
+      total: files.length,
     };
   }
 

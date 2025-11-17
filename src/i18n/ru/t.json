@@ -76,8 +76,6 @@
   "PLACE_WEBSITE_MAX_LENGTH": "Веб-сайт не может превышать 500 символов",
   "PLACE_CATEGORY_REQUIRED": "Категория места обязательна",
   "PLACE_CATEGORY_INVALID": "Категория места должна быть числом",
-  "PLACE_COVER_IMAGE_INVALID": "Обложка места должна быть строкой",
-  "PLACE_COVER_IMAGE_MAX_LENGTH": "Обложка места не может превышать 500 символов",
   "PLACE_IMAGES_INVALID": "Изображения места должны быть массивом строк",
   "PLACE_IS_ACTIVE_INVALID": "Статус активности места должен быть булевым",
   "PLACE_SLUG_INVALID": "Slug места должен быть строкой",
@@ -162,5 +160,10 @@
   "FILE_NOT_FOUND": "Файл не найден",
   "FILE_UPLOAD_CONFIRMED": "Загрузка файла успешно подтверждена",
   "FILE_REQUIRED": "Файл обязателен",
-  "FILE_UPLOADED_SUCCESSFULLY": "Файл успешно загружен"
+  "FILE_UPLOADED_SUCCESSFULLY": "Файл успешно загружен",
+  "FILE_ATTACHED_SUCCESSFULLY": "Файл успешно прикреплен",
+  "FILE_DETACHED_SUCCESSFULLY": "Файл успешно откреплен",
+  "FILE_ALREADY_ATTACHED": "Файл уже прикреплен к этой сущности",
+  "FILE_RELATION_NOT_FOUND": "Связь с файлом не найдена",
+  "FILE_RELATIONS_RETRIEVED_SUCCESSFULLY": "Связи с файлами получены успешно"
 }

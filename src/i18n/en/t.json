@@ -76,8 +76,6 @@
   "PLACE_WEBSITE_MAX_LENGTH": "Place website cannot exceed 500 characters",
   "PLACE_CATEGORY_REQUIRED": "Place category is required",
   "PLACE_CATEGORY_INVALID": "Place category must be a number",
-  "PLACE_COVER_IMAGE_INVALID": "Place cover image must be a string",
-  "PLACE_COVER_IMAGE_MAX_LENGTH": "Place cover image cannot exceed 500 characters",
   "PLACE_IMAGES_INVALID": "Place images must be an array of strings",
   "PLACE_IS_ACTIVE_INVALID": "Place active status must be a boolean",
   "PLACE_SLUG_INVALID": "Place slug must be a string",
@@ -162,5 +160,10 @@
   "FILE_NOT_FOUND": "File not found",
   "FILE_UPLOAD_CONFIRMED": "File upload confirmed successfully",
   "FILE_REQUIRED": "File is required",
-  "FILE_UPLOADED_SUCCESSFULLY": "File uploaded successfully"
+  "FILE_UPLOADED_SUCCESSFULLY": "File uploaded successfully",
+  "FILE_ATTACHED_SUCCESSFULLY": "File attached successfully",
+  "FILE_DETACHED_SUCCESSFULLY": "File detached successfully",
+  "FILE_ALREADY_ATTACHED": "File is already attached to this entity",
+  "FILE_RELATION_NOT_FOUND": "File relation not found",
+  "FILE_RELATIONS_RETRIEVED_SUCCESSFULLY": "File relations retrieved successfully"
 }

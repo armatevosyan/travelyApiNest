@@ -7,6 +7,10 @@ import {
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { FileEntity } from './entities/file.entity';
+import {
+  FileRelation,
+  FileRelationType,
+} from './entities/file-relation.entity';
 import { createR2Client } from './r2.client';
 import { I18nService } from 'nestjs-i18n';
 import { randomUUID } from 'crypto';
@@ -19,6 +23,8 @@ export class FilesService {
   constructor(
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
+    @InjectRepository(FileRelation)
+    private readonly fileRelationRepository: Repository<FileRelation>,
     private readonly i18n: I18nService,
   ) {
     this.r2Client = createR2Client();
@@ -79,6 +85,7 @@ export class FilesService {
    */
   async uploadFileDirectly(
     file: Express.Multer.File,
+    userId: number,
     folder: string = 'uploads',
   ): Promise<FileEntity> {
     // Generate unique file name
@@ -109,8 +116,101 @@ export class FilesService {
       size: file.size,
       bucketPath,
       url: this.generatePublicUrl(bucketPath),
+      userId: userId,
     });
 
     return this.fileRepository.save(fileEntity);
+  }
+
+  /**
+   * Get all files uploaded by a specific user
+   */
+  async findByUserId(userId: number): Promise<FileEntity[]> {
+    return this.fileRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Attach a file to an entity (place, blog, user, etc.)
+   */
+  async attachFileToEntity(
+    fileId: number,
+    entityType: FileRelationType,
+    entityId: number,
+  ): Promise<FileRelation> {
+    // Check if file exists
+    const file = await this.fileRepository.findOne({ where: { id: fileId } });
+    if (!file) {
+      throw new NotFoundException(this.i18n.translate('t.FILE_NOT_FOUND'));
+    }
+
+    // Check if relation already exists
+    const existingRelation = await this.fileRelationRepository.findOne({
+      where: { fileId, entityType, entityId },
+    });
+
+    if (existingRelation) {
+      return existingRelation; // Return existing relation instead of throwing error
+    }
+
+    // Create relation
+    const relation = this.fileRelationRepository.create({
+      fileId,
+      entityType,
+      entityId,
+    });
+
+    return this.fileRelationRepository.save(relation);
+  }
+
+  /**
+   * Detach a file from an entity
+   */
+  async detachFileFromEntity(
+    fileId: number,
+    entityType: FileRelationType,
+    entityId: number,
+  ): Promise<void> {
+    const relation = await this.fileRelationRepository.findOne({
+      where: { fileId, entityType, entityId },
+    });
+
+    if (!relation) {
+      return; // Silently return if relation doesn't exist
+    }
+
+    await this.fileRelationRepository.remove(relation);
+  }
+
+  /**
+   * Get all files attached to a specific entity
+   */
+  async getFilesForEntity(
+    entityType: FileRelationType,
+    entityId: number,
+  ): Promise<FileEntity[]> {
+    const relations = await this.fileRelationRepository.find({
+      where: { entityType, entityId },
+      relations: ['file'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return relations.map((relation) => relation.file);
+  }
+
+  /**
+   * Get all file relations for a specific entity
+   */
+  async getFileRelationsForEntity(
+    entityType: FileRelationType,
+    entityId: number,
+  ): Promise<FileRelation[]> {
+    return this.fileRelationRepository.find({
+      where: { entityType, entityId },
+      relations: ['file'],
+      order: { createdAt: 'DESC' },
+    });
   }
 }
