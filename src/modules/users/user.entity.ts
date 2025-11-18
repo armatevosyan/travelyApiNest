@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Role } from 'modules/roles/role.entity';
+import { FileEntity } from '@/modules/files/entities/file.entity';
 
 @Entity('users')
 export class User {
@@ -22,9 +24,6 @@ export class User {
 
   @Column()
   password: string;
-
-  @Column({ type: 'varchar', nullable: true })
-  image: string;
 
   @Column({ type: 'varchar', nullable: true })
   phone: string;
@@ -64,6 +63,13 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   otpExpiration: Date | null;
+
+  @ManyToOne(() => FileEntity, { eager: true })
+  @JoinColumn({ name: 'profileImageId' })
+  profileImage: FileEntity;
+
+  @Column({ type: 'int', nullable: true })
+  profileImageId: number | null;
 
   @Column({ type: 'timestamp', nullable: true })
   verifiedAt: Date | null;

@@ -165,5 +165,8 @@
   "FILE_DETACHED_SUCCESSFULLY": "File detached successfully",
   "FILE_ALREADY_ATTACHED": "File is already attached to this entity",
   "FILE_RELATION_NOT_FOUND": "File relation not found",
-  "FILE_RELATIONS_RETRIEVED_SUCCESSFULLY": "File relations retrieved successfully"
+  "FILE_RELATIONS_RETRIEVED_SUCCESSFULLY": "File relations retrieved successfully",
+  "PROFILE_IMAGE_UPDATED_SUCCESSFULLY": "Profile image updated successfully",
+  "INVALID_IMAGE_TYPE": "Invalid image type. Only JPEG, PNG, GIF, WebP, and AVIF are allowed",
+  "IMAGE_TOO_LARGE": "Image size exceeds the maximum allowed size of 5MB"
 }

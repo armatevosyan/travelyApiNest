@@ -143,7 +143,7 @@ export class AuthController {
 
     return {
       message: this.i18n.translate('t.EMAIL_VERIFIED_SUCCESS'),
-      user: this.userService.runUserData(updatedUser),
+      user: updatedUser,
       token,
     };
   }
@@ -268,7 +268,7 @@ export class AuthController {
 
     return {
       message: this.i18n.translate('t.PASSWORD_RESET_SUCCESS'),
-      user: this.userService.runUserData(updatedUser),
+      user: updatedUser,
     };
   }
 }

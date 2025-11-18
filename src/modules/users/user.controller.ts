@@ -7,7 +7,11 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { User } from '@/common/decorators/user.decorators';
 import { User as IUser } from '@/modules/users/user.entity';
@@ -32,7 +36,7 @@ export class UserController {
   @Roles(ERoles.USER, ERoles.ADMIN, ERoles.SUPER_ADMIN) // Any authenticated user
   me(@User() user: IUser, @User('role') role: ERoles) {
     console.log(role, 'role');
-    return user;
+    return this.userService.runUserData(user);
   }
 
   @Patch('profile')
@@ -50,9 +54,47 @@ export class UserController {
     };
   }
 
-  @Get('public')
-  public() {
-    return { message: 'Test API for all users.' };
+  @Post('profile-image')
+  @UseInterceptors(FileInterceptor('image'))
+  @HttpCode(HttpStatus.OK)
+  async updateProfileImage(
+    @User() user: IUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException(this.i18n.translate('t.FILE_REQUIRED'));
+    }
+
+    // Validate file type (images only)
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/avif',
+    ];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new BadRequestException(
+        this.i18n.translate('t.INVALID_IMAGE_TYPE'),
+      );
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      throw new BadRequestException(this.i18n.translate('t.IMAGE_TOO_LARGE'));
+    }
+
+    const updatedUser = await this.userService.updateProfileImage(
+      user.id,
+      file,
+    );
+
+    return {
+      message: this.i18n.translate('t.PROFILE_IMAGE_UPDATED_SUCCESSFULLY'),
+      data: updatedUser,
+    };
   }
 
   @Post('change-password')

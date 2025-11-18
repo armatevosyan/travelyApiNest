@@ -9,7 +9,6 @@ import { Place } from './place.entity';
 import { PlaceQueryDto, UpdatePlaceDto } from './place.dto';
 import { I18nService } from 'nestjs-i18n';
 import { CreatePlaceData } from '@/modules/places/place.types';
-import { User } from '@/modules/users/user.entity';
 import { Category } from '@/modules/categories/category.entity';
 import { LocationService } from '@/modules/locations/location.service';
 import { Location } from '@/modules/locations/location.entity';
@@ -33,12 +32,21 @@ export class PlaceService {
     const filteredPlace = { ...place };
 
     if (place.user) {
+      // Load file relations for user profile image
+      const userFileRelations =
+        await this.filesService.getFileRelationsForEntity(
+          FileRelationType.USER,
+          place.user.id,
+        );
+      const profileImage =
+        userFileRelations.length > 0 ? userFileRelations[0].file : null;
+
       filteredPlace.user = {
         id: place.user.id,
         fullName: place.user.fullName,
         email: place.user.email,
-        image: place.user.image,
-      } as User;
+        profileImage: profileImage,
+      } as any;
     }
 
     if (place.category) {
