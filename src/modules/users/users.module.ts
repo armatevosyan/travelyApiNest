@@ -30,6 +30,7 @@ export class UsersModule implements NestModule {
       .forRoutes(
         { path: 'users/me', method: RequestMethod.GET },
         { path: 'users/profile', method: RequestMethod.PATCH },
+        { path: 'users/profile-image', method: RequestMethod.POST },
         { path: 'users/change-password', method: RequestMethod.POST },
         { path: 'users/deactivate-account', method: RequestMethod.POST },
       );

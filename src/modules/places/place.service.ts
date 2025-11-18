@@ -9,12 +9,13 @@ import { Place } from './place.entity';
 import { PlaceQueryDto, UpdatePlaceDto } from './place.dto';
 import { I18nService } from 'nestjs-i18n';
 import { CreatePlaceData } from '@/modules/places/place.types';
-import { User } from '@/modules/users/user.entity';
 import { Category } from '@/modules/categories/category.entity';
 import { LocationService } from '@/modules/locations/location.service';
 import { Location } from '@/modules/locations/location.entity';
 import { TagService } from '@/modules/tags/tag.service';
 import { Tag } from '@/modules/tags/tag.entity';
+import { FilesService } from '@/modules/files/files.service';
+import { FileRelationType } from '@/modules/files/entities/file-relation.entity';
 
 @Injectable()
 export class PlaceService {
@@ -24,18 +25,28 @@ export class PlaceService {
     private readonly i18n: I18nService,
     private readonly locationService: LocationService,
     private readonly tagService: TagService,
+    private readonly filesService: FilesService,
   ) {}
 
-  private filterRelationFields<T extends Place>(place: T): T {
+  private async filterRelationFields<T extends Place>(place: T): Promise<T> {
     const filteredPlace = { ...place };
 
     if (place.user) {
+      // Load file relations for user profile image
+      const userFileRelations =
+        await this.filesService.getFileRelationsForEntity(
+          FileRelationType.USER,
+          place.user.id,
+        );
+      const profileImage =
+        userFileRelations.length > 0 ? userFileRelations[0].file : null;
+
       filteredPlace.user = {
         id: place.user.id,
         fullName: place.user.fullName,
         email: place.user.email,
-        image: place.user.image,
-      } as User;
+        profileImage: profileImage,
+      } as any;
     }
 
     if (place.category) {
@@ -77,11 +88,22 @@ export class PlaceService {
       })) as Tag[];
     }
 
-    return filteredPlace;
+    // Load file relations attached to this place
+    const fileRelations = await this.filesService.getFileRelationsForEntity(
+      FileRelationType.PLACE,
+      place.id,
+    );
+
+    return {
+      ...filteredPlace,
+      images: fileRelations.map((r) => r.file),
+    };
   }
 
-  private filterPlacesRelations<T extends Place>(places: T[]): T[] {
-    return places.map((place) => this.filterRelationFields(place));
+  private async filterPlacesRelations<T extends Place>(
+    places: T[],
+  ): Promise<T[]> {
+    return Promise.all(places.map((place) => this.filterRelationFields(place)));
   }
 
   async create(userId: number, data: CreatePlaceData): Promise<Place> {
@@ -106,7 +128,7 @@ export class PlaceService {
     }
 
     let tags: Tag[] = [];
-    const tagIds = data.tagIds;
+    const { tagIds, ...placeData } = data;
     if (tagIds && tagIds.length > 0) {
       tags = await Promise.all(
         tagIds.map(async (tagId) => {
@@ -115,7 +137,6 @@ export class PlaceService {
       );
     }
 
-    const { tagIds: _, ...placeData } = data;
     const place = this.placeRepository.create({
       ...placeData,
       userId,
@@ -125,12 +146,25 @@ export class PlaceService {
 
     const savedPlace = await this.placeRepository.save(place);
 
+    // Attach images if provided
+    if (data.imageIds && data.imageIds.length > 0) {
+      await Promise.all(
+        data.imageIds.map((fileId) =>
+          this.filesService.attachFileToEntity(
+            fileId,
+            FileRelationType.PLACE,
+            savedPlace.id,
+          ),
+        ),
+      );
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
       relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
     });
 
-    return this.filterRelationFields(reloadedPlace!);
+    return await this.filterRelationFields(reloadedPlace!);
   }
 
   async findAll(
@@ -220,7 +254,7 @@ export class PlaceService {
 
     const [places, total] = await queryBuilder.getManyAndCount();
 
-    const filteredPlaces = this.filterPlacesRelations(places);
+    const filteredPlaces = await this.filterPlacesRelations(places);
 
     return { places: filteredPlaces, total };
   }
@@ -254,7 +288,7 @@ export class PlaceService {
     place.viewCount += 1;
     await this.placeRepository.save(place);
 
-    return this.filterRelationFields(place);
+    return await this.filterRelationFields(place);
   }
 
   async update(
@@ -308,7 +342,8 @@ export class PlaceService {
     }
 
     // Handle tags if tagIds is provided
-    const tagIds = updatePlaceDto.tagIds;
+    const { tagIds, ...placeUpdateData } = updatePlaceDto;
+
     if (tagIds !== undefined) {
       if (tagIds && tagIds.length > 0) {
         place.tags = await Promise.all(
@@ -321,16 +356,46 @@ export class PlaceService {
       }
     }
 
-    const { tagIds: _, ...placeUpdateData } = updatePlaceDto;
     Object.assign(place, placeUpdateData);
     const updatedPlace = await this.placeRepository.save(place);
+
+    // Update file attachments if provided
+    if (updatePlaceDto.imageIds !== undefined) {
+      // Get current images
+      const currentFiles = await this.filesService.getFilesForEntity(
+        FileRelationType.PLACE,
+        place.id,
+      );
+
+      // Remove old image relations
+      await Promise.all(
+        currentFiles.map((file) =>
+          this.filesService
+            .detachFileFromEntity(file.id, FileRelationType.PLACE, place.id)
+            .catch(() => {}),
+        ),
+      );
+
+      // Attach new images
+      if (updatePlaceDto.imageIds && updatePlaceDto.imageIds.length > 0) {
+        await Promise.all(
+          updatePlaceDto.imageIds.map((fileId) =>
+            this.filesService.attachFileToEntity(
+              fileId,
+              FileRelationType.PLACE,
+              place.id,
+            ),
+          ),
+        );
+      }
+    }
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
       relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
     });
 
-    return this.filterRelationFields(reloadedPlace!);
+    return await this.filterRelationFields(reloadedPlace!);
   }
 
   async remove(id: number, userId: number): Promise<void> {
@@ -350,7 +415,7 @@ export class PlaceService {
       order: { createdAt: 'DESC' },
     });
 
-    return this.filterPlacesRelations(places);
+    return await this.filterPlacesRelations(places);
   }
 
   async findByCategory(categoryId: number): Promise<Place[]> {
@@ -360,7 +425,7 @@ export class PlaceService {
       order: { createdAt: 'DESC' },
     });
 
-    return this.filterPlacesRelations(places);
+    return await this.filterPlacesRelations(places);
   }
 
   private generateSlug(name: string): string {

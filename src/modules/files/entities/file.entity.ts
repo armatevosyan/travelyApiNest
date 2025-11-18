@@ -4,11 +4,17 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
   Index,
 } from 'typeorm';
+import { User } from '@/modules/users/user.entity';
+import { FileRelation } from './file-relation.entity';
 
 @Entity('files')
 @Index(['bucketPath'])
+@Index(['userId'])
 export class FileEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -27,6 +33,18 @@ export class FileEntity {
 
   @Column({ type: 'varchar', length: 1000 })
   url: string;
+
+  // User relation (who uploaded the file)
+  @Column({ nullable: true })
+  userId: number | null;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'userId' })
+  user: User | null;
+
+  // Polymorphic relations through file_relations table
+  @OneToMany(() => FileRelation, (relation) => relation.file)
+  relations: FileRelation[];
 
   @CreateDateColumn()
   createdAt: Date;

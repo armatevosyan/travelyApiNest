@@ -92,12 +92,9 @@ export class Place {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  // Media
-  @Column({ type: 'varchar', length: 500, nullable: true })
-  coverImage: string | null;
-
+  // Media (stored as file IDs, actual files managed through file_relations table)
   @Column({ type: 'simple-array', nullable: true })
-  images: string[];
+  imageIds: number[] | null;
 
   // Rating & Reviews
   @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })

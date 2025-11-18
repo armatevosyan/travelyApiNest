@@ -106,16 +106,29 @@ export class CreatePlaceDto {
   @IsNumber({}, { message: 't.PLACE_CATEGORY_INVALID' })
   categoryId: number;
 
-  // Media
+  // Media (File IDs)
   @IsOptional()
-  @IsString({ message: 't.PLACE_COVER_IMAGE_INVALID' })
-  @MaxLength(500, { message: 't.PLACE_COVER_IMAGE_MAX_LENGTH' })
-  coverImage?: string;
-
-  @IsOptional()
-  @IsArray({ message: 't.PLACE_IMAGES_INVALID' })
-  @IsString({ each: true, message: 't.PLACE_IMAGES_INVALID' })
-  images?: string[];
+  @Transform(({ value }) => {
+    if (!value) return null;
+    if (Array.isArray(value)) {
+      return value
+        .map((v) => {
+          const num = typeof v === 'string' ? parseInt(v, 10) : Number(v);
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((v) => parseInt(v.trim(), 10))
+        .filter((v) => !isNaN(v));
+    }
+    return null;
+  })
+  @IsArray({ message: 't.PLACE_IMAGE_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.PLACE_IMAGE_IDS_INVALID' })
+  imageIds?: number[] | null;
 
   // TODO: Need to work Opening Hours Object, validations
   // Operating Hours
@@ -292,14 +305,27 @@ export class UpdatePlaceDto {
   categoryId?: number;
 
   @IsOptional()
-  @IsString({ message: 't.PLACE_COVER_IMAGE_INVALID' })
-  @MaxLength(500, { message: 't.PLACE_COVER_IMAGE_MAX_LENGTH' })
-  coverImage?: string;
-
-  @IsOptional()
-  @IsArray({ message: 't.PLACE_IMAGES_INVALID' })
-  @IsString({ each: true, message: 't.PLACE_IMAGES_INVALID' })
-  images?: string[];
+  @Transform(({ value }) => {
+    if (!value) return null;
+    if (Array.isArray(value)) {
+      return value
+        .map((v) => {
+          const num = typeof v === 'string' ? parseInt(v, 10) : Number(v);
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((v) => parseInt(v.trim(), 10))
+        .filter((v) => !isNaN(v));
+    }
+    return null;
+  })
+  @IsArray({ message: 't.PLACE_IMAGE_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.PLACE_IMAGE_IDS_INVALID' })
+  imageIds?: number[] | null;
 
   // TODO: Need to work Opening Hours Object, validations
   @IsOptional()
