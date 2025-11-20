@@ -1,5 +1,6 @@
 import { User } from 'modules/users/user.entity';
 import { Category } from 'modules/categories/category.entity';
+import { Facility } from '@/modules/facilities/facility.entity';
 
 export interface IPlace {
   id: number;
@@ -30,6 +31,7 @@ export interface IPlace {
   } | null;
   slug?: string | null; // URL-friendly name (auto-generated if not provided)
   tagIds?: number[]; // Array of tag IDs for many-to-many relationship
+  facilityIds?: number[]; // Array of facility IDs
   priceType?: string | null; // 'range', 'fixed', 'onRequest', 'free', 'discounted'
   price?: number | null; // Main/base price (for fixed price)
   minPrice?: number | null; // Minimum price (for price ranges)
@@ -46,6 +48,7 @@ export interface IPlace {
   // RELATIONS (loaded with relations)
   category: Category;
   user: User;
+  facilities?: Facility[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -70,6 +73,7 @@ export interface CreatePlaceData
   // REQUIRED FIELDS
   name: string;
   categoryId: number;
+  facilityIds?: number[];
 }
 
 /**

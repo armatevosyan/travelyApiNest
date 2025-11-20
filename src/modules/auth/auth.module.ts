@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
@@ -10,6 +10,7 @@ import { UsersModule } from '@/modules/users/users.module';
 import { RolesModule } from '@/modules/roles/role.module';
 import { EmailModule } from '../email/email.module';
 
+@Global()
 @Module({
   imports: [
     UsersModule,
@@ -26,6 +27,6 @@ import { EmailModule } from '../email/email.module';
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService, UsersModule], // Export UsersModule so UserService is available globally
 })
 export class AuthModule {}

@@ -23,6 +23,7 @@ import { LocationModule } from '@/modules/locations/location.module';
 import { BlogModule } from '@/modules/blog/blog.module';
 import { TagModule } from '@/modules/tags/tag.module';
 import { FilesModule } from '@/modules/files/files.module';
+import { FacilityModule } from '@/modules/facilities/facility.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -59,6 +60,7 @@ import emailConfig from 'config/email.config';
     BlogModule,
     TagModule,
     FilesModule,
+    FacilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],
