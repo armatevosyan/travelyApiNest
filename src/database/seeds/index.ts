@@ -6,6 +6,7 @@ import RoleSeeder from './roles.seed';
 import UserSeeder from './users.seed';
 import CategorySeeder from './category.seed';
 import LocationSeeder from './location.seed';
+import FacilitySeeder from './facility.seed';
 import { databaseConfig } from '../db.config';
 
 async function bootstrap() {
@@ -22,6 +23,7 @@ async function bootstrap() {
     await runSeeder(AppDataSource, UserSeeder);
     await runSeeder(AppDataSource, CategorySeeder);
     await runSeeder(AppDataSource, LocationSeeder);
+    await runSeeder(AppDataSource, FacilitySeeder);
   } catch (err) {
     console.error('❌ Error seeding database:', err);
     process.exit(1); // Exit with error code

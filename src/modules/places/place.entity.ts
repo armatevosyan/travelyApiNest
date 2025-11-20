@@ -15,6 +15,7 @@ import { User } from '../users/user.entity';
 import { Category } from '../categories/category.entity';
 import { Location } from '../locations/location.entity';
 import { Tag } from '../tags/tag.entity';
+import { Facility } from '@/modules/facilities/facility.entity';
 
 @Entity('places')
 @Index(['latitude', 'longitude'])
@@ -138,6 +139,14 @@ export class Place {
     inverseJoinColumn: { name: 'tagId', referencedColumnName: 'id' },
   })
   tags: Tag[];
+
+  @ManyToMany(() => Facility, (facility) => facility.places)
+  @JoinTable({
+    name: 'place_facilities',
+    joinColumn: { name: 'placeId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'facilityId', referencedColumnName: 'id' },
+  })
+  facilities: Facility[];
 
   // Pricing
   @Column({ type: 'varchar', length: 20, nullable: true })

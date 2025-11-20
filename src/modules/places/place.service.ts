@@ -16,6 +16,8 @@ import { TagService } from '@/modules/tags/tag.service';
 import { Tag } from '@/modules/tags/tag.entity';
 import { FilesService } from '@/modules/files/files.service';
 import { FileRelationType } from '@/modules/files/entities/file-relation.entity';
+import { FacilityService } from '@/modules/facilities/facility.service';
+import { Facility } from '@/modules/facilities/facility.entity';
 
 @Injectable()
 export class PlaceService {
@@ -26,6 +28,7 @@ export class PlaceService {
     private readonly locationService: LocationService,
     private readonly tagService: TagService,
     private readonly filesService: FilesService,
+    private readonly facilityService: FacilityService,
   ) {}
 
   private async filterRelationFields<T extends Place>(place: T): Promise<T> {
@@ -88,6 +91,16 @@ export class PlaceService {
       })) as Tag[];
     }
 
+    if (place.facilities && Array.isArray(place.facilities)) {
+      filteredPlace.facilities = place.facilities.map((facility) => ({
+        id: facility.id,
+        name: facility.name,
+        icon: facility.icon,
+        description: facility.description,
+        count: facility.count,
+      })) as Facility[];
+    }
+
     // Load file relations attached to this place
     const fileRelations = await this.filesService.getFileRelationsForEntity(
       FileRelationType.PLACE,
@@ -128,7 +141,8 @@ export class PlaceService {
     }
 
     let tags: Tag[] = [];
-    const { tagIds, ...placeData } = data;
+    let facilities: Facility[] = [];
+    const { tagIds, facilityIds, ...placeData } = data;
     if (tagIds && tagIds.length > 0) {
       tags = await Promise.all(
         tagIds.map(async (tagId) => {
@@ -137,14 +151,24 @@ export class PlaceService {
       );
     }
 
+    if (facilityIds && facilityIds.length > 0) {
+      facilities = await this.facilityService.findByIds(facilityIds);
+    }
+
     const place = this.placeRepository.create({
       ...placeData,
       userId,
       slug,
       tags,
+      facilities,
     });
 
     const savedPlace = await this.placeRepository.save(place);
+
+    // Increment facility counts for newly associated facilities
+    if (facilityIds && facilityIds.length > 0) {
+      await this.facilityService.incrementCount(facilityIds);
+    }
 
     // Attach images if provided
     if (data.imageIds && data.imageIds.length > 0) {
@@ -161,7 +185,15 @@ export class PlaceService {
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
-      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
+      relations: [
+        'category',
+        'user',
+        'country',
+        'state',
+        'city',
+        'tags',
+        'facilities',
+      ],
     });
 
     return await this.filterRelationFields(reloadedPlace!);
@@ -193,7 +225,8 @@ export class PlaceService {
       .leftJoinAndSelect('place.country', 'country')
       .leftJoinAndSelect('place.state', 'state')
       .leftJoinAndSelect('place.city', 'city')
-      .leftJoinAndSelect('place.tags', 'tags');
+      .leftJoinAndSelect('place.tags', 'tags')
+      .leftJoinAndSelect('place.facilities', 'facilities');
 
     // Apply filters
     if (categoryId) {
@@ -262,7 +295,15 @@ export class PlaceService {
   async findOne(id: number): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { id },
-      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
+      relations: [
+        'category',
+        'user',
+        'country',
+        'state',
+        'city',
+        'tags',
+        'facilities',
+      ],
     });
 
     if (!place) {
@@ -278,7 +319,15 @@ export class PlaceService {
   async findBySlug(slug: string): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { slug },
-      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
+      relations: [
+        'category',
+        'user',
+        'country',
+        'state',
+        'city',
+        'tags',
+        'facilities',
+      ],
     });
 
     if (!place) {
@@ -298,7 +347,15 @@ export class PlaceService {
   ): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { id },
-      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
+      relations: [
+        'category',
+        'user',
+        'country',
+        'state',
+        'city',
+        'tags',
+        'facilities',
+      ],
     });
 
     if (!place) {
@@ -342,7 +399,7 @@ export class PlaceService {
     }
 
     // Handle tags if tagIds is provided
-    const { tagIds, ...placeUpdateData } = updatePlaceDto;
+    const { tagIds, facilityIds, ...placeUpdateData } = updatePlaceDto;
 
     if (tagIds !== undefined) {
       if (tagIds && tagIds.length > 0) {
@@ -354,6 +411,21 @@ export class PlaceService {
       } else {
         place.tags = [];
       }
+    }
+
+    // Handle facilities and update counts
+    if (facilityIds !== undefined) {
+      const oldFacilityIds = place.facilities?.map((f) => f.id) || [];
+      const newFacilityIds = facilityIds || [];
+
+      if (newFacilityIds && newFacilityIds.length > 0) {
+        place.facilities = await this.facilityService.findByIds(newFacilityIds);
+      } else {
+        place.facilities = [];
+      }
+
+      // Update facility counts (increment added, decrement removed)
+      await this.facilityService.updateCounts(oldFacilityIds, newFacilityIds);
     }
 
     Object.assign(place, placeUpdateData);
@@ -392,17 +464,38 @@ export class PlaceService {
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
-      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
+      relations: [
+        'category',
+        'user',
+        'country',
+        'state',
+        'city',
+        'tags',
+        'facilities',
+      ],
     });
 
     return await this.filterRelationFields(reloadedPlace!);
   }
 
   async remove(id: number, userId: number): Promise<void> {
-    const place = await this.findOne(id);
+    const place = await this.placeRepository.findOne({
+      where: { id },
+      relations: ['facilities'],
+    });
+
+    if (!place) {
+      throw new NotFoundException(this.i18n.translate('t.PLACE_NOT_FOUND'));
+    }
 
     if (place.userId !== userId) {
       throw new BadRequestException(this.i18n.translate('t.PLACE_NOT_OWNER'));
+    }
+
+    // Decrement facility counts before deleting
+    if (place.facilities && place.facilities.length > 0) {
+      const facilityIds = place.facilities.map((f) => f.id);
+      await this.facilityService.decrementCount(facilityIds);
     }
 
     await this.placeRepository.softDelete(id);
@@ -411,7 +504,15 @@ export class PlaceService {
   async findByUser(userId: number): Promise<Place[]> {
     const places = await this.placeRepository.find({
       where: { userId },
-      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
+      relations: [
+        'category',
+        'user',
+        'country',
+        'state',
+        'city',
+        'tags',
+        'facilities',
+      ],
       order: { createdAt: 'DESC' },
     });
 
@@ -421,7 +522,15 @@ export class PlaceService {
   async findByCategory(categoryId: number): Promise<Place[]> {
     const places = await this.placeRepository.find({
       where: { categoryId, isActive: true },
-      relations: ['category', 'user', 'country', 'state', 'city', 'tags'],
+      relations: [
+        'category',
+        'user',
+        'country',
+        'state',
+        'city',
+        'tags',
+        'facilities',
+      ],
       order: { createdAt: 'DESC' },
     });
 

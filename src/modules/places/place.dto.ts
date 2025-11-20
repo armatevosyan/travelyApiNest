@@ -176,6 +176,31 @@ export class CreatePlaceDto {
   @IsNumber({}, { each: true, message: 't.PLACE_TAG_ID_INVALID' })
   tagIds?: number[];
 
+  @IsOptional()
+  @Transform(({ value }): number[] => {
+    if (Array.isArray(value)) {
+      return value
+        .map((v) => {
+          const num = Number(v);
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((v) => {
+          const num = Number(v.trim());
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    return value;
+  })
+  @IsArray({ message: 't.PLACE_FACILITY_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.PLACE_FACILITY_ID_INVALID' })
+  facilityIds?: number[];
+
   // Pricing
   @IsOptional()
   @Transform(({ value }) => {
@@ -370,6 +395,31 @@ export class UpdatePlaceDto {
   @IsArray({ message: 't.PLACE_TAG_IDS_INVALID' })
   @IsNumber({}, { each: true, message: 't.PLACE_TAG_ID_INVALID' })
   tagIds?: number[];
+
+  @IsOptional()
+  @Transform(({ value }): number[] => {
+    if (Array.isArray(value)) {
+      return value
+        .map((v) => {
+          const num = Number(v);
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((v) => {
+          const num = Number(v.trim());
+          return isNaN(num) ? null : num;
+        })
+        .filter((v) => v !== null);
+    }
+    return value;
+  })
+  @IsArray({ message: 't.PLACE_FACILITY_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.PLACE_FACILITY_ID_INVALID' })
+  facilityIds?: number[];
 
   // Pricing
   @IsOptional()

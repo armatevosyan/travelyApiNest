@@ -6,6 +6,7 @@ import { Place } from './place.entity';
 import { CategoryModule } from '@/modules/categories/category.module';
 import { LocationModule } from '@/modules/locations/location.module';
 import { TagModule } from '@/modules/tags/tag.module';
+import { FacilityModule } from '@/modules/facilities/facility.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TagModule } from '@/modules/tags/tag.module';
     CategoryModule,
     LocationModule,
     TagModule,
+    FacilityModule,
   ],
   providers: [PlaceService],
   controllers: [PlaceController],
