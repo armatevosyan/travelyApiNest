@@ -237,6 +237,15 @@ export class CreatePlaceDto {
   })
   @IsBoolean({ message: 't.PLACE_IS_PRICE_ON_REQUEST_INVALID' })
   isPriceOnRequest?: boolean;
+
+  // Restaurant-specific data (optional, only for restaurant category)
+  @IsOptional()
+  restaurantData?: {
+    menuImageIds?: number[];
+    dishImageIds?: number[];
+    cuisineTypes?: string[];
+    dietaryOptions?: string[];
+  };
 }
 
 export class UpdatePlaceDto {
@@ -470,6 +479,15 @@ export class UpdatePlaceDto {
   })
   @IsBoolean({ message: 't.PLACE_IS_PRICE_ON_REQUEST_INVALID' })
   isPriceOnRequest?: boolean;
+
+  // Restaurant-specific data (optional, only for restaurant category)
+  @IsOptional()
+  restaurantData?: {
+    menuImageIds?: number[];
+    dishImageIds?: number[];
+    cuisineTypes?: string[];
+    dietaryOptions?: string[];
+  };
 }
 
 export class PlaceQueryDto {

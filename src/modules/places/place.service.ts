@@ -18,6 +18,7 @@ import { FilesService } from '@/modules/files/files.service';
 import { FileRelationType } from '@/modules/files/entities/file-relation.entity';
 import { FacilityService } from '@/modules/facilities/facility.service';
 import { Facility } from '@/modules/facilities/facility.entity';
+import { RestaurantService } from '@/modules/restaurants/restaurant.service';
 
 @Injectable()
 export class PlaceService {
@@ -29,6 +30,7 @@ export class PlaceService {
     private readonly tagService: TagService,
     private readonly filesService: FilesService,
     private readonly facilityService: FacilityService,
+    private readonly restaurantService: RestaurantService,
   ) {}
 
   private async filterRelationFields<T extends Place>(place: T): Promise<T> {
@@ -110,6 +112,8 @@ export class PlaceService {
     return {
       ...filteredPlace,
       images: fileRelations.map((r) => r.file),
+      // Restaurant data loaded via relation (if exists)
+      restaurant: place.restaurant || null,
     };
   }
 
@@ -142,7 +146,7 @@ export class PlaceService {
 
     let tags: Tag[] = [];
     let facilities: Facility[] = [];
-    const { tagIds, facilityIds, ...placeData } = data;
+    const { tagIds, facilityIds, restaurantData, ...placeData } = data;
     if (tagIds && tagIds.length > 0) {
       tags = await Promise.all(
         tagIds.map(async (tagId) => {
@@ -183,6 +187,19 @@ export class PlaceService {
       );
     }
 
+    // Create restaurant record if category is food/drink related and restaurantData is provided
+    if (restaurantData && (await this.isFoodCategory(savedPlace.categoryId))) {
+      try {
+        await this.restaurantService.create({
+          placeId: savedPlace.id,
+          ...restaurantData,
+        });
+      } catch (error) {
+        // Log error but don't fail place creation
+        console.error('Failed to create restaurant record:', error);
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
       relations: [
@@ -193,6 +210,9 @@ export class PlaceService {
         'city',
         'tags',
         'facilities',
+        'restaurant',
+        'restaurant.menuImages',
+        'restaurant.dishImages',
       ],
     });
 
@@ -226,7 +246,10 @@ export class PlaceService {
       .leftJoinAndSelect('place.state', 'state')
       .leftJoinAndSelect('place.city', 'city')
       .leftJoinAndSelect('place.tags', 'tags')
-      .leftJoinAndSelect('place.facilities', 'facilities');
+      .leftJoinAndSelect('place.facilities', 'facilities')
+      .leftJoinAndSelect('place.restaurant', 'restaurant')
+      .leftJoinAndSelect('restaurant.menuImages', 'restaurantMenuImages')
+      .leftJoinAndSelect('restaurant.dishImages', 'restaurantDishImages');
 
     // Apply filters
     if (categoryId) {
@@ -399,7 +422,8 @@ export class PlaceService {
     }
 
     // Handle tags if tagIds is provided
-    const { tagIds, facilityIds, ...placeUpdateData } = updatePlaceDto;
+    const { tagIds, facilityIds, restaurantData, ...placeUpdateData } =
+      updatePlaceDto;
 
     if (tagIds !== undefined) {
       if (tagIds && tagIds.length > 0) {
@@ -462,6 +486,28 @@ export class PlaceService {
       }
     }
 
+    // Update restaurant data if provided and place is a food category
+    if (restaurantData && (await this.isFoodCategory(place.categoryId))) {
+      try {
+        // Try to update existing restaurant
+        await this.restaurantService.updateByPlaceId(place.id, restaurantData);
+      } catch (error) {
+        // If restaurant doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await this.restaurantService.create({
+              placeId: place.id,
+              ...restaurantData,
+            });
+          } catch (createError) {
+            console.error('Failed to create restaurant record:', createError);
+          }
+        } else {
+          console.error('Failed to update restaurant record:', error);
+        }
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
       relations: [
@@ -472,6 +518,9 @@ export class PlaceService {
         'city',
         'tags',
         'facilities',
+        'restaurant',
+        'restaurant.menuImages',
+        'restaurant.dishImages',
       ],
     });
 
@@ -544,5 +593,45 @@ export class PlaceService {
       .replace(/[^\w\s-]/g, '') // Remove special characters
       .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+  }
+
+  /**
+   * Check if a category is a food/restaurant category
+   * Categories: Restaurant, Coffee Shop, Bar & Pub, Fast Food, Fine Dining, Street Food
+   */
+  private async isFoodCategory(categoryId: number): Promise<boolean> {
+    const category = await this.placeRepository.manager.findOne(Category, {
+      where: { id: categoryId },
+      relations: ['parent'],
+    });
+
+    if (!category) return false;
+
+    // Check if category name contains food-related keywords
+    const categoryName = category.name.toLowerCase();
+    const foodKeywords = [
+      'restaurant',
+      'coffee',
+      'bar',
+      'pub',
+      'food',
+      'dining',
+      'cafe',
+      'drink',
+    ];
+
+    if (foodKeywords.some((keyword) => categoryName.includes(keyword))) {
+      return true;
+    }
+
+    // Check if parent category is "Food & Drink"
+    if (category.parent) {
+      const parentName = category.parent.name.toLowerCase();
+      if (parentName.includes('food') || parentName.includes('drink')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
