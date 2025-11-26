@@ -74,6 +74,14 @@ export interface CreatePlaceData
   name: string;
   categoryId: number;
   facilityIds?: number[];
+
+  // RESTAURANT-SPECIFIC FIELDS (optional, only for restaurant category)
+  restaurantData?: {
+    menuImageIds?: number[];
+    dishImageIds?: number[];
+    cuisineTypes?: string[];
+    dietaryOptions?: string[];
+  };
 }
 
 /**

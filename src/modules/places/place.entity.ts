@@ -7,6 +7,7 @@ import {
   DeleteDateColumn,
   ManyToOne,
   ManyToMany,
+  OneToOne,
   JoinColumn,
   JoinTable,
   Index,
@@ -16,6 +17,7 @@ import { Category } from '../categories/category.entity';
 import { Location } from '../locations/location.entity';
 import { Tag } from '../tags/tag.entity';
 import { Facility } from '@/modules/facilities/facility.entity';
+import { Restaurant } from '@/modules/restaurants/restaurant.entity';
 
 @Entity('places')
 @Index(['latitude', 'longitude'])
@@ -147,6 +149,16 @@ export class Place {
     inverseJoinColumn: { name: 'facilityId', referencedColumnName: 'id' },
   })
   facilities: Facility[];
+
+  // Category-specific relations
+  @OneToOne(() => Restaurant, (restaurant) => restaurant.place, {
+    nullable: true,
+  })
+  restaurant?: Restaurant | null;
+
+  // TODO: Add more category-specific relations
+  // @OneToOne(() => Hotel, hotel => hotel.place, { nullable: true })
+  // hotel?: Hotel | null;
 
   // Pricing
   @Column({ type: 'varchar', length: 20, nullable: true })
