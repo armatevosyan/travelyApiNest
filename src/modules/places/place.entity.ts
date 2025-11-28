@@ -18,6 +18,7 @@ import { Location } from '../locations/location.entity';
 import { Tag } from '../tags/tag.entity';
 import { Facility } from '@/modules/facilities/facility.entity';
 import { Restaurant } from '@/modules/restaurants/restaurant.entity';
+import { Accommodation } from '@/modules/accommodations/accommodation.entity';
 
 @Entity('places')
 @Index(['latitude', 'longitude'])
@@ -156,9 +157,10 @@ export class Place {
   })
   restaurant?: Restaurant | null;
 
-  // TODO: Add more category-specific relations
-  // @OneToOne(() => Hotel, hotel => hotel.place, { nullable: true })
-  // hotel?: Hotel | null;
+  @OneToOne(() => Accommodation, (accommodation) => accommodation.place, {
+    nullable: true,
+  })
+  accommodation?: Accommodation | null;
 
   // Pricing
   @Column({ type: 'varchar', length: 20, nullable: true })

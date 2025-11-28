@@ -246,6 +246,20 @@ export class CreatePlaceDto {
     cuisineTypes?: string[];
     dietaryOptions?: string[];
   };
+
+  // Accommodation-specific data (optional, only for accommodation category)
+  @IsOptional()
+  accommodationData?: {
+    roomTypes?: {
+      name: string;
+      description?: string;
+      capacity: number;
+      photos?: number[]; // File IDs
+    }[];
+    bookingUrl?: string;
+    checkInTime?: string; // '14:00'
+    checkOutTime?: string; // '11:00'
+  };
 }
 
 export class UpdatePlaceDto {
@@ -487,6 +501,20 @@ export class UpdatePlaceDto {
     dishImageIds?: number[];
     cuisineTypes?: string[];
     dietaryOptions?: string[];
+  };
+
+  // Accommodation-specific data (optional, only for accommodation category)
+  @IsOptional()
+  accommodationData?: {
+    roomTypes?: {
+      name: string;
+      description?: string;
+      capacity: number;
+      photos?: number[]; // File IDs
+    }[];
+    bookingUrl?: string;
+    checkInTime?: string; // '14:00'
+    checkOutTime?: string; // '11:00'
   };
 }
 

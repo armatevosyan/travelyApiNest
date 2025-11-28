@@ -8,6 +8,7 @@ import { LocationModule } from '@/modules/locations/location.module';
 import { TagModule } from '@/modules/tags/tag.module';
 import { FacilityModule } from '@/modules/facilities/facility.module';
 import { RestaurantModule } from '@/modules/restaurants/restaurant.module';
+import { AccommodationModule } from '@/modules/accommodations/accommodation.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RestaurantModule } from '@/modules/restaurants/restaurant.module';
     TagModule,
     FacilityModule,
     RestaurantModule,
+    AccommodationModule,
   ],
   providers: [PlaceService],
   controllers: [PlaceController],
