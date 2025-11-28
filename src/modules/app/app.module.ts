@@ -25,6 +25,7 @@ import { TagModule } from '@/modules/tags/tag.module';
 import { FilesModule } from '@/modules/files/files.module';
 import { FacilityModule } from '@/modules/facilities/facility.module';
 import { RestaurantModule } from '@/modules/restaurants/restaurant.module';
+import { AccommodationModule } from '@/modules/accommodations/accommodation.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -63,6 +64,7 @@ import emailConfig from 'config/email.config';
     FilesModule,
     FacilityModule,
     RestaurantModule,
+    AccommodationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

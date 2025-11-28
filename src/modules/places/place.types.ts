@@ -82,6 +82,19 @@ export interface CreatePlaceData
     cuisineTypes?: string[];
     dietaryOptions?: string[];
   };
+
+  // ACCOMMODATION-SPECIFIC FIELDS (optional, only for accommodation category)
+  accommodationData?: {
+    roomTypes?: {
+      name: string;
+      description?: string;
+      capacity: number;
+      photos?: number[]; // File IDs
+    }[];
+    bookingUrl?: string;
+    checkInTime?: string; // '14:00'
+    checkOutTime?: string; // '11:00'
+  };
 }
 
 /**

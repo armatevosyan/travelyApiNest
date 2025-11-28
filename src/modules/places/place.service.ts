@@ -19,6 +19,7 @@ import { FileRelationType } from '@/modules/files/entities/file-relation.entity'
 import { FacilityService } from '@/modules/facilities/facility.service';
 import { Facility } from '@/modules/facilities/facility.entity';
 import { RestaurantService } from '@/modules/restaurants/restaurant.service';
+import { AccommodationService } from '@/modules/accommodations/accommodation.service';
 
 @Injectable()
 export class PlaceService {
@@ -31,6 +32,7 @@ export class PlaceService {
     private readonly filesService: FilesService,
     private readonly facilityService: FacilityService,
     private readonly restaurantService: RestaurantService,
+    private readonly accommodationService: AccommodationService,
   ) {}
 
   private async filterRelationFields<T extends Place>(place: T): Promise<T> {
@@ -109,11 +111,26 @@ export class PlaceService {
       place.id,
     );
 
+    // Load accommodation with room photos if accommodation exists
+    let accommodationData: any = null;
+    if (place.accommodation) {
+      const accommodationWithPhotos =
+        await this.accommodationService.loadRoomPhotos(place.accommodation);
+      const { roomTypesWithPhotos, ...accommodationBase } =
+        accommodationWithPhotos;
+      accommodationData = {
+        ...accommodationBase,
+        roomTypes: roomTypesWithPhotos || accommodationWithPhotos.roomTypes,
+      };
+    }
+
     return {
       ...filteredPlace,
       images: fileRelations.map((r) => r.file),
       // Restaurant data loaded via relation (if exists)
       restaurant: place.restaurant || null,
+      // Accommodation data loaded via relation with room photos (if exists)
+      accommodation: accommodationData || null,
     };
   }
 
@@ -146,7 +163,13 @@ export class PlaceService {
 
     let tags: Tag[] = [];
     let facilities: Facility[] = [];
-    const { tagIds, facilityIds, restaurantData, ...placeData } = data;
+    const {
+      tagIds,
+      facilityIds,
+      restaurantData,
+      accommodationData,
+      ...placeData
+    } = data;
     if (tagIds && tagIds.length > 0) {
       tags = await Promise.all(
         tagIds.map(async (tagId) => {
@@ -200,6 +223,22 @@ export class PlaceService {
       }
     }
 
+    // Create accommodation record if category is accommodation related and accommodationData is provided
+    if (
+      accommodationData &&
+      (await this.isAccommodationCategory(savedPlace.categoryId))
+    ) {
+      try {
+        await this.accommodationService.create({
+          placeId: savedPlace.id,
+          ...accommodationData,
+        });
+      } catch (error) {
+        // Log error but don't fail place creation
+        console.error('Failed to create accommodation record:', error);
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
       relations: [
@@ -213,6 +252,7 @@ export class PlaceService {
         'restaurant',
         'restaurant.menuImages',
         'restaurant.dishImages',
+        'accommodation',
       ],
     });
 
@@ -249,7 +289,8 @@ export class PlaceService {
       .leftJoinAndSelect('place.facilities', 'facilities')
       .leftJoinAndSelect('place.restaurant', 'restaurant')
       .leftJoinAndSelect('restaurant.menuImages', 'restaurantMenuImages')
-      .leftJoinAndSelect('restaurant.dishImages', 'restaurantDishImages');
+      .leftJoinAndSelect('restaurant.dishImages', 'restaurantDishImages')
+      .leftJoinAndSelect('place.accommodation', 'accommodation');
 
     // Apply filters
     if (categoryId) {
@@ -326,6 +367,10 @@ export class PlaceService {
         'city',
         'tags',
         'facilities',
+        'restaurant',
+        'restaurant.menuImages',
+        'restaurant.dishImages',
+        'accommodation',
       ],
     });
 
@@ -350,6 +395,10 @@ export class PlaceService {
         'city',
         'tags',
         'facilities',
+        'restaurant',
+        'restaurant.menuImages',
+        'restaurant.dishImages',
+        'accommodation',
       ],
     });
 
@@ -378,6 +427,10 @@ export class PlaceService {
         'city',
         'tags',
         'facilities',
+        'restaurant',
+        'restaurant.menuImages',
+        'restaurant.dishImages',
+        'accommodation',
       ],
     });
 
@@ -422,8 +475,13 @@ export class PlaceService {
     }
 
     // Handle tags if tagIds is provided
-    const { tagIds, facilityIds, restaurantData, ...placeUpdateData } =
-      updatePlaceDto;
+    const {
+      tagIds,
+      facilityIds,
+      restaurantData,
+      accommodationData,
+      ...placeUpdateData
+    } = updatePlaceDto;
 
     if (tagIds !== undefined) {
       if (tagIds && tagIds.length > 0) {
@@ -508,6 +566,37 @@ export class PlaceService {
       }
     }
 
+    // Update accommodation data if provided and place is an accommodation category
+    if (
+      accommodationData &&
+      (await this.isAccommodationCategory(place.categoryId))
+    ) {
+      try {
+        // Try to update existing accommodation
+        await this.accommodationService.updateByPlaceId(
+          place.id,
+          accommodationData,
+        );
+      } catch (error) {
+        // If accommodation doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await this.accommodationService.create({
+              placeId: place.id,
+              ...accommodationData,
+            });
+          } catch (createError) {
+            console.error(
+              'Failed to create accommodation record:',
+              createError,
+            );
+          }
+        } else {
+          console.error('Failed to update accommodation record:', error);
+        }
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
       relations: [
@@ -521,6 +610,7 @@ export class PlaceService {
         'restaurant',
         'restaurant.menuImages',
         'restaurant.dishImages',
+        'accommodation',
       ],
     });
 
@@ -561,6 +651,10 @@ export class PlaceService {
         'city',
         'tags',
         'facilities',
+        'restaurant',
+        'restaurant.menuImages',
+        'restaurant.dishImages',
+        'accommodation',
       ],
       order: { createdAt: 'DESC' },
     });
@@ -579,6 +673,10 @@ export class PlaceService {
         'city',
         'tags',
         'facilities',
+        'restaurant',
+        'restaurant.menuImages',
+        'restaurant.dishImages',
+        'accommodation',
       ],
       order: { createdAt: 'DESC' },
     });
@@ -628,6 +726,51 @@ export class PlaceService {
     if (category.parent) {
       const parentName = category.parent.name.toLowerCase();
       if (parentName.includes('food') || parentName.includes('drink')) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if a category is an accommodation category
+   * Categories: Hotel, Hostel, Airbnb, Resort, Motel, Bed & Breakfast
+   */
+  private async isAccommodationCategory(categoryId: number): Promise<boolean> {
+    const category = await this.placeRepository.manager.findOne(Category, {
+      where: { id: categoryId },
+      relations: ['parent'],
+    });
+
+    if (!category) return false;
+
+    // Check if category name contains accommodation-related keywords
+    const categoryName = category.name.toLowerCase();
+    const accommodationKeywords = [
+      'hotel',
+      'hostel',
+      'airbnb',
+      'resort',
+      'motel',
+      'bed',
+      'breakfast',
+      'accommodation',
+      'lodging',
+      'inn',
+      'guesthouse',
+    ];
+
+    if (
+      accommodationKeywords.some((keyword) => categoryName.includes(keyword))
+    ) {
+      return true;
+    }
+
+    // Check if parent category is "Accommodation"
+    if (category.parent) {
+      const parentName = category.parent.name.toLowerCase();
+      if (parentName.includes('accommodation') || parentName.includes('stay')) {
         return true;
       }
     }
