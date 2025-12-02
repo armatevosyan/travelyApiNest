@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { Shopping } from './shopping.entity';
 import { CreateShoppingDto, UpdateShoppingDto } from './shopping.dto';
 import { Place } from '../places/place.entity';
+import { Category } from '../categories/category.entity';
 
 @Injectable()
 export class ShoppingService {
@@ -16,6 +17,8 @@ export class ShoppingService {
     private shoppingRepository: Repository<Shopping>,
     @InjectRepository(Place)
     private placeRepository: Repository<Place>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(createShoppingDto: CreateShoppingDto): Promise<Shopping> {
@@ -96,5 +99,50 @@ export class ShoppingService {
     Object.assign(shopping, updateShoppingDto);
 
     return await this.shoppingRepository.save(shopping);
+  }
+
+  /**
+   * Check if a category is a shopping category
+   * Categories: Shopping Mall, Store, Market, Boutique, etc.
+   */
+  async isShoppingCategory(categoryId: number): Promise<boolean> {
+    const category = await this.categoryRepository.findOne({
+      where: { id: categoryId },
+      relations: ['parent'],
+    });
+
+    if (!category) return false;
+
+    // Check if category name contains shopping-related keywords
+    const categoryName = category.name.toLowerCase();
+    const shoppingKeywords = [
+      'shop',
+      'store',
+      'mall',
+      'market',
+      'boutique',
+      'retail',
+      'shopping',
+      'outlet',
+      'supermarket',
+      'grocery',
+      'department',
+      'clothing',
+      'fashion',
+    ];
+
+    if (shoppingKeywords.some((keyword) => categoryName.includes(keyword))) {
+      return true;
+    }
+
+    // Check if parent category is "Shopping"
+    if (category.parent) {
+      const parentName = category.parent.name.toLowerCase();
+      if (parentName.includes('shopping') || parentName.includes('retail')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
