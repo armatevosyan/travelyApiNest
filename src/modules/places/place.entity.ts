@@ -19,6 +19,7 @@ import { Tag } from '../tags/tag.entity';
 import { Facility } from '@/modules/facilities/facility.entity';
 import { Restaurant } from '@/modules/restaurants/restaurant.entity';
 import { Accommodation } from '@/modules/accommodations/accommodation.entity';
+import { Shopping } from '@/modules/shopping/shopping.entity';
 
 @Entity('places')
 @Index(['latitude', 'longitude'])
@@ -161,6 +162,11 @@ export class Place {
     nullable: true,
   })
   accommodation?: Accommodation | null;
+
+  @OneToOne(() => Shopping, (shopping) => shopping.place, {
+    nullable: true,
+  })
+  shopping?: Shopping | null;
 
   // Pricing
   @Column({ type: 'varchar', length: 20, nullable: true })

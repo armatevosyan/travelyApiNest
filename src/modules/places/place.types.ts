@@ -95,6 +95,15 @@ export interface CreatePlaceData
     checkInTime?: string; // '14:00'
     checkOutTime?: string; // '11:00'
   };
+
+  // SHOPPING-SPECIFIC FIELDS (optional, only for shopping category)
+  shoppingData?: {
+    productCategories?: string[]; // e.g., ["Men's Clothing", "Groceries", "Electronics"]
+    brandsCarried?: string[]; // e.g., ["Nike", "Adidas", "Apple"]
+    onlineStoreUrl?: string;
+    returnPolicy?: string;
+    bookingUrl?: string; // For vehicle rentals or reservations
+  };
 }
 
 /**

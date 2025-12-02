@@ -9,6 +9,7 @@ import { TagModule } from '@/modules/tags/tag.module';
 import { FacilityModule } from '@/modules/facilities/facility.module';
 import { RestaurantModule } from '@/modules/restaurants/restaurant.module';
 import { AccommodationModule } from '@/modules/accommodations/accommodation.module';
+import { ShoppingModule } from '@/modules/shopping/shopping.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AccommodationModule } from '@/modules/accommodations/accommodation.modu
     FacilityModule,
     RestaurantModule,
     AccommodationModule,
+    ShoppingModule,
   ],
   providers: [PlaceService],
   controllers: [PlaceController],

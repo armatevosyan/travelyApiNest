@@ -20,6 +20,7 @@ import { FacilityService } from '@/modules/facilities/facility.service';
 import { Facility } from '@/modules/facilities/facility.entity';
 import { RestaurantService } from '@/modules/restaurants/restaurant.service';
 import { AccommodationService } from '@/modules/accommodations/accommodation.service';
+import { ShoppingService } from '@/modules/shopping/shopping.service';
 
 @Injectable()
 export class PlaceService {
@@ -33,6 +34,7 @@ export class PlaceService {
     private readonly facilityService: FacilityService,
     private readonly restaurantService: RestaurantService,
     private readonly accommodationService: AccommodationService,
+    private readonly shoppingService: ShoppingService,
   ) {}
 
   private async filterRelationFields<T extends Place>(place: T): Promise<T> {
@@ -131,6 +133,8 @@ export class PlaceService {
       restaurant: place.restaurant || null,
       // Accommodation data loaded via relation with room photos (if exists)
       accommodation: accommodationData || null,
+      // Shopping data loaded via relation (if exists)
+      shopping: place.shopping || null,
     };
   }
 
@@ -168,6 +172,7 @@ export class PlaceService {
       facilityIds,
       restaurantData,
       accommodationData,
+      shoppingData,
       ...placeData
     } = data;
     if (tagIds && tagIds.length > 0) {
@@ -239,6 +244,22 @@ export class PlaceService {
       }
     }
 
+    // Create shopping record if category is shopping related and shoppingData is provided
+    if (
+      shoppingData &&
+      (await this.isShoppingCategory(savedPlace.categoryId))
+    ) {
+      try {
+        await this.shoppingService.create({
+          placeId: savedPlace.id,
+          ...shoppingData,
+        });
+      } catch (error) {
+        // Log error but don't fail place creation
+        console.error('Failed to create shopping record:', error);
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
       relations: [
@@ -253,6 +274,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -290,7 +312,8 @@ export class PlaceService {
       .leftJoinAndSelect('place.restaurant', 'restaurant')
       .leftJoinAndSelect('restaurant.menuImages', 'restaurantMenuImages')
       .leftJoinAndSelect('restaurant.dishImages', 'restaurantDishImages')
-      .leftJoinAndSelect('place.accommodation', 'accommodation');
+      .leftJoinAndSelect('place.accommodation', 'accommodation')
+      .leftJoinAndSelect('place.shopping', 'shopping');
 
     // Apply filters
     if (categoryId) {
@@ -371,6 +394,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -399,6 +423,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -431,6 +456,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -480,6 +506,7 @@ export class PlaceService {
       facilityIds,
       restaurantData,
       accommodationData,
+      shoppingData,
       ...placeUpdateData
     } = updatePlaceDto;
 
@@ -597,6 +624,28 @@ export class PlaceService {
       }
     }
 
+    // Update shopping data if provided and place is a shopping category
+    if (shoppingData && (await this.isShoppingCategory(place.categoryId))) {
+      try {
+        // Try to update existing shopping
+        await this.shoppingService.updateByPlaceId(place.id, shoppingData);
+      } catch (error) {
+        // If shopping doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await this.shoppingService.create({
+              placeId: place.id,
+              ...shoppingData,
+            });
+          } catch (createError) {
+            console.error('Failed to create shopping record:', createError);
+          }
+        } else {
+          console.error('Failed to update shopping record:', error);
+        }
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
       relations: [
@@ -611,6 +660,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -655,6 +705,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
       order: { createdAt: 'DESC' },
     });
@@ -771,6 +822,51 @@ export class PlaceService {
     if (category.parent) {
       const parentName = category.parent.name.toLowerCase();
       if (parentName.includes('accommodation') || parentName.includes('stay')) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if a category is a shopping category
+   * Categories: Shopping Mall, Store, Market, Boutique, etc.
+   */
+  private async isShoppingCategory(categoryId: number): Promise<boolean> {
+    const category = await this.placeRepository.manager.findOne(Category, {
+      where: { id: categoryId },
+      relations: ['parent'],
+    });
+
+    if (!category) return false;
+
+    // Check if category name contains shopping-related keywords
+    const categoryName = category.name.toLowerCase();
+    const shoppingKeywords = [
+      'shop',
+      'store',
+      'mall',
+      'market',
+      'boutique',
+      'retail',
+      'shopping',
+      'outlet',
+      'supermarket',
+      'grocery',
+      'department',
+      'clothing',
+      'fashion',
+    ];
+
+    if (shoppingKeywords.some((keyword) => categoryName.includes(keyword))) {
+      return true;
+    }
+
+    // Check if parent category is "Shopping"
+    if (category.parent) {
+      const parentName = category.parent.name.toLowerCase();
+      if (parentName.includes('shopping') || parentName.includes('retail')) {
         return true;
       }
     }
