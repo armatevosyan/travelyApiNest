@@ -20,6 +20,7 @@ import { FacilityService } from '@/modules/facilities/facility.service';
 import { Facility } from '@/modules/facilities/facility.entity';
 import { RestaurantService } from '@/modules/restaurants/restaurant.service';
 import { AccommodationService } from '@/modules/accommodations/accommodation.service';
+import { ShoppingService } from '@/modules/shopping/shopping.service';
 
 @Injectable()
 export class PlaceService {
@@ -33,6 +34,7 @@ export class PlaceService {
     private readonly facilityService: FacilityService,
     private readonly restaurantService: RestaurantService,
     private readonly accommodationService: AccommodationService,
+    private readonly shoppingService: ShoppingService,
   ) {}
 
   private async filterRelationFields<T extends Place>(place: T): Promise<T> {
@@ -131,6 +133,8 @@ export class PlaceService {
       restaurant: place.restaurant || null,
       // Accommodation data loaded via relation with room photos (if exists)
       accommodation: accommodationData || null,
+      // Shopping data loaded via relation (if exists)
+      shopping: place.shopping || null,
     };
   }
 
@@ -168,6 +172,7 @@ export class PlaceService {
       facilityIds,
       restaurantData,
       accommodationData,
+      shoppingData,
       ...placeData
     } = data;
     if (tagIds && tagIds.length > 0) {
@@ -211,7 +216,10 @@ export class PlaceService {
     }
 
     // Create restaurant record if category is food/drink related and restaurantData is provided
-    if (restaurantData && (await this.isFoodCategory(savedPlace.categoryId))) {
+    if (
+      restaurantData &&
+      (await this.restaurantService.isFoodCategory(savedPlace.categoryId))
+    ) {
       try {
         await this.restaurantService.create({
           placeId: savedPlace.id,
@@ -226,7 +234,9 @@ export class PlaceService {
     // Create accommodation record if category is accommodation related and accommodationData is provided
     if (
       accommodationData &&
-      (await this.isAccommodationCategory(savedPlace.categoryId))
+      (await this.accommodationService.isAccommodationCategory(
+        savedPlace.categoryId,
+      ))
     ) {
       try {
         await this.accommodationService.create({
@@ -236,6 +246,22 @@ export class PlaceService {
       } catch (error) {
         // Log error but don't fail place creation
         console.error('Failed to create accommodation record:', error);
+      }
+    }
+
+    // Create shopping record if category is shopping related and shoppingData is provided
+    if (
+      shoppingData &&
+      (await this.shoppingService.isShoppingCategory(savedPlace.categoryId))
+    ) {
+      try {
+        await this.shoppingService.create({
+          placeId: savedPlace.id,
+          ...shoppingData,
+        });
+      } catch (error) {
+        // Log error but don't fail place creation
+        console.error('Failed to create shopping record:', error);
       }
     }
 
@@ -253,6 +279,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -290,7 +317,8 @@ export class PlaceService {
       .leftJoinAndSelect('place.restaurant', 'restaurant')
       .leftJoinAndSelect('restaurant.menuImages', 'restaurantMenuImages')
       .leftJoinAndSelect('restaurant.dishImages', 'restaurantDishImages')
-      .leftJoinAndSelect('place.accommodation', 'accommodation');
+      .leftJoinAndSelect('place.accommodation', 'accommodation')
+      .leftJoinAndSelect('place.shopping', 'shopping');
 
     // Apply filters
     if (categoryId) {
@@ -371,6 +399,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -399,6 +428,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -431,6 +461,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -480,6 +511,7 @@ export class PlaceService {
       facilityIds,
       restaurantData,
       accommodationData,
+      shoppingData,
       ...placeUpdateData
     } = updatePlaceDto;
 
@@ -545,7 +577,10 @@ export class PlaceService {
     }
 
     // Update restaurant data if provided and place is a food category
-    if (restaurantData && (await this.isFoodCategory(place.categoryId))) {
+    if (
+      restaurantData &&
+      (await this.restaurantService.isFoodCategory(place.categoryId))
+    ) {
       try {
         // Try to update existing restaurant
         await this.restaurantService.updateByPlaceId(place.id, restaurantData);
@@ -569,7 +604,9 @@ export class PlaceService {
     // Update accommodation data if provided and place is an accommodation category
     if (
       accommodationData &&
-      (await this.isAccommodationCategory(place.categoryId))
+      (await this.accommodationService.isAccommodationCategory(
+        place.categoryId,
+      ))
     ) {
       try {
         // Try to update existing accommodation
@@ -597,6 +634,31 @@ export class PlaceService {
       }
     }
 
+    // Update shopping data if provided and place is a shopping category
+    if (
+      shoppingData &&
+      (await this.shoppingService.isShoppingCategory(place.categoryId))
+    ) {
+      try {
+        // Try to update existing shopping
+        await this.shoppingService.updateByPlaceId(place.id, shoppingData);
+      } catch (error) {
+        // If shopping doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await this.shoppingService.create({
+              placeId: place.id,
+              ...shoppingData,
+            });
+          } catch (createError) {
+            console.error('Failed to create shopping record:', createError);
+          }
+        } else {
+          console.error('Failed to update shopping record:', error);
+        }
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
       relations: [
@@ -611,6 +673,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
     });
 
@@ -655,6 +718,7 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
       ],
       order: { createdAt: 'DESC' },
     });
@@ -691,90 +755,5 @@ export class PlaceService {
       .replace(/[^\w\s-]/g, '') // Remove special characters
       .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-  }
-
-  /**
-   * Check if a category is a food/restaurant category
-   * Categories: Restaurant, Coffee Shop, Bar & Pub, Fast Food, Fine Dining, Street Food
-   */
-  private async isFoodCategory(categoryId: number): Promise<boolean> {
-    const category = await this.placeRepository.manager.findOne(Category, {
-      where: { id: categoryId },
-      relations: ['parent'],
-    });
-
-    if (!category) return false;
-
-    // Check if category name contains food-related keywords
-    const categoryName = category.name.toLowerCase();
-    const foodKeywords = [
-      'restaurant',
-      'coffee',
-      'bar',
-      'pub',
-      'food',
-      'dining',
-      'cafe',
-      'drink',
-    ];
-
-    if (foodKeywords.some((keyword) => categoryName.includes(keyword))) {
-      return true;
-    }
-
-    // Check if parent category is "Food & Drink"
-    if (category.parent) {
-      const parentName = category.parent.name.toLowerCase();
-      if (parentName.includes('food') || parentName.includes('drink')) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /**
-   * Check if a category is an accommodation category
-   * Categories: Hotel, Hostel, Airbnb, Resort, Motel, Bed & Breakfast
-   */
-  private async isAccommodationCategory(categoryId: number): Promise<boolean> {
-    const category = await this.placeRepository.manager.findOne(Category, {
-      where: { id: categoryId },
-      relations: ['parent'],
-    });
-
-    if (!category) return false;
-
-    // Check if category name contains accommodation-related keywords
-    const categoryName = category.name.toLowerCase();
-    const accommodationKeywords = [
-      'hotel',
-      'hostel',
-      'airbnb',
-      'resort',
-      'motel',
-      'bed',
-      'breakfast',
-      'accommodation',
-      'lodging',
-      'inn',
-      'guesthouse',
-    ];
-
-    if (
-      accommodationKeywords.some((keyword) => categoryName.includes(keyword))
-    ) {
-      return true;
-    }
-
-    // Check if parent category is "Accommodation"
-    if (category.parent) {
-      const parentName = category.parent.name.toLowerCase();
-      if (parentName.includes('accommodation') || parentName.includes('stay')) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }

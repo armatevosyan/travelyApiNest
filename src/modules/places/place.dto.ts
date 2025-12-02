@@ -260,6 +260,16 @@ export class CreatePlaceDto {
     checkInTime?: string; // '14:00'
     checkOutTime?: string; // '11:00'
   };
+
+  // Shopping-specific data (optional, only for shopping category)
+  @IsOptional()
+  shoppingData?: {
+    productCategories?: string[]; // e.g., ["Men's Clothing", "Groceries", "Electronics"]
+    brandsCarried?: string[]; // e.g., ["Nike", "Adidas", "Apple"]
+    onlineStoreUrl?: string;
+    returnPolicy?: string;
+    bookingUrl?: string; // For vehicle rentals or reservations
+  };
 }
 
 export class UpdatePlaceDto {
@@ -515,6 +525,16 @@ export class UpdatePlaceDto {
     bookingUrl?: string;
     checkInTime?: string; // '14:00'
     checkOutTime?: string; // '11:00'
+  };
+
+  // Shopping-specific data (optional, only for shopping category)
+  @IsOptional()
+  shoppingData?: {
+    productCategories?: string[]; // e.g., ["Men's Clothing", "Groceries", "Electronics"]
+    brandsCarried?: string[]; // e.g., ["Nike", "Adidas", "Apple"]
+    onlineStoreUrl?: string;
+    returnPolicy?: string;
+    bookingUrl?: string; // For vehicle rentals or reservations
   };
 }
 
