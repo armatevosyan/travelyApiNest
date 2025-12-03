@@ -270,6 +270,22 @@ export class CreatePlaceDto {
     returnPolicy?: string;
     bookingUrl?: string; // For vehicle rentals or reservations
   };
+
+  // Transport-specific data (optional, only for transport category)
+  @IsOptional()
+  transportData?: {
+    operator?: string; // e.g., "Amtrak", "Greyhound"
+    transportLines?: string[]; // e.g., ["Red Line", "Route 5B"]
+    destinations?: string[]; // Array of major destinations served
+    vehicleTypes?: string[]; // For Rentals: e.g., ["Sedan", "Mountain Bike", "Van"]
+    rentalOptions?: {
+      perHour?: number;
+      perDay?: number;
+      perWeek?: number;
+      perMonth?: number;
+    };
+    bookingUrl?: string; // For vehicle rentals or reservations
+  };
 }
 
 export class UpdatePlaceDto {
@@ -534,6 +550,22 @@ export class UpdatePlaceDto {
     brandsCarried?: string[]; // e.g., ["Nike", "Adidas", "Apple"]
     onlineStoreUrl?: string;
     returnPolicy?: string;
+    bookingUrl?: string; // For vehicle rentals or reservations
+  };
+
+  // Transport-specific data (optional, only for transport category)
+  @IsOptional()
+  transportData?: {
+    operator?: string; // e.g., "Amtrak", "Greyhound"
+    transportLines?: string[]; // e.g., ["Red Line", "Route 5B"]
+    destinations?: string[]; // Array of major destinations served
+    vehicleTypes?: string[]; // For Rentals: e.g., ["Sedan", "Mountain Bike", "Van"]
+    rentalOptions?: {
+      perHour?: number;
+      perDay?: number;
+      perWeek?: number;
+      perMonth?: number;
+    };
     bookingUrl?: string; // For vehicle rentals or reservations
   };
 }

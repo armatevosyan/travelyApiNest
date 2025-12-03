@@ -20,6 +20,7 @@ import { Facility } from '@/modules/facilities/facility.entity';
 import { Restaurant } from '@/modules/restaurants/restaurant.entity';
 import { Accommodation } from '@/modules/accommodations/accommodation.entity';
 import { Shopping } from '@/modules/shopping/shopping.entity';
+import { Transport } from '@/modules/transport/transport.entity';
 
 @Entity('places')
 @Index(['latitude', 'longitude'])
@@ -167,6 +168,11 @@ export class Place {
     nullable: true,
   })
   shopping?: Shopping | null;
+
+  @OneToOne(() => Transport, (transport) => transport.place, {
+    nullable: true,
+  })
+  transport?: Transport | null;
 
   // Pricing
   @Column({ type: 'varchar', length: 20, nullable: true })

@@ -27,6 +27,7 @@ import { FacilityModule } from '@/modules/facilities/facility.module';
 import { RestaurantModule } from '@/modules/restaurants/restaurant.module';
 import { AccommodationModule } from '@/modules/accommodations/accommodation.module';
 import { ShoppingModule } from '@/modules/shopping/shopping.module';
+import { TransportModule } from '@/modules/transport/transport.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -67,6 +68,7 @@ import emailConfig from 'config/email.config';
     RestaurantModule,
     AccommodationModule,
     ShoppingModule,
+    TransportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

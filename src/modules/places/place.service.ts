@@ -21,6 +21,7 @@ import { Facility } from '@/modules/facilities/facility.entity';
 import { RestaurantService } from '@/modules/restaurants/restaurant.service';
 import { AccommodationService } from '@/modules/accommodations/accommodation.service';
 import { ShoppingService } from '@/modules/shopping/shopping.service';
+import { TransportService } from '@/modules/transport/transport.service';
 
 @Injectable()
 export class PlaceService {
@@ -35,6 +36,7 @@ export class PlaceService {
     private readonly restaurantService: RestaurantService,
     private readonly accommodationService: AccommodationService,
     private readonly shoppingService: ShoppingService,
+    private readonly transportService: TransportService,
   ) {}
 
   private async filterRelationFields<T extends Place>(place: T): Promise<T> {
@@ -135,6 +137,8 @@ export class PlaceService {
       accommodation: accommodationData || null,
       // Shopping data loaded via relation (if exists)
       shopping: place.shopping || null,
+      // Transport data loaded via relation (if exists)
+      transport: place.transport || null,
     };
   }
 
@@ -173,6 +177,7 @@ export class PlaceService {
       restaurantData,
       accommodationData,
       shoppingData,
+      transportData,
       ...placeData
     } = data;
     if (tagIds && tagIds.length > 0) {
@@ -265,6 +270,22 @@ export class PlaceService {
       }
     }
 
+    // Create transport record if category is transport related and transportData is provided
+    if (
+      transportData &&
+      (await this.transportService.isTransportCategory(savedPlace.categoryId))
+    ) {
+      try {
+        await this.transportService.create({
+          placeId: savedPlace.id,
+          ...transportData,
+        });
+      } catch (error) {
+        // Log error but don't fail place creation
+        console.error('Failed to create transport record:', error);
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
       relations: [
@@ -280,6 +301,7 @@ export class PlaceService {
         'restaurant.dishImages',
         'accommodation',
         'shopping',
+        'transport',
       ],
     });
 
@@ -318,7 +340,8 @@ export class PlaceService {
       .leftJoinAndSelect('restaurant.menuImages', 'restaurantMenuImages')
       .leftJoinAndSelect('restaurant.dishImages', 'restaurantDishImages')
       .leftJoinAndSelect('place.accommodation', 'accommodation')
-      .leftJoinAndSelect('place.shopping', 'shopping');
+      .leftJoinAndSelect('place.shopping', 'shopping')
+      .leftJoinAndSelect('place.transport', 'transport');
 
     // Apply filters
     if (categoryId) {
@@ -400,6 +423,7 @@ export class PlaceService {
         'restaurant.dishImages',
         'accommodation',
         'shopping',
+        'transport',
       ],
     });
 
@@ -429,6 +453,7 @@ export class PlaceService {
         'restaurant.dishImages',
         'accommodation',
         'shopping',
+        'transport',
       ],
     });
 
@@ -462,6 +487,7 @@ export class PlaceService {
         'restaurant.dishImages',
         'accommodation',
         'shopping',
+        'transport',
       ],
     });
 
@@ -512,6 +538,7 @@ export class PlaceService {
       restaurantData,
       accommodationData,
       shoppingData,
+      transportData,
       ...placeUpdateData
     } = updatePlaceDto;
 
@@ -579,7 +606,7 @@ export class PlaceService {
     // Update restaurant data if provided and place is a food category
     if (
       restaurantData &&
-      (await this.restaurantService.isFoodCategory(place.categoryId))
+      (await this.restaurantService.isFoodCategory(place.category.id))
     ) {
       try {
         // Try to update existing restaurant
@@ -605,7 +632,7 @@ export class PlaceService {
     if (
       accommodationData &&
       (await this.accommodationService.isAccommodationCategory(
-        place.categoryId,
+        place.category.id,
       ))
     ) {
       try {
@@ -637,7 +664,7 @@ export class PlaceService {
     // Update shopping data if provided and place is a shopping category
     if (
       shoppingData &&
-      (await this.shoppingService.isShoppingCategory(place.categoryId))
+      (await this.shoppingService.isShoppingCategory(place.category.id))
     ) {
       try {
         // Try to update existing shopping
@@ -659,6 +686,31 @@ export class PlaceService {
       }
     }
 
+    // Update transport data if provided and place is a transport category
+    if (
+      transportData &&
+      (await this.transportService.isTransportCategory(place.category.id))
+    ) {
+      try {
+        // Try to update existing transport
+        await this.transportService.updateByPlaceId(place.id, transportData);
+      } catch (error) {
+        // If transport doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await this.transportService.create({
+              placeId: place.id,
+              ...transportData,
+            });
+          } catch (createError) {
+            console.error('Failed to create transport record:', createError);
+          }
+        } else {
+          console.error('Failed to update transport record:', error);
+        }
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
       relations: [
@@ -674,6 +726,7 @@ export class PlaceService {
         'restaurant.dishImages',
         'accommodation',
         'shopping',
+        'transport',
       ],
     });
 
@@ -719,6 +772,7 @@ export class PlaceService {
         'restaurant.dishImages',
         'accommodation',
         'shopping',
+        'transport',
       ],
       order: { createdAt: 'DESC' },
     });
