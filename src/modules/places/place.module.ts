@@ -10,6 +10,7 @@ import { FacilityModule } from '@/modules/facilities/facility.module';
 import { RestaurantModule } from '@/modules/restaurants/restaurant.module';
 import { AccommodationModule } from '@/modules/accommodations/accommodation.module';
 import { ShoppingModule } from '@/modules/shopping/shopping.module';
+import { TransportModule } from '@/modules/transport/transport.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ShoppingModule } from '@/modules/shopping/shopping.module';
     RestaurantModule,
     AccommodationModule,
     ShoppingModule,
+    TransportModule,
   ],
   providers: [PlaceService],
   controllers: [PlaceController],
