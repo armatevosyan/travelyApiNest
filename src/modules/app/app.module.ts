@@ -29,6 +29,7 @@ import { AccommodationModule } from '@/modules/accommodations/accommodation.modu
 import { ShoppingModule } from '@/modules/shopping/shopping.module';
 import { TransportModule } from '@/modules/transport/transport.module';
 import { HealthWellnessModule } from '@/modules/health-wellness/health-wellness.module';
+import { NatureOutdoorsModule } from '@/modules/nature-outdoors/nature-outdoors.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -71,6 +72,7 @@ import emailConfig from 'config/email.config';
     ShoppingModule,
     TransportModule,
     HealthWellnessModule,
+    NatureOutdoorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
