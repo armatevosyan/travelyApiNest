@@ -28,6 +28,7 @@ import { RestaurantModule } from '@/modules/restaurants/restaurant.module';
 import { AccommodationModule } from '@/modules/accommodations/accommodation.module';
 import { ShoppingModule } from '@/modules/shopping/shopping.module';
 import { TransportModule } from '@/modules/transport/transport.module';
+import { HealthWellnessModule } from '@/modules/health-wellness/health-wellness.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -69,6 +70,7 @@ import emailConfig from 'config/email.config';
     AccommodationModule,
     ShoppingModule,
     TransportModule,
+    HealthWellnessModule,
   ],
   controllers: [AppController],
   providers: [AppService],
