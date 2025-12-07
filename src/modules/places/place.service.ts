@@ -22,6 +22,8 @@ import { RestaurantService } from '@/modules/restaurants/restaurant.service';
 import { AccommodationService } from '@/modules/accommodations/accommodation.service';
 import { ShoppingService } from '@/modules/shopping/shopping.service';
 import { TransportService } from '@/modules/transport/transport.service';
+import { HealthWellnessService } from '@/modules/health-wellness/health-wellness.service';
+import { NatureOutdoorsService } from '@/modules/nature-outdoors/nature-outdoors.service';
 
 @Injectable()
 export class PlaceService {
@@ -37,6 +39,8 @@ export class PlaceService {
     private readonly accommodationService: AccommodationService,
     private readonly shoppingService: ShoppingService,
     private readonly transportService: TransportService,
+    private readonly healthWellnessService: HealthWellnessService,
+    private readonly natureOutdoorsService: NatureOutdoorsService,
   ) {}
 
   private async filterRelationFields<T extends Place>(place: T): Promise<T> {
@@ -139,6 +143,10 @@ export class PlaceService {
       shopping: place.shopping || null,
       // Transport data loaded via relation (if exists)
       transport: place.transport || null,
+      // Health & Wellness data loaded via relation (if exists)
+      healthWellness: place.healthWellness || null,
+      // Nature & Outdoors data loaded via relation (if exists)
+      natureOutdoors: place.natureOutdoors || null,
     };
   }
 
@@ -178,6 +186,8 @@ export class PlaceService {
       accommodationData,
       shoppingData,
       transportData,
+      healthWellnessData,
+      natureOutdoorsData,
       ...placeData
     } = data;
     if (tagIds && tagIds.length > 0) {
@@ -286,6 +296,42 @@ export class PlaceService {
       }
     }
 
+    // Create health & wellness record if category is health & wellness related and healthWellnessData is provided
+    if (
+      healthWellnessData &&
+      (await this.healthWellnessService.isHealthWellnessCategory(
+        savedPlace.categoryId,
+      ))
+    ) {
+      try {
+        await this.healthWellnessService.create({
+          placeId: savedPlace.id,
+          ...healthWellnessData,
+        });
+      } catch (error) {
+        // Log error but don't fail place creation
+        console.error('Failed to create health & wellness record:', error);
+      }
+    }
+
+    // Create nature & outdoors record if category is nature & outdoors related and natureOutdoorsData is provided
+    if (
+      natureOutdoorsData &&
+      (await this.natureOutdoorsService.isNatureOutdoorsCategory(
+        savedPlace.categoryId,
+      ))
+    ) {
+      try {
+        await this.natureOutdoorsService.create({
+          placeId: savedPlace.id,
+          ...natureOutdoorsData,
+        });
+      } catch (error) {
+        // Log error but don't fail place creation
+        console.error('Failed to create nature & outdoors record:', error);
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
       relations: [
@@ -302,6 +348,8 @@ export class PlaceService {
         'accommodation',
         'shopping',
         'transport',
+        'healthWellness',
+        'natureOutdoors',
       ],
     });
 
@@ -341,7 +389,9 @@ export class PlaceService {
       .leftJoinAndSelect('restaurant.dishImages', 'restaurantDishImages')
       .leftJoinAndSelect('place.accommodation', 'accommodation')
       .leftJoinAndSelect('place.shopping', 'shopping')
-      .leftJoinAndSelect('place.transport', 'transport');
+      .leftJoinAndSelect('place.transport', 'transport')
+      .leftJoinAndSelect('place.healthWellness', 'healthWellness')
+      .leftJoinAndSelect('place.natureOutdoors', 'natureOutdoors');
 
     // Apply filters
     if (categoryId) {
@@ -424,6 +474,8 @@ export class PlaceService {
         'accommodation',
         'shopping',
         'transport',
+        'healthWellness',
+        'natureOutdoors',
       ],
     });
 
@@ -454,6 +506,8 @@ export class PlaceService {
         'accommodation',
         'shopping',
         'transport',
+        'healthWellness',
+        'natureOutdoors',
       ],
     });
 
@@ -488,6 +542,8 @@ export class PlaceService {
         'accommodation',
         'shopping',
         'transport',
+        'healthWellness',
+        'natureOutdoors',
       ],
     });
 
@@ -539,6 +595,8 @@ export class PlaceService {
       accommodationData,
       shoppingData,
       transportData,
+      healthWellnessData,
+      natureOutdoorsData,
       ...placeUpdateData
     } = updatePlaceDto;
 
@@ -711,6 +769,72 @@ export class PlaceService {
       }
     }
 
+    // Update health & wellness data if provided and place is a health & wellness category
+    if (
+      healthWellnessData &&
+      (await this.healthWellnessService.isHealthWellnessCategory(
+        place.category.id,
+      ))
+    ) {
+      try {
+        // Try to update existing health & wellness
+        await this.healthWellnessService.updateByPlaceId(
+          place.id,
+          healthWellnessData,
+        );
+      } catch (error) {
+        // If health & wellness doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await this.healthWellnessService.create({
+              placeId: place.id,
+              ...healthWellnessData,
+            });
+          } catch (createError) {
+            console.error(
+              'Failed to create health & wellness record:',
+              createError,
+            );
+          }
+        } else {
+          console.error('Failed to update health & wellness record:', error);
+        }
+      }
+    }
+
+    // Update nature & outdoors data if provided and place is a nature & outdoors category
+    if (
+      natureOutdoorsData &&
+      (await this.natureOutdoorsService.isNatureOutdoorsCategory(
+        place.category.id,
+      ))
+    ) {
+      try {
+        // Try to update existing nature & outdoors
+        await this.natureOutdoorsService.updateByPlaceId(
+          place.id,
+          natureOutdoorsData,
+        );
+      } catch (error) {
+        // If nature & outdoors doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await this.natureOutdoorsService.create({
+              placeId: place.id,
+              ...natureOutdoorsData,
+            });
+          } catch (createError) {
+            console.error(
+              'Failed to create nature & outdoors record:',
+              createError,
+            );
+          }
+        } else {
+          console.error('Failed to update nature & outdoors record:', error);
+        }
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
       relations: [
@@ -727,6 +851,8 @@ export class PlaceService {
         'accommodation',
         'shopping',
         'transport',
+        'healthWellness',
+        'natureOutdoors',
       ],
     });
 
@@ -773,6 +899,8 @@ export class PlaceService {
         'accommodation',
         'shopping',
         'transport',
+        'healthWellness',
+        'natureOutdoors',
       ],
       order: { createdAt: 'DESC' },
     });
@@ -795,6 +923,10 @@ export class PlaceService {
         'restaurant.menuImages',
         'restaurant.dishImages',
         'accommodation',
+        'shopping',
+        'transport',
+        'healthWellness',
+        'natureOutdoors',
       ],
       order: { createdAt: 'DESC' },
     });

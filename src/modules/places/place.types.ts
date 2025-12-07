@@ -119,6 +119,76 @@ export interface CreatePlaceData
     };
     bookingUrl?: string; // For vehicle rentals or reservations
   };
+
+  // HEALTH & WELLNESS-SPECIFIC FIELDS (optional, only for health & wellness category)
+  healthWellnessData?: {
+    servicesOffered?: string[]; // e.g., ["Emergency Care", "Prescriptions", "Deep Tissue Massage"]
+    appointmentBookingUrl?: string;
+    insuranceAccepted?:
+      | boolean
+      | string[]
+      | {
+          accepted: boolean;
+          providers?: string[];
+        };
+    practitioners?: {
+      name: string;
+      specialty?: string;
+      qualifications?: string;
+      yearsOfExperience?: number;
+    }[];
+    membershipOptions?: {
+      monthly?: number;
+      yearly?: number;
+      weekly?: number;
+      dayPass?: number;
+      trialPeriod?: number;
+      features?: string[];
+    };
+    bookingUrl?: string;
+  };
+
+  // NATURE & OUTDOORS-SPECIFIC FIELDS (optional, only for nature & outdoors category)
+  natureOutdoorsData?: {
+    activitiesOffered?: string[]; // e.g., ["Hiking", "Camping", "Fishing", "Rock Climbing"]
+    equipmentRental?: {
+      available: boolean;
+      items?: {
+        name: string;
+        price?: number;
+        priceUnit?: string; // "per_hour", "per_day", "per_week"
+      }[];
+    };
+    guidedTours?: {
+      available: boolean;
+      tours?: {
+        name: string;
+        duration?: string; // e.g., "2 hours", "Half day", "Full day"
+        price?: number;
+        description?: string;
+      }[];
+    };
+    trailInformation?: {
+      difficulty?: string[]; // e.g., ["Easy", "Moderate", "Difficult"]
+      totalLength?: number; // in kilometers or miles
+      elevationGain?: number;
+      estimatedTime?: string;
+    };
+    permitsRequired?: {
+      required: boolean;
+      types?: string[]; // e.g., ["Camping Permit", "Fishing License", "Park Entry"]
+      whereToObtain?: string;
+      cost?: number;
+    };
+    bestSeason?: string[]; // e.g., ["Spring", "Summer", "Fall"]
+    campingOptions?: {
+      available: boolean;
+      sites?: number;
+      facilities?: string[]; // e.g., ["Restrooms", "Fire Pits", "Picnic Tables"]
+      reservationRequired?: boolean;
+    };
+    bookingUrl?: string;
+  };
 }
 
 /**

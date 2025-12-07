@@ -11,6 +11,8 @@ import { RestaurantModule } from '@/modules/restaurants/restaurant.module';
 import { AccommodationModule } from '@/modules/accommodations/accommodation.module';
 import { ShoppingModule } from '@/modules/shopping/shopping.module';
 import { TransportModule } from '@/modules/transport/transport.module';
+import { HealthWellnessModule } from '@/modules/health-wellness/health-wellness.module';
+import { NatureOutdoorsModule } from '@/modules/nature-outdoors/nature-outdoors.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { TransportModule } from '@/modules/transport/transport.module';
     AccommodationModule,
     ShoppingModule,
     TransportModule,
+    HealthWellnessModule,
+    NatureOutdoorsModule,
   ],
   providers: [PlaceService],
   controllers: [PlaceController],
