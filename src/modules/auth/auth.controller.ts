@@ -98,7 +98,7 @@ export class AuthController {
       );
     }
 
-    const token = this.authService.accessToken(user.id, user.role);
+    const token = this.authService.accessToken(String(user.id), user.role);
 
     return {
       user: this.userService.runUserData(user),
@@ -137,7 +137,7 @@ export class AuthController {
       verifyCode: null,
       otpExpiration: null,
     });
-    const token = this.authService.accessToken(user.id, user.role);
+    const token = this.authService.accessToken(String(user.id), user.role);
 
     await this.authService.sendWelcomeEmail(data.email, user.fullName);
 

@@ -35,9 +35,13 @@ export class AuthService {
    * Generate a JWT access token
    */
 
-  accessToken(userId: string, role: Role, expiresIn = '30d'): string {
+  accessToken(
+    userId: string | number,
+    role: Role,
+    expiresIn: JwtSignOptions['expiresIn'] = 60 * 60 * 24 * 30,
+  ): string {
     const payload: { sub: string; role: string } = {
-      sub: userId,
+      sub: String(userId),
       role: role.name,
     };
     const options: JwtSignOptions = { expiresIn };
