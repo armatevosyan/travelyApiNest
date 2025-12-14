@@ -1,0 +1,11 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home2/travely/repositories/travelyApiNest
+    - echo "🚀 Starting Travely API deployment"
+    - /bin/rsync -a --delete ./ $DEPLOYPATH/
+    - cd $DEPLOYPATH
+    - /bin/npm ci --only=production
+    - mkdir -p tmp
+    - touch tmp/restart.txt
+    - echo "✅ Deployment complete!"

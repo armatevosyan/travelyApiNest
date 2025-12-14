@@ -33,7 +33,7 @@ export class UserController {
   ) {}
 
   @Get('me')
-  @Roles(ERoles.USER, ERoles.ADMIN, ERoles.SUPER_ADMIN) // Any authenticated user
+  @Roles(ERoles.USER, ERoles.ADMIN, ERoles.SUPER_ADMIN)
   me(@User() user: IUser, @User('role') role: ERoles) {
     console.log(role, 'role');
     return this.userService.runUserData(user);
