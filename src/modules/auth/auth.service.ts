@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
@@ -34,11 +34,14 @@ export class AuthService {
   /**
    * Generate a JWT access token
    */
-  accessToken(userId: number, role: Role, expiresIn = '30d'): string {
-    const payload = { sub: userId, role: role.name };
-    return this.jwtService.sign(payload, {
-      expiresIn,
-    });
+
+  accessToken(userId: string, role: Role, expiresIn = '30d'): string {
+    const payload: { sub: string; role: string } = {
+      sub: userId,
+      role: role.name,
+    };
+    const options: JwtSignOptions = { expiresIn };
+    return this.jwtService.sign(payload, options);
   }
 
   /**
