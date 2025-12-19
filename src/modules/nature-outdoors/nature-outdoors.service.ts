@@ -70,57 +70,21 @@ export class NatureOutdoorsService {
       );
     }
 
-    // Handle nested objects merge if provided
-    if (updateNatureOutdoorsDto.equipmentRental !== undefined) {
-      const existingEquipmentRental = natureOutdoors.equipmentRental || {};
-      natureOutdoors.equipmentRental = {
-        ...existingEquipmentRental,
-        ...updateNatureOutdoorsDto.equipmentRental,
-      };
+    // Update fields (only if they are provided in the DTO)
+    if (updateNatureOutdoorsDto.entryFee !== undefined) {
+      natureOutdoors.entryFee = updateNatureOutdoorsDto.entryFee;
     }
-
-    if (updateNatureOutdoorsDto.guidedTours !== undefined) {
-      const existingGuidedTours = natureOutdoors.guidedTours || {};
-      natureOutdoors.guidedTours = {
-        ...existingGuidedTours,
-        ...updateNatureOutdoorsDto.guidedTours,
-      };
+    if (updateNatureOutdoorsDto.keyActivities !== undefined) {
+      natureOutdoors.keyActivities = updateNatureOutdoorsDto.keyActivities;
     }
-
-    if (updateNatureOutdoorsDto.trailInformation !== undefined) {
-      const existingTrailInformation = natureOutdoors.trailInformation || {};
-      natureOutdoors.trailInformation = {
-        ...existingTrailInformation,
-        ...updateNatureOutdoorsDto.trailInformation,
-      };
+    if (updateNatureOutdoorsDto.rules !== undefined) {
+      natureOutdoors.rules = updateNatureOutdoorsDto.rules;
     }
-
-    if (updateNatureOutdoorsDto.permitsRequired !== undefined) {
-      const existingPermitsRequired = natureOutdoors.permitsRequired || {};
-      natureOutdoors.permitsRequired = {
-        ...existingPermitsRequired,
-        ...updateNatureOutdoorsDto.permitsRequired,
-      };
+    if (updateNatureOutdoorsDto.bestTimeToVisit !== undefined) {
+      natureOutdoors.bestTimeToVisit = updateNatureOutdoorsDto.bestTimeToVisit;
     }
-
-    if (updateNatureOutdoorsDto.campingOptions !== undefined) {
-      const existingCampingOptions = natureOutdoors.campingOptions || {};
-      natureOutdoors.campingOptions = {
-        ...existingCampingOptions,
-        ...updateNatureOutdoorsDto.campingOptions,
-      };
-    }
-
-    // Update other fields (only if they are provided in the DTO)
-    if (updateNatureOutdoorsDto.activitiesOffered !== undefined) {
-      natureOutdoors.activitiesOffered =
-        updateNatureOutdoorsDto.activitiesOffered;
-    }
-    if (updateNatureOutdoorsDto.bestSeason !== undefined) {
-      natureOutdoors.bestSeason = updateNatureOutdoorsDto.bestSeason;
-    }
-    if (updateNatureOutdoorsDto.bookingUrl !== undefined) {
-      natureOutdoors.bookingUrl = updateNatureOutdoorsDto.bookingUrl;
+    if (updateNatureOutdoorsDto.keyExhibits !== undefined) {
+      natureOutdoors.keyExhibits = updateNatureOutdoorsDto.keyExhibits;
     }
 
     return await this.natureOutdoorsRepository.save(natureOutdoors);
@@ -154,9 +118,12 @@ export class NatureOutdoorsService {
     const categoryName = category.name.toLowerCase();
     const natureOutdoorsKeywords = [
       'park',
-      'forest',
       'beach',
       'mountain',
+      'lake',
+      'zoo',
+      'botanical garden',
+      'forest',
       'trail',
       'campground',
       'camping',
@@ -168,7 +135,6 @@ export class NatureOutdoorsService {
       'sanctuary',
       'national park',
       'state park',
-      'lake',
       'river',
       'waterfall',
       'canyon',
@@ -176,16 +142,11 @@ export class NatureOutdoorsService {
       'cave',
       'garden',
       'botanical',
-      'zoo',
       'aquarium',
     ];
 
-    if (
-      natureOutdoorsKeywords.some((keyword) => categoryName.includes(keyword))
-    ) {
-      return true;
-    }
-
-    return false;
+    return natureOutdoorsKeywords.some((keyword) =>
+      categoryName.includes(keyword),
+    );
   }
 }
