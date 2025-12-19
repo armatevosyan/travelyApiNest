@@ -10,6 +10,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
+import { FileEntity } from '@/modules/files/entities/file.entity';
 
 export enum LocationType {
   COUNTRY = 'country',
@@ -45,6 +46,13 @@ export class Location {
 
   @OneToMany(() => Location, (location) => location.parent)
   children: Location[];
+
+  @Column({ type: 'int', nullable: true })
+  imageId: number | null;
+
+  @ManyToOne(() => FileEntity, { nullable: true })
+  @JoinColumn({ name: 'imageId' })
+  image: FileEntity | null;
 
   @CreateDateColumn()
   createdAt: Date;

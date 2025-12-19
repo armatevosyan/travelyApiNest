@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import { Location, LocationType } from '@/modules/locations/location.entity';
+import { FileEntity } from '@/modules/files/entities/file.entity';
 import { Seeder } from 'typeorm-extension';
 
 // Countries
@@ -323,29 +324,138 @@ const citiesData: Record<string, Record<string, string[]>> = {
   },
 };
 
+// Country name to ISO 3166-1 alpha-2 code mapping for flag images
+const countryCodeMap: Record<string, string> = {
+  Armenia: 'am',
+  'United States': 'us',
+  'United Kingdom': 'gb',
+  France: 'fr',
+  Germany: 'de',
+  Italy: 'it',
+  Spain: 'es',
+  Russia: 'ru',
+  Georgia: 'ge',
+  Turkey: 'tr',
+  Greece: 'gr',
+  Netherlands: 'nl',
+  Belgium: 'be',
+  Switzerland: 'ch',
+  Austria: 'at',
+  Poland: 'pl',
+  'Czech Republic': 'cz',
+  Portugal: 'pt',
+  Ireland: 'ie',
+  Sweden: 'se',
+  Norway: 'no',
+  Denmark: 'dk',
+  Finland: 'fi',
+  Japan: 'jp',
+  China: 'cn',
+  India: 'in',
+  'United Arab Emirates': 'ae',
+  'Saudi Arabia': 'sa',
+  Israel: 'il',
+  Canada: 'ca',
+  Mexico: 'mx',
+  Brazil: 'br',
+  Argentina: 'ar',
+  Australia: 'au',
+  'New Zealand': 'nz',
+  'South Korea': 'kr',
+  Thailand: 'th',
+  Singapore: 'sg',
+  Malaysia: 'my',
+  Indonesia: 'id',
+  Philippines: 'ph',
+  Vietnam: 'vn',
+  Egypt: 'eg',
+  'South Africa': 'za',
+};
+
+// Default country images - using flagcdn.com for country flags
+// In production, these should be replaced with actual uploaded images
+const getCountryImageUrl = (countryName: string): string => {
+  const countryCode = countryCodeMap[countryName] || 'xx';
+  return `https://flagcdn.com/w320/${countryCode}.png`;
+};
+
 export default class LocationSeeder implements Seeder {
   async run(dataSource: DataSource): Promise<void> {
     const locationRepo = dataSource.getRepository(Location);
+    const fileRepo = dataSource.getRepository(FileEntity);
     const countryMap = new Map<string, number>();
     const stateMap = new Map<string, number>();
 
-    // Step 1: Create all countries
+    // Helper function to create or get a file for a country
+    const getOrCreateCountryImage = async (
+      countryName: string,
+    ): Promise<number | null> => {
+      try {
+        // Check if a file already exists for this country
+        const existingFile = await fileRepo.findOne({
+          where: {
+            fileName: `country-${countryName.toLowerCase().replace(/\s+/g, '-')}.png`,
+          },
+        });
+
+        if (existingFile) {
+          return existingFile.id;
+        }
+
+        // Create a new file entity for the country
+        const imageUrl = getCountryImageUrl(countryName);
+        const file = fileRepo.create({
+          fileName: `country-${countryName.toLowerCase().replace(/\s+/g, '-')}.png`,
+          mimeType: 'image/png',
+          size: 0, // Placeholder size
+          bucketPath: `countries/${countryName.toLowerCase().replace(/\s+/g, '-')}.png`,
+          url: imageUrl,
+          userId: null,
+        });
+
+        const savedFile = await fileRepo.save(file);
+        return savedFile.id;
+      } catch (error) {
+        console.warn(`⚠️  Could not create image for ${countryName}:`, error);
+        return null;
+      }
+    };
+
+    // Step 1: Create all countries with images
     console.log('🌍 Creating countries...');
     for (const countryData of countries) {
       const existing = await locationRepo.findOne({
         where: { name: countryData.name, type: LocationType.COUNTRY },
+        relations: ['image'],
       });
 
       if (!existing) {
+        // Create image for country
+        const imageId = await getOrCreateCountryImage(countryData.name);
+
         const country = locationRepo.create({
           name: countryData.name,
           type: LocationType.COUNTRY,
           parentId: null,
+          imageId: imageId,
         });
         const saved = await locationRepo.save(country);
         countryMap.set(countryData.name, saved.id);
-        console.log(`✅ Created country: ${countryData.name}`);
+        console.log(
+          `✅ Created country: ${countryData.name}${imageId ? ' with image' : ''}`,
+        );
       } else {
+        // Update existing country with image if it doesn't have one
+        if (!existing.imageId) {
+          const imageId = await getOrCreateCountryImage(countryData.name);
+          if (imageId) {
+            existing.imageId = imageId;
+            await locationRepo.save(existing);
+            console.log(
+              `✅ Added image to existing country: ${countryData.name}`,
+            );
+          }
+        }
         countryMap.set(countryData.name, existing.id);
         console.log(`⏭️  Country already exists: ${countryData.name}`);
       }

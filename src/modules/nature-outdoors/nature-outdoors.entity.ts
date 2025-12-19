@@ -23,67 +23,25 @@ export class NatureOutdoors {
   @JoinColumn({ name: 'placeId' })
   place: Place;
 
-  // Activities Offered - An array of key activities
+  // Entry Fee - e.g., "Free", "$10 per person"
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  entryFee: string | null;
+
+  // Key Activities - An array of things to do
   @Column({ type: 'simple-array', nullable: true })
-  activitiesOffered: string[] | null; // e.g., ["Hiking", "Camping", "Fishing", "Rock Climbing", "Bird Watching", "Kayaking"]
+  keyActivities: string[] | null; // e.g., ["Hiking", "Swimming", "Picnicking"]
 
-  // Equipment Rental - Available equipment for rent
-  @Column({ type: 'json', nullable: true })
-  equipmentRental: {
-    available: boolean;
-    items?: {
-      name: string;
-      price?: number;
-      priceUnit?: string; // "per_hour", "per_day", "per_week"
-    }[];
-  } | null;
-
-  // Guided Tours - Information about guided tours
-  @Column({ type: 'json', nullable: true })
-  guidedTours: {
-    available: boolean;
-    tours?: {
-      name: string;
-      duration?: string; // e.g., "2 hours", "Half day", "Full day"
-      price?: number;
-      description?: string;
-    }[];
-  } | null;
-
-  // Trail Information - Details about trails
-  @Column({ type: 'json', nullable: true })
-  trailInformation: {
-    difficulty?: string[]; // e.g., ["Easy", "Moderate", "Difficult"]
-    totalLength?: number; // in kilometers or miles
-    elevationGain?: number;
-    estimatedTime?: string;
-  } | null;
-
-  // Permits Required - Information about permits
-  @Column({ type: 'json', nullable: true })
-  permitsRequired: {
-    required: boolean;
-    types?: string[]; // e.g., ["Camping Permit", "Fishing License", "Park Entry"]
-    whereToObtain?: string;
-    cost?: number;
-  } | null;
-
-  // Best Season - Best time to visit
+  // Rules - A short list of important rules
   @Column({ type: 'simple-array', nullable: true })
-  bestSeason: string[] | null; // e.g., ["Spring", "Summer", "Fall"]
+  rules: string[] | null; // e.g., ["Pets on leash", "No open fires"]
 
-  // Camping Options - Camping details
-  @Column({ type: 'json', nullable: true })
-  campingOptions: {
-    available: boolean;
-    sites?: number;
-    facilities?: string[]; // e.g., ["Restrooms", "Fire Pits", "Picnic Tables", "Water Access"]
-    reservationRequired?: boolean;
-  } | null;
-
-  // Booking URL - A link to book/reserve
+  // Best Time to Visit - A text suggestion
   @Column({ type: 'varchar', length: 500, nullable: true })
-  bookingUrl: string | null;
+  bestTimeToVisit: string | null; // e.g., "Spring for blooms", "Sunrise"
+
+  // Key Exhibits - (For Zoos/Gardens) A list of main attractions
+  @Column({ type: 'simple-array', nullable: true })
+  keyExhibits: string[] | null; // e.g., ["Panda Enclosure", "Rose Garden"]
 
   @CreateDateColumn()
   createdAt: Date;

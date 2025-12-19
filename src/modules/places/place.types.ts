@@ -152,44 +152,20 @@ export interface CreatePlaceData
 
   // NATURE & OUTDOORS-SPECIFIC FIELDS (optional, only for nature & outdoors category)
   natureOutdoorsData?: {
-    activitiesOffered?: string[]; // e.g., ["Hiking", "Camping", "Fishing", "Rock Climbing"]
-    equipmentRental?: {
-      available: boolean;
-      items?: {
-        name: string;
-        price?: number;
-        priceUnit?: string; // "per_hour", "per_day", "per_week"
-      }[];
-    };
-    guidedTours?: {
-      available: boolean;
-      tours?: {
-        name: string;
-        duration?: string; // e.g., "2 hours", "Half day", "Full day"
-        price?: number;
-        description?: string;
-      }[];
-    };
-    trailInformation?: {
-      difficulty?: string[]; // e.g., ["Easy", "Moderate", "Difficult"]
-      totalLength?: number; // in kilometers or miles
-      elevationGain?: number;
-      estimatedTime?: string;
-    };
-    permitsRequired?: {
-      required: boolean;
-      types?: string[]; // e.g., ["Camping Permit", "Fishing License", "Park Entry"]
-      whereToObtain?: string;
-      cost?: number;
-    };
-    bestSeason?: string[]; // e.g., ["Spring", "Summer", "Fall"]
-    campingOptions?: {
-      available: boolean;
-      sites?: number;
-      facilities?: string[]; // e.g., ["Restrooms", "Fire Pits", "Picnic Tables"]
-      reservationRequired?: boolean;
-    };
-    bookingUrl?: string;
+    entryFee?: string; // e.g., "Free", "$10 per person"
+    keyActivities?: string[]; // e.g., ["Hiking", "Swimming", "Picnicking"]
+    rules?: string[]; // e.g., ["Pets on leash", "No open fires"]
+    bestTimeToVisit?: string; // e.g., "Spring for blooms", "Sunrise"
+    keyExhibits?: string[]; // e.g., ["Panda Enclosure", "Rose Garden"]
+  };
+
+  // ENTERTAINMENT-SPECIFIC FIELDS (optional, only for entertainment category)
+  entertainmentData?: {
+    eventSchedule?: string; // A URL or structured data for current and upcoming shows/events
+    ticketPrice?: Record<string, any>; // e.g., {"adult": 20, "child": 10}
+    ticketBookingUrl?: string;
+    currentExhibits?: string[]; // For museums, a list of current special exhibits
+    ageRestriction?: string;
   };
 }
 

@@ -23,6 +23,7 @@ import { Shopping } from '@/modules/shopping/shopping.entity';
 import { Transport } from '@/modules/transport/transport.entity';
 import { HealthWellness } from '@/modules/health-wellness/health-wellness.entity';
 import { NatureOutdoors } from '@/modules/nature-outdoors/nature-outdoors.entity';
+import { Entertainment } from '@/modules/entertainment/entertainment.entity';
 
 @Entity('places')
 @Index(['latitude', 'longitude'])
@@ -192,6 +193,11 @@ export class Place {
     nullable: true,
   })
   natureOutdoors?: NatureOutdoors | null;
+
+  @OneToOne(() => Entertainment, (entertainment) => entertainment.place, {
+    nullable: true,
+  })
+  entertainment?: Entertainment | null;
 
   // Pricing
   @Column({ type: 'varchar', length: 20, nullable: true })
