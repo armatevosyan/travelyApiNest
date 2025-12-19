@@ -89,9 +89,16 @@ export class Place {
   @Column()
   categoryId: number;
 
+  @Column({ nullable: true })
+  subcategoryId: number | null;
+
   @ManyToOne(() => Category, { eager: true })
   @JoinColumn({ name: 'categoryId' })
   category: Category;
+
+  @ManyToOne(() => Category, { eager: true, nullable: true })
+  @JoinColumn({ name: 'subcategoryId' })
+  subcategory: Category | null;
 
   @Column()
   userId: number;

@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './category.entity';
+import { Location, LocationType } from '../locations/location.entity';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
@@ -17,10 +18,11 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepo: Repository<Category>,
+    @InjectRepository(Location)
+    private readonly locationRepo: Repository<Location>,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    // Check if category with same name already exists
     const existingCategory = await this.categoryRepo.findOne({
       where: { name: createCategoryDto.name },
     });
@@ -29,7 +31,6 @@ export class CategoryService {
       throw new BadRequestException('Category with this name already exists');
     }
 
-    // If parentId is provided, verify parent exists
     if (createCategoryDto.parentId) {
       const parent = await this.categoryRepo.findOne({
         where: { id: createCategoryDto.parentId },
@@ -62,7 +63,6 @@ export class CategoryService {
       .leftJoinAndSelect('category.parent', 'parent')
       .leftJoinAndSelect('category.children', 'children');
 
-    // Apply filters
     if (search) {
       queryBuilder.andWhere(
         '(category.name ILIKE :search OR category.description ILIKE :search)',
@@ -90,13 +90,11 @@ export class CategoryService {
       queryBuilder.andWhere('category.parentId IS NOT NULL');
     }
 
-    // Apply pagination
     if (page && limit) {
       const skip = (page - 1) * limit;
       queryBuilder.skip(skip).take(limit);
     }
 
-    // Order by sortOrder, then by name
     queryBuilder
       .orderBy('category.sortOrder', 'ASC')
       .addOrderBy('category.name', 'ASC');
@@ -125,7 +123,6 @@ export class CategoryService {
   ): Promise<Category> {
     const category = await this.findOne(id);
 
-    // Check if name is being updated and if it conflicts with existing category
     if (updateCategoryDto.name && updateCategoryDto.name !== category.name) {
       const existingCategory = await this.categoryRepo.findOne({
         where: { name: updateCategoryDto.name },
@@ -136,7 +133,6 @@ export class CategoryService {
       }
     }
 
-    // If parentId is being updated, verify parent exists and prevent circular reference
     if (updateCategoryDto.parentId !== undefined) {
       if (updateCategoryDto.parentId === id) {
         throw new BadRequestException('Category cannot be its own parent');
@@ -151,7 +147,6 @@ export class CategoryService {
           throw new BadRequestException('Parent category not found');
         }
 
-        // Check for circular reference
         if (
           await this.wouldCreateCircularReference(
             id,
@@ -175,7 +170,6 @@ export class CategoryService {
     if (!category) {
       throw new NotFoundException('Category not found');
     }
-    // Check if category has children
     const childrenCount = await this.categoryRepo.count({
       where: { parentId: id },
     });
@@ -196,10 +190,72 @@ export class CategoryService {
     });
   }
 
+  async listLegacy(categoryId?: number | null): Promise<Category[]> {
+    const qb = this.categoryRepo
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.children', 'children')
+      .where('category.isActive = :isActive', { isActive: true });
+
+    if (categoryId === null || categoryId === undefined) {
+      qb.andWhere('category.parentId IS NULL');
+    } else {
+      qb.andWhere('category.parentId = :parentId', { parentId: categoryId });
+    }
+
+    qb.orderBy('category.sortOrder', 'ASC').addOrderBy('category.name', 'ASC');
+
+    const categories = await qb.getMany();
+
+    for (const c of categories) {
+      if (Array.isArray(c.children)) {
+        c.children = c.children
+          .filter((ch) => ch.isActive)
+          .sort((a, b) => {
+            if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+            return a.name.localeCompare(b.name);
+          });
+      }
+    }
+
+    return categories;
+  }
+
   async toggleActive(id: number): Promise<Category> {
     const category = await this.findOne(id);
     category.isActive = !category.isActive;
     return this.categoryRepo.save(category);
+  }
+
+  async getDiscoveryCategories(country?: string): Promise<any[]> {
+    let location: Location | null = null;
+    if (country) {
+      location = await this.locationRepo.findOne({
+        where: {
+          name: country,
+          type: LocationType.COUNTRY,
+        },
+      });
+    }
+
+    const categories = await this.categoryRepo
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.places', 'featuredProducts')
+      .leftJoinAndSelect('featuredProducts.user', 'author')
+      .leftJoinAndSelect('featuredProducts.category', 'placeCategory')
+      .where('category.parentId IS NULL')
+      .andWhere('category.isActive = :isActive', { isActive: true })
+      .andWhere(
+        '(featuredProducts.id IS NULL OR (featuredProducts.countryId = :countryId AND featuredProducts.isActive = :isActive))',
+        {
+          countryId: location?.id || null,
+          isActive: true,
+        },
+      )
+      .orderBy('category.sortOrder', 'ASC')
+      .addOrderBy('category.name', 'ASC')
+      .getMany();
+
+    return categories.slice(0, 10);
   }
 
   private async wouldCreateCircularReference(

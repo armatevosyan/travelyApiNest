@@ -71,6 +71,13 @@ export class PlaceService {
       } as Category;
     }
 
+    if (place.subcategory) {
+      filteredPlace.subcategory = {
+        id: place.subcategory.id,
+        name: place.subcategory.name,
+      } as Category;
+    }
+
     if (place.country) {
       filteredPlace.country = {
         id: place.country.id,
@@ -336,6 +343,7 @@ export class PlaceService {
       where: { id: savedPlace.id },
       relations: [
         'category',
+        'subcategory',
         'user',
         'country',
         'state',
@@ -361,6 +369,7 @@ export class PlaceService {
   ): Promise<{ places: Place[]; total: number }> {
     const {
       categoryId,
+      subcategoryId,
       userId,
       cityId,
       countryId,
@@ -379,6 +388,7 @@ export class PlaceService {
     queryBuilder = queryBuilder
       .leftJoinAndSelect('place.user', 'user')
       .leftJoinAndSelect('place.category', 'category')
+      .leftJoinAndSelect('place.subcategory', 'subcategory')
       .leftJoinAndSelect('place.country', 'country')
       .leftJoinAndSelect('place.state', 'state')
       .leftJoinAndSelect('place.city', 'city')
@@ -398,6 +408,14 @@ export class PlaceService {
       queryBuilder = queryBuilder.andWhere('place.categoryId = :categoryId', {
         categoryId,
       });
+    }
+    if (subcategoryId) {
+      queryBuilder = queryBuilder.andWhere(
+        'place.subcategoryId = :subcategoryId',
+        {
+          subcategoryId,
+        },
+      );
     }
     if (userId) {
       queryBuilder = queryBuilder.andWhere('place.userId = :userId', {
@@ -462,6 +480,7 @@ export class PlaceService {
       where: { id },
       relations: [
         'category',
+        'subcategory',
         'user',
         'country',
         'state',
@@ -494,6 +513,7 @@ export class PlaceService {
       where: { slug },
       relations: [
         'category',
+        'subcategory',
         'user',
         'country',
         'state',
@@ -530,6 +550,7 @@ export class PlaceService {
       where: { id },
       relations: [
         'category',
+        'subcategory',
         'user',
         'country',
         'state',
@@ -839,6 +860,7 @@ export class PlaceService {
       where: { id: updatedPlace.id },
       relations: [
         'category',
+        'subcategory',
         'user',
         'country',
         'state',
@@ -887,6 +909,7 @@ export class PlaceService {
       where: { userId },
       relations: [
         'category',
+        'subcategory',
         'user',
         'country',
         'state',

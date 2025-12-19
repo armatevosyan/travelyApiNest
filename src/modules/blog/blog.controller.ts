@@ -7,6 +7,8 @@ import {
   Patch,
   Post,
   UseGuards,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorators';
@@ -38,6 +40,28 @@ export class BlogController {
     };
   }
 
+  @Get('home')
+  @HttpCode(HttpStatus.OK)
+  async home(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('categoryId') categoryId?: number,
+    @Query('category_id') category_id?: number,
+    @Query('s') s?: string,
+  ) {
+    const result = await this.blogService.home({
+      page: page as any,
+      perPage: (limit as any) ?? (undefined as any),
+      categoryId: (categoryId as any) ?? (category_id as any),
+      keyword: s,
+    });
+
+    return {
+      message: this.i18n.translate('t.BLOG_HOME_RETRIEVED_SUCCESSFULLY'),
+      ...result,
+    };
+  }
+
   @Patch(':id')
   @UseGuards(RolesGuard)
   @Roles(ERoles.ADMIN, ERoles.SUPER_ADMIN, ERoles.USER)
@@ -51,6 +75,16 @@ export class BlogController {
     return {
       message: this.i18n.translate('t.BLOG_UPDATED_SUCCESSFULLY'),
       data: blog,
+    };
+  }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  async find(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.blogService.find(id);
+    return {
+      message: this.i18n.translate('t.BLOG_RETRIEVED_SUCCESSFULLY'),
+      ...result,
     };
   }
 }

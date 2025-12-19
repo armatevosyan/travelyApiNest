@@ -12,9 +12,15 @@ import { AuthMiddleware } from '@/common/middleware/auth.middleware';
 import { UsersModule } from '@/modules/users/users.module';
 import { CategoryModule } from '@/modules/categories/category.module';
 import { JwtService } from '@nestjs/jwt';
+import { FilesModule } from '@/modules/files/files.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Blog]), UsersModule, CategoryModule],
+  imports: [
+    TypeOrmModule.forFeature([Blog]),
+    UsersModule,
+    CategoryModule,
+    FilesModule,
+  ],
   providers: [BlogService, JwtService],
   controllers: [BlogController],
   exports: [BlogService, TypeOrmModule],

@@ -3,11 +3,10 @@ import { Category } from 'modules/categories/category.entity';
 import { Seeder } from 'typeorm-extension';
 
 export const categorySeeds: Partial<Category>[] = [
-  // Parent Categories
   {
     name: 'Food & Drink',
     description: 'All food and beverage establishments',
-    icon: '🍽️',
+    icon: 'utensils',
     color: '#FF6B6B',
     isActive: true,
     isPro: false,
@@ -17,7 +16,7 @@ export const categorySeeds: Partial<Category>[] = [
   {
     name: 'Accommodation',
     description: 'Places to stay and sleep',
-    icon: '🏨',
+    icon: 'hotel',
     color: '#4169E1',
     isActive: true,
     isPro: false,
@@ -27,7 +26,7 @@ export const categorySeeds: Partial<Category>[] = [
   {
     name: 'Entertainment',
     description: 'Entertainment and leisure activities',
-    icon: '🎭',
+    icon: 'film',
     color: '#9370DB',
     isActive: true,
     isPro: false,
@@ -37,7 +36,7 @@ export const categorySeeds: Partial<Category>[] = [
   {
     name: 'Shopping',
     description: 'Shopping and retail',
-    icon: '🛍️',
+    icon: 'shopping-bag',
     color: '#FF69B4',
     isActive: true,
     isPro: false,
@@ -47,7 +46,7 @@ export const categorySeeds: Partial<Category>[] = [
   {
     name: 'Transport',
     description: 'Transportation and travel services',
-    icon: '🚌',
+    icon: 'train-outline',
     color: '#32CD32',
     isActive: true,
     isPro: false,
@@ -57,7 +56,7 @@ export const categorySeeds: Partial<Category>[] = [
   {
     name: 'Health & Wellness',
     description: 'Health, medical, and wellness services',
-    icon: '🏥',
+    icon: 'spa',
     color: '#DC143C',
     isActive: true,
     isPro: false,
@@ -67,7 +66,7 @@ export const categorySeeds: Partial<Category>[] = [
   {
     name: 'Nature & Outdoors',
     description: 'Natural attractions and outdoor activities',
-    icon: '🌳',
+    icon: 'sunny-outline',
     color: '#228B22',
     isActive: true,
     isPro: false,
@@ -77,7 +76,6 @@ export const categorySeeds: Partial<Category>[] = [
 ];
 
 export const childCategorySeeds: Partial<Category>[] = [
-  // Food & Drink Children
   {
     name: 'Restaurant',
     description: 'Full-service restaurants and dining establishments',

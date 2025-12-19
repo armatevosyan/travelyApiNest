@@ -106,7 +106,15 @@ export class CreatePlaceDto {
   @IsNumber({}, { message: 't.PLACE_CATEGORY_INVALID' })
   categoryId: number;
 
-  // Media (File IDs)
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_SUBCATEGORY_INVALID' })
+  subcategoryId?: number;
+
   @IsOptional()
   @Transform(({ value }) => {
     if (!value) return null;
@@ -452,6 +460,15 @@ export class UpdatePlaceDto {
 
   @IsOptional()
   @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_SUBCATEGORY_INVALID' })
+  subcategoryId?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
     if (!value) return null;
     if (Array.isArray(value)) {
       return value
@@ -723,6 +740,15 @@ export class PlaceQueryDto {
   })
   @IsNumber()
   categoryId?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  subcategoryId?: number;
 
   @IsOptional()
   @Transform(({ value }) => {

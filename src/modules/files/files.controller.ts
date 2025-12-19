@@ -27,7 +27,7 @@ export class FilesController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @UseInterceptors(AnyFilesInterceptor()) // Accepts any field name
+  @UseInterceptors(AnyFilesInterceptor())
   @HttpCode(HttpStatus.CREATED)
   async createFile(
     @User('id') userId: number,
@@ -38,10 +38,8 @@ export class FilesController {
       throw new BadRequestException(this.i18n.translate('t.FILE_REQUIRED'));
     }
 
-    // Get folder from query param or default
     const uploadFolder = folder || 'uploads';
 
-    // Upload all files
     const uploadedFiles = await Promise.all(
       files.map((file) =>
         this.filesService.uploadFileDirectly(file, userId, uploadFolder),

@@ -47,6 +47,8 @@ export interface IPlace {
 
   // RELATIONS (loaded with relations)
   category: Category;
+  subcategory?: Category | null;
+  subcategoryId?: number | null;
   user: User;
   facilities?: Facility[];
 

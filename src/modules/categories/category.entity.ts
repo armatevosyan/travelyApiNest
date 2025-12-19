@@ -48,6 +48,9 @@ export class Category {
   @OneToMany(() => Category, (category) => category.parent)
   children: Category[];
 
+  @OneToMany('Place', 'category')
+  places: any[];
+
   @DeleteDateColumn()
   deletedAt: Date | null;
 

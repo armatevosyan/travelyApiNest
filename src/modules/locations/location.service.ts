@@ -94,6 +94,18 @@ export class LocationService {
     return { data: processedData, total };
   }
 
+  async listLegacy(parentId?: number, type: LocationType = LocationType.COUNTRY) {
+    const where: any = { type };
+    if (parentId) {
+      where.parentId = parentId;
+    }
+
+    return this.locationRepo.find({
+      where,
+      order: { name: 'ASC' },
+    });
+  }
+
   async findOne(id: number): Promise<Location> {
     const location = await this.locationRepo.findOne({
       where: { id },

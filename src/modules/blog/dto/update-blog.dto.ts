@@ -31,4 +31,13 @@ export class UpdateBlogDto {
   @IsString({ message: 't.BLOG_IMAGE_INVALID' })
   @MaxLength(500, { message: 't.BLOG_IMAGE_MAX_LENGTH' })
   image?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber({}, { message: 't.BLOG_FILE_ID_INVALID' })
+  fileId?: number;
 }

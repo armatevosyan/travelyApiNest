@@ -38,17 +38,14 @@ export class FilesService {
     const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID;
     const publicDomain = process.env.CLOUDFLARE_R2_PUBLIC_DOMAIN;
 
-    // If custom domain is configured, use it
     if (publicDomain) {
-      return `https://${publicDomain}/${bucketPath}`;
+      return `${publicDomain}/${bucketPath}`;
     }
 
-    // Otherwise use R2 public URL format
     if (accountId) {
       return `https://pub-${accountId}.r2.dev/${bucketPath}`;
     }
 
-    // Fallback (should not happen in production)
     return `https://r2.dev/${bucketPath}`;
   }
 
@@ -88,18 +85,15 @@ export class FilesService {
     userId: number,
     folder: string = 'uploads',
   ): Promise<FileEntity> {
-    // Generate unique file name
     const fileExtension = file.originalname.split('.').pop() || '';
     const baseFileName = file.originalname.replace(/\.[^/.]+$/, '');
     const uniqueFileName = `${baseFileName}-${randomUUID()}.${fileExtension}`;
 
-    // Construct bucket path
     const normalizedFolder = folder.replace(/^\/+|\/+$/g, '');
     const bucketPath = normalizedFolder
       ? `${normalizedFolder}/${uniqueFileName}`
       : uniqueFileName;
 
-    // Upload to R2
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: bucketPath,
@@ -109,7 +103,6 @@ export class FilesService {
 
     await this.r2Client.send(command);
 
-    // Create database record
     const fileEntity = this.fileRepository.create({
       fileName: uniqueFileName,
       mimeType: file.mimetype,

@@ -24,7 +24,6 @@ export class HomeService {
   ) {}
 
   async getInit(country?: string) {
-    // Get location by country name if provided
     let location: Location | null = null;
     if (country) {
       location = await this.locationRepository.findOne({
@@ -35,10 +34,8 @@ export class HomeService {
       });
     }
 
-    // Get sliders (empty for now - Banner entity not implemented)
     const sliders: string[] = [];
 
-    // Get categories with subcategories
     const categories = await this.categoryRepository.find({
       where: {
         parentId: IsNull(),
@@ -52,7 +49,6 @@ export class HomeService {
       take: 10,
     });
 
-    // Get locations (countries)
     const locations = await this.locationRepository.find({
       where: {
         type: LocationType.COUNTRY,
@@ -63,7 +59,6 @@ export class HomeService {
       take: 10,
     });
 
-    // Get recent posts (places) filtered by country
     const recentPostsQuery = this.placeRepository
       .createQueryBuilder('place')
       .leftJoinAndSelect('place.category', 'category')

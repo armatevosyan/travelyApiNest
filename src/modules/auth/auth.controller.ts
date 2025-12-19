@@ -216,8 +216,7 @@ export class AuthController {
         this.i18n.translate('t.INVALID_RESET_TOKEN'),
       );
     }
-
-    if (!user.otp || user.otp !== data.code) {
+    if (!user.verifyCode || user.verifyCode !== data.code) {
       throw new BadRequestException(
         this.i18n.translate('t.INVALID_VERIFICATION_CODE'),
       );
@@ -229,8 +228,18 @@ export class AuthController {
       );
     }
 
+    await this.userService.update(user.id, {
+      verifyCode: null,
+      otpExpiration: null,
+      verifiedAt: new Date(),
+    });
+
+    const token = this.authService.accessToken(String(user.id), user.role);
+
     return {
       message: this.i18n.translate('t.OTP_VERIFIED_SUCCESS'),
+      user: this.userService.runUserData(user),
+      token,
       success: true,
     };
   }
