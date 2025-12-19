@@ -13,6 +13,7 @@ import { ShoppingModule } from '@/modules/shopping/shopping.module';
 import { TransportModule } from '@/modules/transport/transport.module';
 import { HealthWellnessModule } from '@/modules/health-wellness/health-wellness.module';
 import { NatureOutdoorsModule } from '@/modules/nature-outdoors/nature-outdoors.module';
+import { EntertainmentModule } from '@/modules/entertainment/entertainment.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { NatureOutdoorsModule } from '@/modules/nature-outdoors/nature-outdoors.
     TransportModule,
     HealthWellnessModule,
     NatureOutdoorsModule,
+    EntertainmentModule,
   ],
   providers: [PlaceService],
   controllers: [PlaceController],

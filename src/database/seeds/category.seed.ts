@@ -1,11 +1,13 @@
 import { DataSource } from 'typeorm';
 import { Category } from 'modules/categories/category.entity';
 import { Seeder } from 'typeorm-extension';
+import { MainCategoryEnum } from 'modules/categories/category.enum';
 
 export const categorySeeds: Partial<Category>[] = [
   // Parent Categories
   {
     name: 'Food & Drink',
+    slug: MainCategoryEnum.FOOD_AND_DRINK,
     description: 'All food and beverage establishments',
     icon: '🍽️',
     color: '#FF6B6B',
@@ -16,6 +18,7 @@ export const categorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Accommodation',
+    slug: MainCategoryEnum.ACCOMMODATION,
     description: 'Places to stay and sleep',
     icon: '🏨',
     color: '#4169E1',
@@ -26,6 +29,7 @@ export const categorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Entertainment',
+    slug: MainCategoryEnum.ENTERTAINMENT,
     description: 'Entertainment and leisure activities',
     icon: '🎭',
     color: '#9370DB',
@@ -36,6 +40,7 @@ export const categorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Shopping',
+    slug: MainCategoryEnum.SHOPPING,
     description: 'Shopping and retail',
     icon: '🛍️',
     color: '#FF69B4',
@@ -46,6 +51,7 @@ export const categorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Transport',
+    slug: MainCategoryEnum.TRANSPORT,
     description: 'Transportation and travel services',
     icon: '🚌',
     color: '#32CD32',
@@ -56,6 +62,7 @@ export const categorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Health & Wellness',
+    slug: MainCategoryEnum.HEALTH_AND_WELLNESS,
     description: 'Health, medical, and wellness services',
     icon: '🏥',
     color: '#DC143C',
@@ -66,6 +73,7 @@ export const categorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Nature & Outdoors',
+    slug: MainCategoryEnum.NATURE_AND_OUTDOORS,
     description: 'Natural attractions and outdoor activities',
     icon: '🌳',
     color: '#228B22',
@@ -80,6 +88,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   // Food & Drink Children
   {
     name: 'Restaurant',
+    slug: 'restaurant',
     description: 'Full-service restaurants and dining establishments',
     icon: '🍽️',
     color: '#FF6B6B',
@@ -90,6 +99,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Coffee Shop',
+    slug: 'coffee-shop',
     description: 'Coffee shops, cafes, and coffee houses',
     icon: '☕',
     color: '#8B4513',
@@ -100,6 +110,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Bar & Pub',
+    slug: 'bar-and-pub',
     description: 'Bars, pubs, and drinking establishments',
     icon: '🍺',
     color: '#FFD700',
@@ -110,6 +121,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Fast Food',
+    slug: 'fast-food',
     description: 'Quick service restaurants and fast food chains',
     icon: '🍔',
     color: '#FF4500',
@@ -120,6 +132,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Fine Dining',
+    slug: 'fine-dining',
     description: 'Upscale restaurants and fine dining establishments',
     icon: '🍷',
     color: '#8B0000',
@@ -130,6 +143,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Street Food',
+    slug: 'street-food',
     description: 'Street vendors and food trucks',
     icon: '🌮',
     color: '#FF6347',
@@ -142,6 +156,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   // Accommodation Children
   {
     name: 'Hotel',
+    slug: 'hotel',
     description: 'Hotels and hotel chains',
     icon: '🏨',
     color: '#4169E1',
@@ -152,6 +167,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Hostel',
+    slug: 'hostel',
     description: 'Budget accommodations and hostels',
     icon: '🏠',
     color: '#32CD32',
@@ -162,6 +178,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Airbnb',
+    slug: 'airbnb',
     description: 'Short-term rentals and vacation homes',
     icon: '🏡',
     color: '#FF1493',
@@ -172,6 +189,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Resort',
+    slug: 'resort',
     description: 'Luxury resorts and vacation destinations',
     icon: '🏖️',
     color: '#00CED1',
@@ -182,6 +200,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Motel',
+    slug: 'motel',
     description: 'Budget motels and roadside accommodations',
     icon: '🛣️',
     color: '#696969',
@@ -192,6 +211,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Bed & Breakfast',
+    slug: 'bed-and-breakfast',
     description: 'Cozy B&Bs and guesthouses',
     icon: '🛏️',
     color: '#DDA0DD',
@@ -204,6 +224,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   // Entertainment Children
   {
     name: 'Cinema',
+    slug: 'cinema',
     description: 'Movie theaters and cinemas',
     icon: '🎬',
     color: '#9370DB',
@@ -214,6 +235,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Theater',
+    slug: 'theater',
     description: 'Live theater and performing arts venues',
     icon: '🎭',
     color: '#8A2BE2',
@@ -224,6 +246,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Museum',
+    slug: 'museum',
     description: 'Museums and cultural institutions',
     icon: '🏛️',
     color: '#FFD700',
@@ -234,6 +257,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Concert Hall',
+    slug: 'concert-hall',
     description: 'Music venues and concert halls',
     icon: '🎵',
     color: '#FF69B4',
@@ -244,6 +268,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Amusement Park',
+    slug: 'amusement-park',
     description: 'Theme parks and amusement centers',
     icon: '🎢',
     color: '#FF4500',
@@ -254,6 +279,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Nightclub',
+    slug: 'nightclub',
     description: 'Nightclubs and dance venues',
     icon: '🕺',
     color: '#FF1493',
@@ -266,6 +292,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   // Shopping Children
   {
     name: 'Shopping Mall',
+    slug: 'shopping-mall',
     description: 'Large shopping centers and malls',
     icon: '🏬',
     color: '#FF69B4',
@@ -276,6 +303,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Boutique',
+    slug: 'boutique',
     description: 'Small specialty shops and boutiques',
     icon: '👗',
     color: '#FFB6C1',
@@ -286,6 +314,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Market',
+    slug: 'market',
     description: 'Local markets and bazaars',
     icon: '🛒',
     color: '#32CD32',
@@ -296,6 +325,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Supermarket',
+    slug: 'supermarket',
     description: 'Grocery stores and supermarkets',
     icon: '🛍️',
     color: '#00CED1',
@@ -306,6 +336,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Electronics Store',
+    slug: 'electronics-store',
     description: 'Electronics and technology retailers',
     icon: '📱',
     color: '#4169E1',
@@ -316,6 +347,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Bookstore',
+    slug: 'bookstore',
     description: 'Bookshops and literary stores',
     icon: '📚',
     color: '#8B4513',
@@ -328,6 +360,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   // Transport Children
   {
     name: 'Airport',
+    slug: 'airport',
     description: 'Airports and aviation terminals',
     icon: '✈️',
     color: '#32CD32',
@@ -338,6 +371,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Train Station',
+    slug: 'train-station',
     description: 'Railway stations and train terminals',
     icon: '🚂',
     color: '#FF6347',
@@ -348,6 +382,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Bus Station',
+    slug: 'bus-station',
     description: 'Bus terminals and stations',
     icon: '🚌',
     color: '#FFD700',
@@ -358,6 +393,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Taxi Stand',
+    slug: 'taxi-stand',
     description: 'Taxi services and ride-sharing',
     icon: '🚕',
     color: '#FFA500',
@@ -368,6 +404,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Car Rental',
+    slug: 'car-rental',
     description: 'Vehicle rental services',
     icon: '🚗',
     color: '#4169E1',
@@ -378,6 +415,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Bike Rental',
+    slug: 'bike-rental',
     description: 'Bicycle rental and bike-sharing',
     icon: '🚲',
     color: '#32CD32',
@@ -390,6 +428,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   // Health & Wellness Children
   {
     name: 'Hospital',
+    slug: 'hospital',
     description: 'Hospitals and medical centers',
     icon: '🏥',
     color: '#DC143C',
@@ -400,6 +439,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Pharmacy',
+    slug: 'pharmacy',
     description: 'Pharmacies and drug stores',
     icon: '💊',
     color: '#FF69B4',
@@ -410,6 +450,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Clinic',
+    slug: 'clinic',
     description: 'Medical clinics and health centers',
     icon: '🏥',
     color: '#FF6347',
@@ -420,6 +461,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Spa',
+    slug: 'spa',
     description: 'Spas and wellness centers',
     icon: '🧖',
     color: '#DDA0DD',
@@ -430,6 +472,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Gym',
+    slug: 'gym',
     description: 'Fitness centers and gyms',
     icon: '💪',
     color: '#FF4500',
@@ -440,6 +483,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Dentist',
+    slug: 'dentist',
     description: 'Dental clinics and dentists',
     icon: '🦷',
     color: '#FFFFFF',
@@ -452,6 +496,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   // Nature & Outdoors Children
   {
     name: 'Park',
+    slug: 'park',
     description: 'Public parks and green spaces',
     icon: '🌳',
     color: '#228B22',
@@ -462,6 +507,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Beach',
+    slug: 'beach',
     description: 'Beaches and coastal areas',
     icon: '🏖️',
     color: '#00CED1',
@@ -472,6 +518,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Mountain',
+    slug: 'mountain',
     description: 'Mountain trails and hiking areas',
     icon: '⛰️',
     color: '#8B4513',
@@ -482,6 +529,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Lake',
+    slug: 'lake',
     description: 'Lakes and water bodies',
     icon: '🏞️',
     color: '#4169E1',
@@ -492,6 +540,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Zoo',
+    slug: 'zoo',
     description: 'Zoos and wildlife parks',
     icon: '🦁',
     color: '#FFD700',
@@ -502,6 +551,7 @@ export const childCategorySeeds: Partial<Category>[] = [
   },
   {
     name: 'Botanical Garden',
+    slug: 'botanical-garden',
     description: 'Botanical gardens and plant collections',
     icon: '🌺',
     color: '#32CD32',

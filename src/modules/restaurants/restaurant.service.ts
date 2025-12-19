@@ -10,6 +10,7 @@ import { CreateRestaurantDto, UpdateRestaurantDto } from './restaurant.dto';
 import { Place } from '../places/place.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { Category } from '../categories/category.entity';
+import { MainCategoryEnum } from '@/modules/categories/category.enum';
 
 @Injectable()
 export class RestaurantService {
@@ -128,31 +129,7 @@ export class RestaurantService {
 
     if (!category) return false;
 
-    // Check if category name contains food-related keywords
-    const categoryName = category.name.toLowerCase();
-    const foodKeywords = [
-      'restaurant',
-      'coffee',
-      'bar',
-      'pub',
-      'food',
-      'dining',
-      'cafe',
-      'drink',
-    ];
-
-    if (foodKeywords.some((keyword) => categoryName.includes(keyword))) {
-      return true;
-    }
-
     // Check if parent category is "Food & Drink"
-    if (category.parent) {
-      const parentName = category.parent.name.toLowerCase();
-      if (parentName.includes('food') || parentName.includes('drink')) {
-        return true;
-      }
-    }
-
-    return false;
+    return category.parent?.slug === MainCategoryEnum.FOOD_AND_DRINK;
   }
 }

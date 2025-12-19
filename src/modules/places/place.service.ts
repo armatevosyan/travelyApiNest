@@ -24,6 +24,7 @@ import { ShoppingService } from '@/modules/shopping/shopping.service';
 import { TransportService } from '@/modules/transport/transport.service';
 import { HealthWellnessService } from '@/modules/health-wellness/health-wellness.service';
 import { NatureOutdoorsService } from '@/modules/nature-outdoors/nature-outdoors.service';
+import { EntertainmentService } from '@/modules/entertainment/entertainment.service';
 
 @Injectable()
 export class PlaceService {
@@ -41,6 +42,7 @@ export class PlaceService {
     private readonly transportService: TransportService,
     private readonly healthWellnessService: HealthWellnessService,
     private readonly natureOutdoorsService: NatureOutdoorsService,
+    private readonly entertainmentService: EntertainmentService,
   ) {}
 
   private async filterRelationFields<T extends Place>(place: T): Promise<T> {
@@ -149,6 +151,8 @@ export class PlaceService {
       healthWellness: place.healthWellness || null,
       // Nature & Outdoors data loaded via relation (if exists)
       natureOutdoors: place.natureOutdoors || null,
+      // Entertainment data loaded via relation (if exists)
+      entertainment: place.entertainment || null,
     };
   }
 
@@ -190,6 +194,7 @@ export class PlaceService {
       transportData,
       healthWellnessData,
       natureOutdoorsData,
+      entertainmentData,
       ...placeData
     } = data;
     if (tagIds && tagIds.length > 0) {
@@ -334,6 +339,24 @@ export class PlaceService {
       }
     }
 
+    // Create entertainment record if category is entertainment related and entertainmentData is provided
+    if (
+      entertainmentData &&
+      (await this.entertainmentService.isEntertainmentCategory(
+        savedPlace.categoryId,
+      ))
+    ) {
+      try {
+        await this.entertainmentService.create({
+          placeId: savedPlace.id,
+          ...entertainmentData,
+        });
+      } catch (error) {
+        // Log error but don't fail place creation
+        console.error('Failed to create entertainment record:', error);
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
       relations: [
@@ -352,6 +375,7 @@ export class PlaceService {
         'transport',
         'healthWellness',
         'natureOutdoors',
+        'entertainment',
       ],
     });
 
@@ -394,7 +418,8 @@ export class PlaceService {
       .leftJoinAndSelect('place.shopping', 'shopping')
       .leftJoinAndSelect('place.transport', 'transport')
       .leftJoinAndSelect('place.healthWellness', 'healthWellness')
-      .leftJoinAndSelect('place.natureOutdoors', 'natureOutdoors');
+      .leftJoinAndSelect('place.natureOutdoors', 'natureOutdoors')
+      .leftJoinAndSelect('place.entertainment', 'entertainment');
 
     // Apply filters
     if (categoryId) {
@@ -480,6 +505,7 @@ export class PlaceService {
         'transport',
         'healthWellness',
         'natureOutdoors',
+        'entertainment',
       ],
     });
 
@@ -513,6 +539,7 @@ export class PlaceService {
         'transport',
         'healthWellness',
         'natureOutdoors',
+        'entertainment',
       ],
     });
 
@@ -550,6 +577,7 @@ export class PlaceService {
         'transport',
         'healthWellness',
         'natureOutdoors',
+        'entertainment',
       ],
     });
 
@@ -603,6 +631,7 @@ export class PlaceService {
       transportData,
       healthWellnessData,
       natureOutdoorsData,
+      entertainmentData,
       ...placeUpdateData
     } = updatePlaceDto;
 
@@ -841,6 +870,39 @@ export class PlaceService {
       }
     }
 
+    // Update entertainment data if provided and place is an entertainment category
+    if (
+      entertainmentData &&
+      (await this.entertainmentService.isEntertainmentCategory(
+        place.category.id,
+      ))
+    ) {
+      try {
+        // Try to update existing entertainment
+        await this.entertainmentService.updateByPlaceId(
+          place.id,
+          entertainmentData,
+        );
+      } catch (error) {
+        // If entertainment doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await this.entertainmentService.create({
+              placeId: place.id,
+              ...entertainmentData,
+            });
+          } catch (createError) {
+            console.error(
+              'Failed to create entertainment record:',
+              createError,
+            );
+          }
+        } else {
+          console.error('Failed to update entertainment record:', error);
+        }
+      }
+    }
+
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
       relations: [
@@ -860,6 +922,7 @@ export class PlaceService {
         'transport',
         'healthWellness',
         'natureOutdoors',
+        'entertainment',
       ],
     });
 
@@ -908,6 +971,7 @@ export class PlaceService {
         'transport',
         'healthWellness',
         'natureOutdoors',
+        'entertainment',
       ],
       order: { createdAt: 'DESC' },
     });
@@ -934,6 +998,7 @@ export class PlaceService {
         'transport',
         'healthWellness',
         'natureOutdoors',
+        'entertainment',
       ],
       order: { createdAt: 'DESC' },
     });

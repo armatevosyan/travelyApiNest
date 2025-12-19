@@ -325,6 +325,16 @@ export class CreatePlaceDto {
     bestTimeToVisit?: string; // e.g., "Spring for blooms", "Sunrise"
     keyExhibits?: string[]; // e.g., ["Panda Enclosure", "Rose Garden"]
   };
+
+  // Entertainment-specific data (optional, only for entertainment category)
+  @IsOptional()
+  entertainmentData?: {
+    eventSchedule?: string; // A URL or structured data for current and upcoming shows/events
+    ticketPrice?: Record<string, any>; // e.g., {"adult": 20, "child": 10}
+    ticketBookingUrl?: string;
+    currentExhibits?: string[]; // For museums, a list of current special exhibits
+    ageRestriction?: string;
+  };
 }
 
 export class UpdatePlaceDto {
@@ -645,6 +655,16 @@ export class UpdatePlaceDto {
     rules?: string[]; // e.g., ["Pets on leash", "No open fires"]
     bestTimeToVisit?: string; // e.g., "Spring for blooms", "Sunrise"
     keyExhibits?: string[]; // e.g., ["Panda Enclosure", "Rose Garden"]
+  };
+
+  // Entertainment-specific data (optional, only for entertainment category)
+  @IsOptional()
+  entertainmentData?: {
+    eventSchedule?: string; // A URL or structured data for current and upcoming shows/events
+    ticketPrice?: Record<string, any>; // e.g., {"adult": 20, "child": 10}
+    ticketBookingUrl?: string;
+    currentExhibits?: string[]; // For museums, a list of current special exhibits
+    ageRestriction?: string;
   };
 }
 

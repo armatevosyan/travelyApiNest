@@ -156,6 +156,15 @@ export interface CreatePlaceData
     bestTimeToVisit?: string; // e.g., "Spring for blooms", "Sunrise"
     keyExhibits?: string[]; // e.g., ["Panda Enclosure", "Rose Garden"]
   };
+
+  // ENTERTAINMENT-SPECIFIC FIELDS (optional, only for entertainment category)
+  entertainmentData?: {
+    eventSchedule?: string; // A URL or structured data for current and upcoming shows/events
+    ticketPrice?: Record<string, any>; // e.g., {"adult": 20, "child": 10}
+    ticketBookingUrl?: string;
+    currentExhibits?: string[]; // For museums, a list of current special exhibits
+    ageRestriction?: string;
+  };
 }
 
 /**
