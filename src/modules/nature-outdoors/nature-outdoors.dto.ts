@@ -1,283 +1,54 @@
-import {
-  IsOptional,
-  IsInt,
-  IsString,
-  IsArray,
-  IsUrl,
-  IsObject,
-  IsBoolean,
-  IsNumber,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-
-class EquipmentItemDto {
-  @IsString()
-  name: string;
-
-  @IsOptional()
-  @IsNumber()
-  price?: number;
-
-  @IsOptional()
-  @IsString()
-  priceUnit?: string; // "per_hour", "per_day", "per_week"
-}
-
-class EquipmentRentalDto {
-  @IsBoolean()
-  available: boolean;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => EquipmentItemDto)
-  items?: {
-    name: string;
-    price?: number;
-    priceUnit?: string;
-  }[];
-}
-
-class GuidedTourDto {
-  @IsString()
-  name: string;
-
-  @IsOptional()
-  @IsString()
-  duration?: string; // e.g., "2 hours", "Half day", "Full day"
-
-  @IsOptional()
-  @IsNumber()
-  price?: number;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-}
-
-class GuidedToursDto {
-  @IsBoolean()
-  available: boolean;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => GuidedTourDto)
-  tours?: {
-    name: string;
-    duration?: string;
-    price?: number;
-    description?: string;
-  }[];
-}
-
-class TrailInformationDto {
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  difficulty?: string[]; // e.g., ["Easy", "Moderate", "Difficult"]
-
-  @IsOptional()
-  @IsNumber()
-  totalLength?: number; // in kilometers or miles
-
-  @IsOptional()
-  @IsNumber()
-  elevationGain?: number;
-
-  @IsOptional()
-  @IsString()
-  estimatedTime?: string;
-}
-
-class PermitsRequiredDto {
-  @IsBoolean()
-  required: boolean;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  types?: string[]; // e.g., ["Camping Permit", "Fishing License", "Park Entry"]
-
-  @IsOptional()
-  @IsString()
-  whereToObtain?: string;
-
-  @IsOptional()
-  @IsNumber()
-  cost?: number;
-}
-
-class CampingOptionsDto {
-  @IsBoolean()
-  available: boolean;
-
-  @IsOptional()
-  @IsNumber()
-  sites?: number;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  facilities?: string[]; // e.g., ["Restrooms", "Fire Pits", "Picnic Tables", "Water Access"]
-
-  @IsOptional()
-  @IsBoolean()
-  reservationRequired?: boolean;
-}
+import { IsOptional, IsInt, IsString, IsArray } from 'class-validator';
 
 export class CreateNatureOutdoorsDto {
   @IsInt()
   placeId: number;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  activitiesOffered?: string[]; // e.g., ["Hiking", "Camping", "Fishing"]
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => EquipmentRentalDto)
-  equipmentRental?: {
-    available: boolean;
-    items?: {
-      name: string;
-      price?: number;
-      priceUnit?: string;
-    }[];
-  };
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => GuidedToursDto)
-  guidedTours?: {
-    available: boolean;
-    tours?: {
-      name: string;
-      duration?: string;
-      price?: number;
-      description?: string;
-    }[];
-  };
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => TrailInformationDto)
-  trailInformation?: {
-    difficulty?: string[];
-    totalLength?: number;
-    elevationGain?: number;
-    estimatedTime?: string;
-  };
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => PermitsRequiredDto)
-  permitsRequired?: {
-    required: boolean;
-    types?: string[];
-    whereToObtain?: string;
-    cost?: number;
-  };
+  @IsString()
+  entryFee?: string; // e.g., "Free", "$10 per person"
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  bestSeason?: string[]; // e.g., ["Spring", "Summer", "Fall"]
+  keyActivities?: string[]; // e.g., ["Hiking", "Swimming", "Picnicking"]
 
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => CampingOptionsDto)
-  campingOptions?: {
-    available: boolean;
-    sites?: number;
-    facilities?: string[];
-    reservationRequired?: boolean;
-  };
+  @IsArray()
+  @IsString({ each: true })
+  rules?: string[]; // e.g., ["Pets on leash", "No open fires"]
 
   @IsOptional()
-  @IsUrl()
-  bookingUrl?: string;
+  @IsString()
+  bestTimeToVisit?: string; // e.g., "Spring for blooms", "Sunrise"
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  keyExhibits?: string[]; // e.g., ["Panda Enclosure", "Rose Garden"]
 }
 
 export class UpdateNatureOutdoorsDto {
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  activitiesOffered?: string[];
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => EquipmentRentalDto)
-  equipmentRental?: {
-    available: boolean;
-    items?: {
-      name: string;
-      price?: number;
-      priceUnit?: string;
-    }[];
-  };
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => GuidedToursDto)
-  guidedTours?: {
-    available: boolean;
-    tours?: {
-      name: string;
-      duration?: string;
-      price?: number;
-      description?: string;
-    }[];
-  };
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => TrailInformationDto)
-  trailInformation?: {
-    difficulty?: string[];
-    totalLength?: number;
-    elevationGain?: number;
-    estimatedTime?: string;
-  };
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => PermitsRequiredDto)
-  permitsRequired?: {
-    required: boolean;
-    types?: string[];
-    whereToObtain?: string;
-    cost?: number;
-  };
+  @IsString()
+  entryFee?: string;
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  bestSeason?: string[];
+  keyActivities?: string[];
 
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => CampingOptionsDto)
-  campingOptions?: {
-    available: boolean;
-    sites?: number;
-    facilities?: string[];
-    reservationRequired?: boolean;
-  };
+  @IsArray()
+  @IsString({ each: true })
+  rules?: string[];
 
   @IsOptional()
-  @IsUrl()
-  bookingUrl?: string;
+  @IsString()
+  bestTimeToVisit?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  keyExhibits?: string[];
 }
