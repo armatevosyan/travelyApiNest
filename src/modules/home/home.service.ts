@@ -57,6 +57,7 @@ export class HomeService {
       where: {
         type: LocationType.COUNTRY,
       },
+      relations: ['image'],
       order: {
         name: 'ASC',
       },
@@ -125,7 +126,17 @@ export class HomeService {
       termId: loc.id,
       name: loc.name,
       count: 0,
-      image: undefined,
+      image: loc.image
+        ? {
+            id: loc.image.id,
+            full: {
+              url: this.filesService.generatePublicUrl(loc.image.bucketPath),
+            },
+            thumb: {
+              url: this.filesService.generatePublicUrl(loc.image.bucketPath),
+            },
+          }
+        : undefined,
       icon: null,
       color: null,
       taxonomy: 'location',

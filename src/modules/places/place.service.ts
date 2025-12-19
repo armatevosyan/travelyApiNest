@@ -76,6 +76,8 @@ export class PlaceService {
         id: place.country.id,
         name: place.country.name,
         type: place.country.type,
+        image: place.country.image,
+        imageId: place.country.imageId,
       } as Location;
     }
 
@@ -380,6 +382,7 @@ export class PlaceService {
       .leftJoinAndSelect('place.user', 'user')
       .leftJoinAndSelect('place.category', 'category')
       .leftJoinAndSelect('place.country', 'country')
+      .leftJoinAndSelect('country.image', 'countryImage')
       .leftJoinAndSelect('place.state', 'state')
       .leftJoinAndSelect('place.city', 'city')
       .leftJoinAndSelect('place.tags', 'tags')
@@ -464,6 +467,7 @@ export class PlaceService {
         'category',
         'user',
         'country',
+        'country.image',
         'state',
         'city',
         'tags',
@@ -496,6 +500,7 @@ export class PlaceService {
         'category',
         'user',
         'country',
+        'country.image',
         'state',
         'city',
         'tags',
@@ -532,6 +537,7 @@ export class PlaceService {
         'category',
         'user',
         'country',
+        'country.image',
         'state',
         'city',
         'tags',
@@ -841,6 +847,7 @@ export class PlaceService {
         'category',
         'user',
         'country',
+        'country.image',
         'state',
         'city',
         'tags',

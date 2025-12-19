@@ -65,6 +65,11 @@ export class LocationService {
 
     const queryBuilder = this.locationRepo.createQueryBuilder('location');
 
+    // Only join image for countries
+    if (!type || type === LocationType.COUNTRY) {
+      queryBuilder.leftJoinAndSelect('location.image', 'image');
+    }
+
     if (type) {
       queryBuilder.andWhere('location.type = :type', { type });
     }
@@ -102,6 +107,15 @@ export class LocationService {
 
     if (!location) {
       throw new NotFoundException(this.i18n.translate('t.LOCATION_NOT_FOUND'));
+    }
+
+    // Only load image for countries
+    if (location.type === LocationType.COUNTRY) {
+      const locationWithImage = await this.locationRepo.findOne({
+        where: { id },
+        relations: ['parent', 'image'],
+      });
+      return this.loadNestedChildren(locationWithImage!);
     }
 
     return this.loadNestedChildren(location);
