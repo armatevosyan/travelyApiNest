@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { Transport } from './transport.entity';
 import { CreateTransportDto, UpdateTransportDto } from './transport.dto';
 import { Place } from '../places/place.entity';
-import { Category } from '../categories/category.entity';
 
 @Injectable()
 export class TransportService {
@@ -17,8 +16,6 @@ export class TransportService {
     private transportRepository: Repository<Transport>,
     @InjectRepository(Place)
     private placeRepository: Repository<Place>,
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(createTransportDto: CreateTransportDto): Promise<Transport> {
@@ -102,58 +99,5 @@ export class TransportService {
     }
 
     return await this.transportRepository.save(transport);
-  }
-
-  /**
-   * Check if a category is a transport category
-   * Categories: Bus Station, Train Station, Airport, Car Rental, Bike Rental, Taxi Service, etc.
-   */
-  async isTransportCategory(categoryId: number): Promise<boolean> {
-    const category = await this.categoryRepository.findOne({
-      where: { id: categoryId },
-      relations: ['parent'],
-    });
-
-    if (!category) return false;
-
-    // First, check if parent category is "Transport" (most reliable check)
-    if (category.parent) {
-      const parentName = category.parent.name.toLowerCase();
-      if (
-        parentName.includes('transport') ||
-        parentName.includes('transportation')
-      ) {
-        return true;
-      }
-    }
-
-    // Then check if category name contains transport-related keywords
-    const categoryName = category.name.toLowerCase();
-    const transportKeywords = [
-      'transport',
-      'transportation',
-      'bus',
-      'train',
-      'airport',
-      'station',
-      'rental',
-      'taxi',
-      'metro',
-      'subway',
-      'ferry',
-      'port',
-      'terminal',
-      'shuttle',
-      'transit',
-      'bike',
-      'bicycle',
-      'car',
-    ];
-
-    if (transportKeywords.some((keyword) => categoryName.includes(keyword))) {
-      return true;
-    }
-
-    return false;
   }
 }
