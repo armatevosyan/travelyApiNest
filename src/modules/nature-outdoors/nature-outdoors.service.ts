@@ -11,7 +11,6 @@ import {
   UpdateNatureOutdoorsDto,
 } from './nature-outdoors.dto';
 import { Place } from '../places/place.entity';
-import { Category } from '../categories/category.entity';
 
 @Injectable()
 export class NatureOutdoorsService {
@@ -20,8 +19,6 @@ export class NatureOutdoorsService {
     private natureOutdoorsRepository: Repository<NatureOutdoors>,
     @InjectRepository(Place)
     private placeRepository: Repository<Place>,
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(
@@ -88,65 +85,5 @@ export class NatureOutdoorsService {
     }
 
     return await this.natureOutdoorsRepository.save(natureOutdoors);
-  }
-
-  /**
-   * Check if a category is a nature & outdoors category
-   * Categories: Park, Forest, Beach, Mountain, Trail, Campground, etc.
-   */
-  async isNatureOutdoorsCategory(categoryId: number): Promise<boolean> {
-    const category = await this.categoryRepository.findOne({
-      where: { id: categoryId },
-      relations: ['parent'],
-    });
-
-    if (!category) return false;
-
-    // First, check if parent category is "Nature & Outdoors" (most reliable check)
-    if (category.parent) {
-      const parentName = category.parent.name.toLowerCase();
-      if (
-        parentName.includes('nature') ||
-        parentName.includes('outdoor') ||
-        parentName.includes('recreation')
-      ) {
-        return true;
-      }
-    }
-
-    // Then check if category name contains nature & outdoors-related keywords
-    const categoryName = category.name.toLowerCase();
-    const natureOutdoorsKeywords = [
-      'park',
-      'beach',
-      'mountain',
-      'lake',
-      'zoo',
-      'botanical garden',
-      'forest',
-      'trail',
-      'campground',
-      'camping',
-      'hiking',
-      'nature',
-      'outdoor',
-      'wildlife',
-      'reserve',
-      'sanctuary',
-      'national park',
-      'state park',
-      'river',
-      'waterfall',
-      'canyon',
-      'desert',
-      'cave',
-      'garden',
-      'botanical',
-      'aquarium',
-    ];
-
-    return natureOutdoorsKeywords.some((keyword) =>
-      categoryName.includes(keyword),
-    );
   }
 }

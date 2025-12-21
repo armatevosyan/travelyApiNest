@@ -12,7 +12,6 @@ import {
 } from './accommodation.dto';
 import { Place } from '../places/place.entity';
 import { FileEntity } from '../files/entities/file.entity';
-import { Category } from '../categories/category.entity';
 
 @Injectable()
 export class AccommodationService {
@@ -23,8 +22,6 @@ export class AccommodationService {
     private placeRepository: Repository<Place>,
     @InjectRepository(FileEntity)
     private fileRepository: Repository<FileEntity>,
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(
@@ -146,50 +143,5 @@ export class AccommodationService {
       ...accommodation,
       roomTypesWithPhotos,
     };
-  }
-
-  /**
-   * Check if a category is an accommodation category
-   * Categories: Hotel, Hostel, Airbnb, Resort, Motel, Bed & Breakfast
-   */
-  async isAccommodationCategory(categoryId: number): Promise<boolean> {
-    const category = await this.categoryRepository.findOne({
-      where: { id: categoryId },
-      relations: ['parent'],
-    });
-
-    if (!category) return false;
-
-    // Check if category name contains accommodation-related keywords
-    const categoryName = category.name.toLowerCase();
-    const accommodationKeywords = [
-      'hotel',
-      'hostel',
-      'airbnb',
-      'resort',
-      'motel',
-      'bed',
-      'breakfast',
-      'accommodation',
-      'lodging',
-      'inn',
-      'guesthouse',
-    ];
-
-    if (
-      accommodationKeywords.some((keyword) => categoryName.includes(keyword))
-    ) {
-      return true;
-    }
-
-    // Check if parent category is "Accommodation"
-    if (category.parent) {
-      const parentName = category.parent.name.toLowerCase();
-      if (parentName.includes('accommodation') || parentName.includes('stay')) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }

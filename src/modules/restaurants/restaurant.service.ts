@@ -9,8 +9,6 @@ import { Restaurant } from './restaurant.entity';
 import { CreateRestaurantDto, UpdateRestaurantDto } from './restaurant.dto';
 import { Place } from '../places/place.entity';
 import { FileEntity } from '../files/entities/file.entity';
-import { Category } from '../categories/category.entity';
-import { MainCategoryEnum } from '@/modules/categories/category.enum';
 
 @Injectable()
 export class RestaurantService {
@@ -21,8 +19,6 @@ export class RestaurantService {
     private placeRepository: Repository<Place>,
     @InjectRepository(FileEntity)
     private fileRepository: Repository<FileEntity>,
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(createRestaurantDto: CreateRestaurantDto): Promise<Restaurant> {
@@ -115,21 +111,5 @@ export class RestaurantService {
         ? await this.fileRepository.findByIds(dishImageIds)
         : [];
     }
-  }
-
-  /**
-   * Check if a category is a food/restaurant category
-   * Categories: Restaurant, Coffee Shop, Bar & Pub, Fast Food, Fine Dining, Street Food
-   */
-  async isFoodCategory(categoryId: number): Promise<boolean> {
-    const category = await this.categoryRepository.findOne({
-      where: { id: categoryId },
-      relations: ['parent'],
-    });
-
-    if (!category) return false;
-
-    // Check if parent category is "Food & Drink"
-    return category.parent?.slug === MainCategoryEnum.FOOD_AND_DRINK;
   }
 }

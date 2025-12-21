@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlaceService } from './place.service';
 import { PlaceController } from './place.controller';
 import { Place } from './place.entity';
+import { Category } from '@/modules/categories/category.entity';
 import { CategoryModule } from '@/modules/categories/category.module';
 import { LocationModule } from '@/modules/locations/location.module';
 import { TagModule } from '@/modules/tags/tag.module';
@@ -17,7 +18,7 @@ import { EntertainmentModule } from '@/modules/entertainment/entertainment.modul
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Place]),
+    TypeOrmModule.forFeature([Place, Category]),
     CategoryModule,
     LocationModule,
     TagModule,

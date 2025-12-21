@@ -25,12 +25,15 @@ import { TransportService } from '@/modules/transport/transport.service';
 import { HealthWellnessService } from '@/modules/health-wellness/health-wellness.service';
 import { NatureOutdoorsService } from '@/modules/nature-outdoors/nature-outdoors.service';
 import { EntertainmentService } from '@/modules/entertainment/entertainment.service';
+import { MainCategoryEnum } from '@/modules/categories/category.enum';
 
 @Injectable()
 export class PlaceService {
   constructor(
     @InjectRepository(Place)
     private readonly placeRepository: Repository<Place>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
     private readonly i18n: I18nService,
     private readonly locationService: LocationService,
     private readonly tagService: TagService,
@@ -244,125 +247,16 @@ export class PlaceService {
       );
     }
 
-    // Create restaurant record if category is food/drink related and restaurantData is provided
-    if (
-      restaurantData &&
-      (await this.restaurantService.isFoodCategory(savedPlace.categoryId))
-    ) {
-      try {
-        await this.restaurantService.create({
-          placeId: savedPlace.id,
-          ...restaurantData,
-        });
-      } catch (error) {
-        // Log error but don't fail place creation
-        console.error('Failed to create restaurant record:', error);
-      }
-    }
-
-    // Create accommodation record if category is accommodation related and accommodationData is provided
-    if (
-      accommodationData &&
-      (await this.accommodationService.isAccommodationCategory(
-        savedPlace.categoryId,
-      ))
-    ) {
-      try {
-        await this.accommodationService.create({
-          placeId: savedPlace.id,
-          ...accommodationData,
-        });
-      } catch (error) {
-        // Log error but don't fail place creation
-        console.error('Failed to create accommodation record:', error);
-      }
-    }
-
-    // Create shopping record if category is shopping related and shoppingData is provided
-    if (
-      shoppingData &&
-      (await this.shoppingService.isShoppingCategory(savedPlace.categoryId))
-    ) {
-      try {
-        await this.shoppingService.create({
-          placeId: savedPlace.id,
-          ...shoppingData,
-        });
-      } catch (error) {
-        // Log error but don't fail place creation
-        console.error('Failed to create shopping record:', error);
-      }
-    }
-
-    // Create transport record if category is transport related and transportData is provided
-    if (
-      transportData &&
-      (await this.transportService.isTransportCategory(savedPlace.categoryId))
-    ) {
-      try {
-        await this.transportService.create({
-          placeId: savedPlace.id,
-          ...transportData,
-        });
-      } catch (error) {
-        // Log error but don't fail place creation
-        console.error('Failed to create transport record:', error);
-      }
-    }
-
-    // Create health & wellness record if category is health & wellness related and healthWellnessData is provided
-    if (
-      healthWellnessData &&
-      (await this.healthWellnessService.isHealthWellnessCategory(
-        savedPlace.categoryId,
-      ))
-    ) {
-      try {
-        await this.healthWellnessService.create({
-          placeId: savedPlace.id,
-          ...healthWellnessData,
-        });
-      } catch (error) {
-        // Log error but don't fail place creation
-        console.error('Failed to create health & wellness record:', error);
-      }
-    }
-
-    // Create nature & outdoors record if category is nature & outdoors related and natureOutdoorsData is provided
-    if (
-      natureOutdoorsData &&
-      (await this.natureOutdoorsService.isNatureOutdoorsCategory(
-        savedPlace.categoryId,
-      ))
-    ) {
-      try {
-        await this.natureOutdoorsService.create({
-          placeId: savedPlace.id,
-          ...natureOutdoorsData,
-        });
-      } catch (error) {
-        // Log error but don't fail place creation
-        console.error('Failed to create nature & outdoors record:', error);
-      }
-    }
-
-    // Create entertainment record if category is entertainment related and entertainmentData is provided
-    if (
-      entertainmentData &&
-      (await this.entertainmentService.isEntertainmentCategory(
-        savedPlace.categoryId,
-      ))
-    ) {
-      try {
-        await this.entertainmentService.create({
-          placeId: savedPlace.id,
-          ...entertainmentData,
-        });
-      } catch (error) {
-        // Log error but don't fail place creation
-        console.error('Failed to create entertainment record:', error);
-      }
-    }
+    // Create category-specific record based on parent category slug
+    await this.createCategorySpecificRecord(savedPlace.id, {
+      restaurantData,
+      accommodationData,
+      shoppingData,
+      transportData,
+      healthWellnessData,
+      natureOutdoorsData,
+      entertainmentData,
+    });
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: savedPlace.id },
@@ -717,212 +611,16 @@ export class PlaceService {
       }
     }
 
-    // Update restaurant data if provided and place is a food category
-    if (
-      restaurantData &&
-      (await this.restaurantService.isFoodCategory(place.category.id))
-    ) {
-      try {
-        // Try to update existing restaurant
-        await this.restaurantService.updateByPlaceId(place.id, restaurantData);
-      } catch (error) {
-        // If restaurant doesn't exist, create it
-        if (error instanceof NotFoundException) {
-          try {
-            await this.restaurantService.create({
-              placeId: place.id,
-              ...restaurantData,
-            });
-          } catch (createError) {
-            console.error('Failed to create restaurant record:', createError);
-          }
-        } else {
-          console.error('Failed to update restaurant record:', error);
-        }
-      }
-    }
-
-    // Update accommodation data if provided and place is an accommodation category
-    if (
-      accommodationData &&
-      (await this.accommodationService.isAccommodationCategory(
-        place.category.id,
-      ))
-    ) {
-      try {
-        // Try to update existing accommodation
-        await this.accommodationService.updateByPlaceId(
-          place.id,
-          accommodationData,
-        );
-      } catch (error) {
-        // If accommodation doesn't exist, create it
-        if (error instanceof NotFoundException) {
-          try {
-            await this.accommodationService.create({
-              placeId: place.id,
-              ...accommodationData,
-            });
-          } catch (createError) {
-            console.error(
-              'Failed to create accommodation record:',
-              createError,
-            );
-          }
-        } else {
-          console.error('Failed to update accommodation record:', error);
-        }
-      }
-    }
-
-    // Update shopping data if provided and place is a shopping category
-    if (
-      shoppingData &&
-      (await this.shoppingService.isShoppingCategory(place.category.id))
-    ) {
-      try {
-        // Try to update existing shopping
-        await this.shoppingService.updateByPlaceId(place.id, shoppingData);
-      } catch (error) {
-        // If shopping doesn't exist, create it
-        if (error instanceof NotFoundException) {
-          try {
-            await this.shoppingService.create({
-              placeId: place.id,
-              ...shoppingData,
-            });
-          } catch (createError) {
-            console.error('Failed to create shopping record:', createError);
-          }
-        } else {
-          console.error('Failed to update shopping record:', error);
-        }
-      }
-    }
-
-    // Update transport data if provided and place is a transport category
-    if (
-      transportData &&
-      (await this.transportService.isTransportCategory(place.category.id))
-    ) {
-      try {
-        // Try to update existing transport
-        await this.transportService.updateByPlaceId(place.id, transportData);
-      } catch (error) {
-        // If transport doesn't exist, create it
-        if (error instanceof NotFoundException) {
-          try {
-            await this.transportService.create({
-              placeId: place.id,
-              ...transportData,
-            });
-          } catch (createError) {
-            console.error('Failed to create transport record:', createError);
-          }
-        } else {
-          console.error('Failed to update transport record:', error);
-        }
-      }
-    }
-
-    // Update health & wellness data if provided and place is a health & wellness category
-    if (
-      healthWellnessData &&
-      (await this.healthWellnessService.isHealthWellnessCategory(
-        place.category.id,
-      ))
-    ) {
-      try {
-        // Try to update existing health & wellness
-        await this.healthWellnessService.updateByPlaceId(
-          place.id,
-          healthWellnessData,
-        );
-      } catch (error) {
-        // If health & wellness doesn't exist, create it
-        if (error instanceof NotFoundException) {
-          try {
-            await this.healthWellnessService.create({
-              placeId: place.id,
-              ...healthWellnessData,
-            });
-          } catch (createError) {
-            console.error(
-              'Failed to create health & wellness record:',
-              createError,
-            );
-          }
-        } else {
-          console.error('Failed to update health & wellness record:', error);
-        }
-      }
-    }
-
-    // Update nature & outdoors data if provided and place is a nature & outdoors category
-    if (
-      natureOutdoorsData &&
-      (await this.natureOutdoorsService.isNatureOutdoorsCategory(
-        place.category.id,
-      ))
-    ) {
-      try {
-        // Try to update existing nature & outdoors
-        await this.natureOutdoorsService.updateByPlaceId(
-          place.id,
-          natureOutdoorsData,
-        );
-      } catch (error) {
-        // If nature & outdoors doesn't exist, create it
-        if (error instanceof NotFoundException) {
-          try {
-            await this.natureOutdoorsService.create({
-              placeId: place.id,
-              ...natureOutdoorsData,
-            });
-          } catch (createError) {
-            console.error(
-              'Failed to create nature & outdoors record:',
-              createError,
-            );
-          }
-        } else {
-          console.error('Failed to update nature & outdoors record:', error);
-        }
-      }
-    }
-
-    // Update entertainment data if provided and place is an entertainment category
-    if (
-      entertainmentData &&
-      (await this.entertainmentService.isEntertainmentCategory(
-        place.category.id,
-      ))
-    ) {
-      try {
-        // Try to update existing entertainment
-        await this.entertainmentService.updateByPlaceId(
-          place.id,
-          entertainmentData,
-        );
-      } catch (error) {
-        // If entertainment doesn't exist, create it
-        if (error instanceof NotFoundException) {
-          try {
-            await this.entertainmentService.create({
-              placeId: place.id,
-              ...entertainmentData,
-            });
-          } catch (createError) {
-            console.error(
-              'Failed to create entertainment record:',
-              createError,
-            );
-          }
-        } else {
-          console.error('Failed to update entertainment record:', error);
-        }
-      }
-    }
+    // Update category-specific record based on parent category slug
+    await this.updateCategorySpecificRecord(place.id, place.category.id, {
+      restaurantData,
+      accommodationData,
+      shoppingData,
+      transportData,
+      healthWellnessData,
+      natureOutdoorsData,
+      entertainmentData,
+    });
 
     const reloadedPlace = await this.placeRepository.findOne({
       where: { id: updatedPlace.id },
@@ -1027,6 +725,158 @@ export class PlaceService {
     });
 
     return await this.filterPlacesRelations(places);
+  }
+
+  /**
+   * Build category map for category-specific data handling
+   */
+  private buildCategoryMap(data: {
+    restaurantData?: any;
+    accommodationData?: any;
+    shoppingData?: any;
+    transportData?: any;
+    healthWellnessData?: any;
+    natureOutdoorsData?: any;
+    entertainmentData?: any;
+  }): Record<MainCategoryEnum, { data: any; service: any; name: string }> {
+    return {
+      [MainCategoryEnum.FOOD_AND_DRINK]: {
+        data: data.restaurantData,
+        service: this.restaurantService,
+        name: 'restaurant',
+      },
+      [MainCategoryEnum.ACCOMMODATION]: {
+        data: data.accommodationData,
+        service: this.accommodationService,
+        name: 'accommodation',
+      },
+      [MainCategoryEnum.SHOPPING]: {
+        data: data.shoppingData,
+        service: this.shoppingService,
+        name: 'shopping',
+      },
+      [MainCategoryEnum.TRANSPORT]: {
+        data: data.transportData,
+        service: this.transportService,
+        name: 'transport',
+      },
+      [MainCategoryEnum.HEALTH_AND_WELLNESS]: {
+        data: data.healthWellnessData,
+        service: this.healthWellnessService,
+        name: 'health & wellness',
+      },
+      [MainCategoryEnum.NATURE_AND_OUTDOORS]: {
+        data: data.natureOutdoorsData,
+        service: this.natureOutdoorsService,
+        name: 'nature & outdoors',
+      },
+      [MainCategoryEnum.ENTERTAINMENT]: {
+        data: data.entertainmentData,
+        service: this.entertainmentService,
+        name: 'entertainment',
+      },
+    };
+  }
+
+  /**
+   * Create category-specific record based on parent category slug
+   */
+  private async createCategorySpecificRecord(
+    placeId: number,
+    data: {
+      restaurantData?: any;
+      accommodationData?: any;
+      shoppingData?: any;
+      transportData?: any;
+      healthWellnessData?: any;
+      natureOutdoorsData?: any;
+      entertainmentData?: any;
+    },
+  ): Promise<void> {
+    const place = await this.placeRepository.findOne({
+      where: { id: placeId },
+      relations: ['category', 'category.parent'],
+    });
+
+    if (!place) return;
+
+    // Get parent category slug
+    const parentSlug = (place.category.parent?.slug ||
+      place.category.slug) as MainCategoryEnum;
+
+    if (!parentSlug) return;
+
+    // Get category map
+    const categoryMap = this.buildCategoryMap(data);
+    const categoryInfo = categoryMap[parentSlug];
+
+    if (categoryInfo && categoryInfo.data) {
+      try {
+        await categoryInfo.service.create({
+          placeId,
+          ...categoryInfo.data,
+        });
+      } catch (error) {
+        console.error(`Failed to create ${categoryInfo.name} record:`, error);
+      }
+    }
+  }
+
+  /**
+   * Update category-specific record based on parent category slug
+   */
+  private async updateCategorySpecificRecord(
+    placeId: number,
+    categoryId: number,
+    data: {
+      restaurantData?: any;
+      accommodationData?: any;
+      shoppingData?: any;
+      transportData?: any;
+      healthWellnessData?: any;
+      natureOutdoorsData?: any;
+      entertainmentData?: any;
+    },
+  ): Promise<void> {
+    const category = await this.categoryRepository.findOne({
+      where: { id: categoryId },
+      relations: ['parent'],
+    });
+
+    if (!category) return;
+
+    // Get parent category slug
+    const parentSlug = (category.parent?.slug ||
+      category.slug) as MainCategoryEnum;
+
+    if (!parentSlug) return;
+
+    // Get category map
+    const categoryMap = this.buildCategoryMap(data);
+    const categoryInfo = categoryMap[parentSlug];
+
+    if (categoryInfo && categoryInfo.data) {
+      try {
+        await categoryInfo.service.updateByPlaceId(placeId, categoryInfo.data);
+      } catch (error) {
+        // If doesn't exist, create it
+        if (error instanceof NotFoundException) {
+          try {
+            await categoryInfo.service.create({
+              placeId,
+              ...categoryInfo.data,
+            });
+          } catch (createError) {
+            console.error(
+              `Failed to create ${categoryInfo.name} record:`,
+              createError,
+            );
+          }
+        } else {
+          console.error(`Failed to update ${categoryInfo.name} record:`, error);
+        }
+      }
+    }
   }
 
   private generateSlug(name: string): string {

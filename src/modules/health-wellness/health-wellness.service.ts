@@ -11,7 +11,6 @@ import {
   UpdateHealthWellnessDto,
 } from './health-wellness.dto';
 import { Place } from '../places/place.entity';
-import { Category } from '../categories/category.entity';
 
 @Injectable()
 export class HealthWellnessService {
@@ -20,8 +19,6 @@ export class HealthWellnessService {
     private healthWellnessRepository: Repository<HealthWellness>,
     @InjectRepository(Place)
     private placeRepository: Repository<Place>,
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(
@@ -101,64 +98,5 @@ export class HealthWellnessService {
     }
 
     return await this.healthWellnessRepository.save(healthWellness);
-  }
-
-  /**
-   * Check if a category is a health & wellness category
-   * Categories: Hospital, Clinic, Pharmacy, Gym, Spa, Dental, etc.
-   */
-  async isHealthWellnessCategory(categoryId: number): Promise<boolean> {
-    const category = await this.categoryRepository.findOne({
-      where: { id: categoryId },
-      relations: ['parent'],
-    });
-
-    if (!category) return false;
-
-    // First, check if parent category is "Health & Wellness" (most reliable check)
-    if (category.parent) {
-      const parentName = category.parent.name.toLowerCase();
-      if (
-        parentName.includes('health') ||
-        parentName.includes('wellness') ||
-        parentName.includes('medical')
-      ) {
-        return true;
-      }
-    }
-
-    // Then check if category name contains health & wellness-related keywords
-    const categoryName = category.name.toLowerCase();
-    const healthWellnessKeywords = [
-      'health',
-      'wellness',
-      'hospital',
-      'clinic',
-      'pharmacy',
-      'gym',
-      'fitness',
-      'spa',
-      'dental',
-      'dentist',
-      'doctor',
-      'medical',
-      'therapy',
-      'massage',
-      'physiotherapy',
-      'chiropractic',
-      'optometry',
-      'veterinary',
-      'vet',
-      'urgent care',
-      'emergency',
-    ];
-
-    if (
-      healthWellnessKeywords.some((keyword) => categoryName.includes(keyword))
-    ) {
-      return true;
-    }
-
-    return false;
   }
 }

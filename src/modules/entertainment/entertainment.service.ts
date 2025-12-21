@@ -11,7 +11,6 @@ import {
   UpdateEntertainmentDto,
 } from './entertainment.dto';
 import { Place } from '../places/place.entity';
-import { Category } from '../categories/category.entity';
 
 @Injectable()
 export class EntertainmentService {
@@ -20,8 +19,6 @@ export class EntertainmentService {
     private entertainmentRepository: Repository<Entertainment>,
     @InjectRepository(Place)
     private placeRepository: Repository<Place>,
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(
@@ -73,54 +70,5 @@ export class EntertainmentService {
     Object.assign(entertainment, updateEntertainmentDto);
 
     return await this.entertainmentRepository.save(entertainment);
-  }
-
-  /**
-   * Check if a category is an entertainment category
-   * Categories: Cinema, Theater, Museum, Concert Hall, Amusement Park, Nightclub, etc.
-   */
-  async isEntertainmentCategory(categoryId: number): Promise<boolean> {
-    const category = await this.categoryRepository.findOne({
-      where: { id: categoryId },
-      relations: ['parent'],
-    });
-
-    if (!category) return false;
-
-    // Check if category name contains entertainment-related keywords
-    const categoryName = category.name.toLowerCase();
-    const entertainmentKeywords = [
-      'entertainment',
-      'cinema',
-      'theater',
-      'theatre',
-      'museum',
-      'concert',
-      'amusement',
-      'nightclub',
-      'club',
-      'arcade',
-      'casino',
-      'gallery',
-      'show',
-      'performance',
-      'venue',
-    ];
-
-    if (
-      entertainmentKeywords.some((keyword) => categoryName.includes(keyword))
-    ) {
-      return true;
-    }
-
-    // Check if parent category is "Entertainment"
-    if (category.parent) {
-      const parentName = category.parent.name.toLowerCase();
-      if (parentName.includes('entertainment')) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }
