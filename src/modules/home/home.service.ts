@@ -68,7 +68,6 @@ export class HomeService {
       .where('place.isActive = :isActive', { isActive: true })
       .orderBy('place.createdAt', 'DESC')
       .take(10);
-
     if (location) {
       recentPostsQuery.andWhere('place.countryId = :countryId', {
         countryId: location.id,
@@ -77,7 +76,6 @@ export class HomeService {
 
     const recentPosts = await recentPostsQuery.getMany();
 
-    // Get related blogs
     const relatedBlogs = await this.blogRepository.find({
       relations: ['user', 'category'],
       order: {
@@ -86,12 +84,9 @@ export class HomeService {
       take: 5,
     });
 
-    // Format sliders (empty for now)
     const formattedSliders = sliders;
 
-    // Format categories
     const formattedCategories = categories.map((category) => {
-      // Format subcategories
       const formattedChildren = (category.children || []).map((sub) => ({
         termId: sub.id,
         name: sub.name,
@@ -101,6 +96,7 @@ export class HomeService {
         color: sub.color,
         taxonomy: 'category',
         hasChild: false,
+        id: sub.id,
       }));
 
       return {
@@ -113,6 +109,7 @@ export class HomeService {
         taxonomy: 'category',
         hasChild: category.children && category.children.length > 0,
         children: formattedChildren,
+        id: category.id,
       };
     });
 
@@ -136,9 +133,9 @@ export class HomeService {
       color: null,
       taxonomy: 'location',
       hasChild: false,
+      id: loc.id,
     }));
 
-    // Format recent posts
     const formattedRecentPosts = await Promise.all(
       recentPosts.map(async (place) => {
         // Get place images
@@ -150,7 +147,6 @@ export class HomeService {
         const placeImage: FileEntity | null =
           placeFileRelations.length > 0 ? placeFileRelations[0].file : null;
 
-        // Get user profile image
         let userImage: FileEntity | null = null;
         if (place.user?.profileImageId) {
           const userFileRelations =
@@ -213,17 +209,13 @@ export class HomeService {
       }),
     );
 
-    // Format news (blogs)
     const formattedNews = await Promise.all(
       relatedBlogs.map(async (blog) => {
-        // Get blog image if stored as file relation
         let blogImage: string | null = null;
         if (blog.image) {
-          // If image is a URL string, use it directly
           blogImage = blog.image;
         }
 
-        // Get user profile image
         let userImage: FileEntity | null = null;
         if (blog.user?.profileImageId) {
           const userFileRelations =
@@ -301,14 +293,13 @@ export class HomeService {
       }),
     );
 
-    // Widgets (empty for now - Widget entity not implemented)
     const formattedWidgets: any[] = [];
-
+    console.log('formattedRecentPosts', formattedRecentPosts);
     return {
       sliders: formattedSliders,
       categories: formattedCategories,
       locations: formattedLocations,
-      recentPosts: formattedRecentPosts,
+      recent_posts: formattedRecentPosts,
       widgets: formattedWidgets,
       news: formattedNews,
     };

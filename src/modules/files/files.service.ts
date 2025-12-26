@@ -133,7 +133,6 @@ export class FilesService {
     entityType: FileRelationType,
     entityId: number,
   ): Promise<FileRelation> {
-    // Check if file exists
     const file = await this.fileRepository.findOne({ where: { id: fileId } });
     if (!file) {
       throw new NotFoundException(this.i18n.translate('t.FILE_NOT_FOUND'));

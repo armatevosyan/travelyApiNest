@@ -52,7 +52,6 @@ export class PlaceService {
     const filteredPlace = { ...place };
 
     if (place.user) {
-      // Load file relations for user profile image
       const userFileRelations =
         await this.filesService.getFileRelationsForEntity(
           FileRelationType.USER,
@@ -127,13 +126,11 @@ export class PlaceService {
       })) as Facility[];
     }
 
-    // Load file relations attached to this place
     const fileRelations = await this.filesService.getFileRelationsForEntity(
       FileRelationType.PLACE,
       place.id,
     );
 
-    // Load accommodation with room photos if accommodation exists
     let accommodationData: any = null;
     if (place.accommodation) {
       const accommodationWithPhotos =
@@ -149,19 +146,12 @@ export class PlaceService {
     return {
       ...filteredPlace,
       images: fileRelations.map((r) => r.file),
-      // Restaurant data loaded via relation (if exists)
       restaurant: place.restaurant || null,
-      // Accommodation data loaded via relation with room photos (if exists)
       accommodation: accommodationData || null,
-      // Shopping data loaded via relation (if exists)
       shopping: place.shopping || null,
-      // Transport data loaded via relation (if exists)
       transport: place.transport || null,
-      // Health & Wellness data loaded via relation (if exists)
       healthWellness: place.healthWellness || null,
-      // Nature & Outdoors data loaded via relation (if exists)
       natureOutdoors: place.natureOutdoors || null,
-      // Entertainment data loaded via relation (if exists)
       entertainment: place.entertainment || null,
     };
   }
@@ -229,12 +219,10 @@ export class PlaceService {
 
     const savedPlace = await this.placeRepository.save(place);
 
-    // Increment facility counts for newly associated facilities
     if (facilityIds && facilityIds.length > 0) {
       await this.facilityService.incrementCount(facilityIds);
     }
 
-    // Attach images if provided
     if (data.imageIds && data.imageIds.length > 0) {
       await Promise.all(
         data.imageIds.map((fileId) =>
@@ -304,7 +292,6 @@ export class PlaceService {
 
     let queryBuilder = this.placeRepository.createQueryBuilder('place');
 
-    // Load relations
     queryBuilder = queryBuilder
       .leftJoinAndSelect('place.user', 'user')
       .leftJoinAndSelect('place.category', 'category')
@@ -325,7 +312,6 @@ export class PlaceService {
       .leftJoinAndSelect('place.natureOutdoors', 'natureOutdoors')
       .leftJoinAndSelect('place.entertainment', 'entertainment');
 
-    // Apply filters
     if (categoryId) {
       queryBuilder = queryBuilder.andWhere('place.categoryId = :categoryId', {
         categoryId,

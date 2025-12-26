@@ -238,13 +238,26 @@ export class CreatePlaceDto {
   maxPrice?: number | null;
 
   @IsOptional()
-  @Transform(({ value }): boolean => {
+  @Transform(({ value }) => {
     if (value === 'true') return true;
     if (value === 'false') return false;
     return value;
   })
   @IsBoolean({ message: 't.PLACE_IS_PRICE_ON_REQUEST_INVALID' })
   isPriceOnRequest?: boolean;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_PRICE_TYPE_INVALID' })
+  priceType?: string | null; // 'range', 'fixed', 'onRequest', 'free', 'discounted'
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  })
+  @IsNumber({}, { message: 't.PLACE_OLD_PRICE_INVALID' })
+  oldPrice?: number | null;
 
   // Restaurant-specific data (optional, only for restaurant category)
   @IsOptional()
