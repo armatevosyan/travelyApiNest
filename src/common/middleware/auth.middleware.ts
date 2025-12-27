@@ -31,7 +31,7 @@ export class AuthMiddleware implements NestMiddleware {
         secret: process.env.JWT_SECRET,
       });
 
-      req['role'] = payload.role;
+      req.role = payload.role;
       const user = await this.userService.findById(payload.sub);
       if (!user) {
         throw new UnauthorizedException('Invalid user');

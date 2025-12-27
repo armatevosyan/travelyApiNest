@@ -33,7 +33,7 @@ let AuthMiddleware = class AuthMiddleware {
             const payload = this.jwtService.verify(token, {
                 secret: process.env.JWT_SECRET,
             });
-            req['role'] = payload.role;
+            req.role = payload.role;
             const user = await this.userService.findById(payload.sub);
             if (!user) {
                 throw new common_1.UnauthorizedException('Invalid user');
