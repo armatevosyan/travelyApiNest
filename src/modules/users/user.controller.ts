@@ -21,7 +21,7 @@ import { ERoles } from '@/modules/roles/role.types';
 import { AuthService } from '@/modules/auth/auth.service';
 import { I18nService } from 'nestjs-i18n';
 import { ChangePasswordDto } from '@/modules/auth/auth.dto';
-import { UpdateProfileDto } from './user.dto';
+import { UpdateProfileDto, UpdateNotificationSettingDto } from './user.dto';
 
 @Controller('users')
 @UseGuards(RolesGuard) // Protect all routes in this controller
@@ -121,6 +121,24 @@ export class UserController {
 
     return {
       message: this.i18n.translate('t.ACCOUNT_DEACTIVATED_SUCCESSFULLY'),
+    };
+  }
+
+  @Post('notification-setting')
+  @Roles(ERoles.USER, ERoles.ADMIN, ERoles.SUPER_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  async updateNotificationSetting(
+    @User() user: IUser,
+    @Body() data: UpdateNotificationSettingDto,
+  ) {
+    const updatedUser = await this.userService.updateNotificationSetting(
+      user.id,
+      data.notificationsEnabled,
+    );
+
+    return {
+      message: this.i18n.translate('t.NOTIFICATION_UPDATE_SUCCESS'),
+      data: updatedUser,
     };
   }
 }

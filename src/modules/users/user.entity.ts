@@ -80,6 +80,9 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   deactivatedAt: Date | null;
 
+  @Column({ type: 'boolean', nullable: true, default: true })
+  notificationsEnabled: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

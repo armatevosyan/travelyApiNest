@@ -62,6 +62,11 @@ export class UserService {
     return this.runUserData(await this.findById(userId));
   }
 
+  async updateNotificationSetting(id: number, notificationsEnabled: boolean) {
+    await this.userRepo.update(id, { notificationsEnabled });
+    return this.runUserData(await this.findById(id));
+  }
+
   runUserData(user: User | null) {
     if (!user) {
       return null;
@@ -79,6 +84,7 @@ export class UserService {
       language: user.language,
       isActive: user.isActive,
       verifiedAt: user.verifiedAt,
+      notificationsEnabled: user.notificationsEnabled,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

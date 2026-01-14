@@ -1,4 +1,10 @@
-import { IsOptional, IsString, MaxLength, IsUrl } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  MaxLength,
+  IsUrl,
+  IsBoolean,
+} from 'class-validator';
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -14,4 +20,9 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString({ message: 't.USER_DESCRIPTION_INVALID' })
   description?: string | null;
+}
+
+export class UpdateNotificationSettingDto {
+  @IsBoolean({ message: 't.NOTIFICATIONS_ENABLED_INVALID' })
+  notificationsEnabled: boolean;
 }

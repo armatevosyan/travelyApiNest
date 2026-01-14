@@ -99,6 +99,7 @@
   "PLACE_DELETED_SUCCESSFULLY": "Place deleted successfully",
   "PLACE_NOT_FOUND": "Place not found",
   "PLACE_NOT_OWNER": "You are not the owner of this place",
+  "PLACE_OPTIONS_RETRIEVED_SUCCESSFULLY": "Place options retrieved successfully",
   "PROFILE_UPDATED_SUCCESSFULLY": "Profile updated successfully",
   "EMAIL_ALREADY_EXISTS": "Email already exists",
   "USER_FULL_NAME_INVALID": "Full name must be a string",
@@ -168,5 +169,8 @@
   "FILE_RELATIONS_RETRIEVED_SUCCESSFULLY": "File relations retrieved successfully",
   "PROFILE_IMAGE_UPDATED_SUCCESSFULLY": "Profile image updated successfully",
   "INVALID_IMAGE_TYPE": "Invalid image type. Only JPEG, PNG, GIF, WebP, and AVIF are allowed",
-  "IMAGE_TOO_LARGE": "Image size exceeds the maximum allowed size of 5MB"
+  "IMAGE_TOO_LARGE": "Image size exceeds the maximum allowed size of 5MB",
+  "NOTIFICATION_UPDATE_SUCCESS": "Notification updated successfully",
+  "NOTIFICATIONS_ENABLED_INVALID": "Notifications enabled must be a boolean",
+  "NOTIFICATIONS_ENABLED_REQUIRED": "Notifications enabled is required"
 }
