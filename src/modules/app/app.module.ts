@@ -32,6 +32,7 @@ import { HealthWellnessModule } from '@/modules/health-wellness/health-wellness.
 import { NatureOutdoorsModule } from '@/modules/nature-outdoors/nature-outdoors.module';
 import { EntertainmentModule } from '@/modules/entertainment/entertainment.module';
 import { HomeModule } from '@/modules/home/home.module';
+import { PlaceOptionModule } from '@/modules/place-options/place-option.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -77,6 +78,7 @@ import emailConfig from 'config/email.config';
     NatureOutdoorsModule,
     EntertainmentModule,
     HomeModule,
+    PlaceOptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
