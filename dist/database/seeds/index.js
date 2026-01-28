@@ -11,6 +11,7 @@ const users_seed_1 = __importDefault(require("./users.seed"));
 const category_seed_1 = __importDefault(require("./category.seed"));
 const location_seed_1 = __importDefault(require("./location.seed"));
 const facility_seed_1 = __importDefault(require("./facility.seed"));
+const place_option_seed_1 = __importDefault(require("./place-option.seed"));
 const db_config_1 = require("../db.config");
 async function bootstrap() {
     console.log('🟢 Starting database seeding...');
@@ -23,6 +24,7 @@ async function bootstrap() {
         await (0, typeorm_extension_1.runSeeder)(AppDataSource, category_seed_1.default);
         await (0, typeorm_extension_1.runSeeder)(AppDataSource, location_seed_1.default);
         await (0, typeorm_extension_1.runSeeder)(AppDataSource, facility_seed_1.default);
+        await (0, typeorm_extension_1.runSeeder)(AppDataSource, place_option_seed_1.default);
     }
     catch (err) {
         console.error('❌ Error seeding database:', err);

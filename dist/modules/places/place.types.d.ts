@@ -54,6 +54,11 @@ export interface CreatePlaceData extends Omit<IPlace, 'id' | 'category' | 'user'
     restaurantData?: {
         menuImageIds?: number[];
         dishImageIds?: number[];
+        specialDishes?: {
+            imageId: number;
+            title?: string | null;
+            description?: string | null;
+        }[];
         cuisineTypes?: string[];
         dietaryOptions?: string[];
     };

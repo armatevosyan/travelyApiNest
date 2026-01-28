@@ -3,3 +3,6 @@ export declare class UpdateProfileDto {
     website?: string;
     description?: string | null;
 }
+export declare class UpdateNotificationSettingDto {
+    notificationsEnabled: boolean;
+}

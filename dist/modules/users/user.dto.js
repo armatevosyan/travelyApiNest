@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateProfileDto = void 0;
+exports.UpdateNotificationSettingDto = exports.UpdateProfileDto = void 0;
 const class_validator_1 = require("class-validator");
 class UpdateProfileDto {
     fullName;
@@ -34,4 +34,12 @@ __decorate([
     (0, class_validator_1.IsString)({ message: 't.USER_DESCRIPTION_INVALID' }),
     __metadata("design:type", Object)
 ], UpdateProfileDto.prototype, "description", void 0);
+class UpdateNotificationSettingDto {
+    notificationsEnabled;
+}
+exports.UpdateNotificationSettingDto = UpdateNotificationSettingDto;
+__decorate([
+    (0, class_validator_1.IsBoolean)({ message: 't.NOTIFICATIONS_ENABLED_INVALID' }),
+    __metadata("design:type", Boolean)
+], UpdateNotificationSettingDto.prototype, "notificationsEnabled", void 0);
 //# sourceMappingURL=user.dto.js.map

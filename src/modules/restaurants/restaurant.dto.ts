@@ -1,4 +1,26 @@
-import { IsOptional, IsInt, IsString, IsArray } from 'class-validator';
+import {
+  IsOptional,
+  IsInt,
+  IsString,
+  IsArray,
+  ValidateNested,
+  MaxLength,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class RestaurantSpecialDishDto {
+  @IsInt()
+  imageId: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  title?: string | null;
+
+  @IsOptional()
+  @IsString()
+  description?: string | null;
+}
 
 export class CreateRestaurantDto {
   @IsInt()
@@ -13,6 +35,12 @@ export class CreateRestaurantDto {
   @IsArray()
   @IsInt({ each: true })
   dishImageIds?: number[]; // Accept as IDs, will convert to relations
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => RestaurantSpecialDishDto)
+  specialDishes?: RestaurantSpecialDishDto[];
 
   @IsOptional()
   @IsArray()
@@ -35,6 +63,12 @@ export class UpdateRestaurantDto {
   @IsArray()
   @IsInt({ each: true })
   dishImageIds?: number[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => RestaurantSpecialDishDto)
+  specialDishes?: RestaurantSpecialDishDto[];
 
   @IsOptional()
   @IsArray()

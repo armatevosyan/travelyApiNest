@@ -21,7 +21,7 @@ let UsersModule = class UsersModule {
     configure(consumer) {
         consumer
             .apply(auth_middleware_1.AuthMiddleware)
-            .forRoutes({ path: 'users/me', method: common_1.RequestMethod.GET }, { path: 'users/profile', method: common_1.RequestMethod.PATCH }, { path: 'users/profile-image', method: common_1.RequestMethod.POST }, { path: 'users/change-password', method: common_1.RequestMethod.POST }, { path: 'users/deactivate-account', method: common_1.RequestMethod.POST });
+            .forRoutes({ path: 'users/me', method: common_1.RequestMethod.GET }, { path: 'users/profile', method: common_1.RequestMethod.PATCH }, { path: 'users/profile-image', method: common_1.RequestMethod.POST }, { path: 'users/change-password', method: common_1.RequestMethod.POST }, { path: 'users/deactivate-account', method: common_1.RequestMethod.POST }, { path: 'users/notification-setting', method: common_1.RequestMethod.POST });
     }
 };
 exports.UsersModule = UsersModule;

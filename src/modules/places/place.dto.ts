@@ -9,9 +9,57 @@ import {
   MaxLength,
   IsLatitude,
   IsLongitude,
+  IsInt,
+  ValidateNested,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import * as placeTypes from '@/modules/places/place.types';
+
+class RestaurantSpecialDishInputDto {
+  @IsInt()
+  @Transform(({ value }) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : value;
+  })
+  imageId: number;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_NAME_INVALID' })
+  @MaxLength(255, { message: 't.PLACE_NAME_MAX_LENGTH' })
+  title?: string | null;
+
+  @IsOptional()
+  @IsString({ message: 't.PLACE_DESCRIPTION_INVALID' })
+  description?: string | null;
+}
+
+class RestaurantDataDto {
+  @IsOptional()
+  @IsArray({ message: 't.PLACE_IMAGE_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.PLACE_IMAGE_IDS_INVALID' })
+  menuImageIds?: number[];
+
+  @IsOptional()
+  @IsArray({ message: 't.PLACE_IMAGE_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.PLACE_IMAGE_IDS_INVALID' })
+  dishImageIds?: number[];
+
+  @IsOptional()
+  @IsArray({ message: 't.PLACE_IMAGE_IDS_INVALID' })
+  @ValidateNested({ each: true })
+  @Type(() => RestaurantSpecialDishInputDto)
+  specialDishes?: RestaurantSpecialDishInputDto[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  cuisineTypes?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  dietaryOptions?: string[];
+}
 
 export class CreatePlaceDto {
   @IsNotEmpty({ message: 't.PLACE_NAME_REQUIRED' })
@@ -261,12 +309,9 @@ export class CreatePlaceDto {
 
   // Restaurant-specific data (optional, only for restaurant category)
   @IsOptional()
-  restaurantData?: {
-    menuImageIds?: number[];
-    dishImageIds?: number[];
-    cuisineTypes?: string[];
-    dietaryOptions?: string[];
-  };
+  @ValidateNested()
+  @Type(() => RestaurantDataDto)
+  restaurantData?: RestaurantDataDto;
 
   // Accommodation-specific data (optional, only for accommodation category)
   @IsOptional()
@@ -601,12 +646,9 @@ export class UpdatePlaceDto {
 
   // Restaurant-specific data (optional, only for restaurant category)
   @IsOptional()
-  restaurantData?: {
-    menuImageIds?: number[];
-    dishImageIds?: number[];
-    cuisineTypes?: string[];
-    dietaryOptions?: string[];
-  };
+  @ValidateNested()
+  @Type(() => RestaurantDataDto)
+  restaurantData?: RestaurantDataDto;
 
   // Accommodation-specific data (optional, only for accommodation category)
   @IsOptional()

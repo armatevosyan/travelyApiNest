@@ -4,7 +4,7 @@ import { ERoles } from '@/modules/roles/role.types';
 import { AuthService } from '@/modules/auth/auth.service';
 import { I18nService } from 'nestjs-i18n';
 import { ChangePasswordDto } from '@/modules/auth/auth.dto';
-import { UpdateProfileDto } from './user.dto';
+import { UpdateProfileDto, UpdateNotificationSettingDto } from './user.dto';
 export declare class UserController {
     private readonly userService;
     private readonly authService;
@@ -22,6 +22,7 @@ export declare class UserController {
         language: string;
         isActive: boolean;
         verifiedAt: Date | null;
+        notificationsEnabled: boolean;
         createdAt: Date;
         updatedAt: Date;
     } | null;
@@ -39,6 +40,7 @@ export declare class UserController {
             language: string;
             isActive: boolean;
             verifiedAt: Date | null;
+            notificationsEnabled: boolean;
             createdAt: Date;
             updatedAt: Date;
         } | null;
@@ -57,6 +59,7 @@ export declare class UserController {
             language: string;
             isActive: boolean;
             verifiedAt: Date | null;
+            notificationsEnabled: boolean;
             createdAt: Date;
             updatedAt: Date;
         } | null;
@@ -66,5 +69,24 @@ export declare class UserController {
     }>;
     deactivateAccount(user: IUser): Promise<{
         message: string;
+    }>;
+    updateNotificationSetting(user: IUser, data: UpdateNotificationSettingDto): Promise<{
+        message: string;
+        data: {
+            id: number;
+            fullName: string;
+            email: string;
+            profileImage: import("../files/entities/file.entity").FileEntity;
+            phone: string;
+            website: string;
+            role: import("../roles/role.entity").Role;
+            description: string;
+            language: string;
+            isActive: boolean;
+            verifiedAt: Date | null;
+            notificationsEnabled: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        } | null;
     }>;
 }

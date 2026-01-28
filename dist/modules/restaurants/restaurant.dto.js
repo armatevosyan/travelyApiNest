@@ -9,12 +9,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateRestaurantDto = exports.CreateRestaurantDto = void 0;
+exports.UpdateRestaurantDto = exports.CreateRestaurantDto = exports.RestaurantSpecialDishDto = void 0;
 const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
+class RestaurantSpecialDishDto {
+    imageId;
+    title;
+    description;
+}
+exports.RestaurantSpecialDishDto = RestaurantSpecialDishDto;
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], RestaurantSpecialDishDto.prototype, "imageId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(255),
+    __metadata("design:type", Object)
+], RestaurantSpecialDishDto.prototype, "title", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", Object)
+], RestaurantSpecialDishDto.prototype, "description", void 0);
 class CreateRestaurantDto {
     placeId;
     menuImageIds;
     dishImageIds;
+    specialDishes;
     cuisineTypes;
     dietaryOptions;
 }
@@ -38,6 +61,13 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => RestaurantSpecialDishDto),
+    __metadata("design:type", Array)
+], CreateRestaurantDto.prototype, "specialDishes", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", Array)
 ], CreateRestaurantDto.prototype, "cuisineTypes", void 0);
@@ -50,6 +80,7 @@ __decorate([
 class UpdateRestaurantDto {
     menuImageIds;
     dishImageIds;
+    specialDishes;
     cuisineTypes;
     dietaryOptions;
 }
@@ -66,6 +97,13 @@ __decorate([
     (0, class_validator_1.IsInt)({ each: true }),
     __metadata("design:type", Array)
 ], UpdateRestaurantDto.prototype, "dishImageIds", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => RestaurantSpecialDishDto),
+    __metadata("design:type", Array)
+], UpdateRestaurantDto.prototype, "specialDishes", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsArray)(),

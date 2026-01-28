@@ -1,4 +1,16 @@
 import * as placeTypes from '@/modules/places/place.types';
+declare class RestaurantSpecialDishInputDto {
+    imageId: number;
+    title?: string | null;
+    description?: string | null;
+}
+declare class RestaurantDataDto {
+    menuImageIds?: number[];
+    dishImageIds?: number[];
+    specialDishes?: RestaurantSpecialDishInputDto[];
+    cuisineTypes?: string[];
+    dietaryOptions?: string[];
+}
 export declare class CreatePlaceDto {
     name: string;
     description?: string | null;
@@ -31,12 +43,7 @@ export declare class CreatePlaceDto {
     isPriceOnRequest?: boolean;
     priceType?: string | null;
     oldPrice?: number | null;
-    restaurantData?: {
-        menuImageIds?: number[];
-        dishImageIds?: number[];
-        cuisineTypes?: string[];
-        dietaryOptions?: string[];
-    };
+    restaurantData?: RestaurantDataDto;
     accommodationData?: {
         roomTypes?: {
             name: string;
@@ -138,12 +145,7 @@ export declare class UpdatePlaceDto {
     priceType?: string | null;
     oldPrice?: number | null;
     isPriceOnRequest?: boolean;
-    restaurantData?: {
-        menuImageIds?: number[];
-        dishImageIds?: number[];
-        cuisineTypes?: string[];
-        dietaryOptions?: string[];
-    };
+    restaurantData?: RestaurantDataDto;
     accommodationData?: {
         roomTypes?: {
             name: string;
@@ -227,3 +229,4 @@ export declare class PlaceQueryDto {
     page?: number;
     limit?: number;
 }
+export {};

@@ -213,6 +213,8 @@ let PlaceService = class PlaceService {
                 'restaurant',
                 'restaurant.menuImages',
                 'restaurant.dishImages',
+                'restaurant.specialDishes',
+                'restaurant.specialDishes.file',
                 'accommodation',
                 'shopping',
                 'transport',
@@ -239,6 +241,8 @@ let PlaceService = class PlaceService {
             .leftJoinAndSelect('place.restaurant', 'restaurant')
             .leftJoinAndSelect('restaurant.menuImages', 'restaurantMenuImages')
             .leftJoinAndSelect('restaurant.dishImages', 'restaurantDishImages')
+            .leftJoinAndSelect('restaurant.specialDishes', 'restaurantSpecialDishes')
+            .leftJoinAndSelect('restaurantSpecialDishes.file', 'restaurantSpecialDishFile')
             .leftJoinAndSelect('place.accommodation', 'accommodation')
             .leftJoinAndSelect('place.shopping', 'shopping')
             .leftJoinAndSelect('place.transport', 'transport')
@@ -313,6 +317,8 @@ let PlaceService = class PlaceService {
                 'restaurant',
                 'restaurant.menuImages',
                 'restaurant.dishImages',
+                'restaurant.specialDishes',
+                'restaurant.specialDishes.file',
                 'accommodation',
                 'shopping',
                 'transport',
@@ -344,6 +350,8 @@ let PlaceService = class PlaceService {
                 'restaurant',
                 'restaurant.menuImages',
                 'restaurant.dishImages',
+                'restaurant.specialDishes',
+                'restaurant.specialDishes.file',
                 'accommodation',
                 'shopping',
                 'transport',
@@ -375,6 +383,8 @@ let PlaceService = class PlaceService {
                 'restaurant',
                 'restaurant.menuImages',
                 'restaurant.dishImages',
+                'restaurant.specialDishes',
+                'restaurant.specialDishes.file',
                 'accommodation',
                 'shopping',
                 'transport',
@@ -468,6 +478,8 @@ let PlaceService = class PlaceService {
                 'restaurant',
                 'restaurant.menuImages',
                 'restaurant.dishImages',
+                'restaurant.specialDishes',
+                'restaurant.specialDishes.file',
                 'accommodation',
                 'shopping',
                 'transport',
@@ -510,6 +522,8 @@ let PlaceService = class PlaceService {
                 'restaurant',
                 'restaurant.menuImages',
                 'restaurant.dishImages',
+                'restaurant.specialDishes',
+                'restaurant.specialDishes.file',
                 'accommodation',
                 'shopping',
                 'transport',
@@ -535,6 +549,8 @@ let PlaceService = class PlaceService {
                 'restaurant',
                 'restaurant.menuImages',
                 'restaurant.dishImages',
+                'restaurant.specialDishes',
+                'restaurant.specialDishes.file',
                 'accommodation',
                 'shopping',
                 'transport',

@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const restaurant_service_1 = require("./restaurant.service");
 const restaurant_entity_1 = require("./restaurant.entity");
+const restaurant_special_dish_entity_1 = require("./restaurant-special-dish.entity");
 const place_entity_1 = require("../places/place.entity");
 const file_entity_1 = require("../files/entities/file.entity");
 const category_entity_1 = require("../categories/category.entity");
@@ -20,7 +21,13 @@ exports.RestaurantModule = RestaurantModule;
 exports.RestaurantModule = RestaurantModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([restaurant_entity_1.Restaurant, place_entity_1.Place, file_entity_1.FileEntity, category_entity_1.Category]),
+            typeorm_1.TypeOrmModule.forFeature([
+                restaurant_entity_1.Restaurant,
+                restaurant_special_dish_entity_1.RestaurantSpecialDish,
+                place_entity_1.Place,
+                file_entity_1.FileEntity,
+                category_entity_1.Category,
+            ]),
         ],
         controllers: [],
         providers: [restaurant_service_1.RestaurantService],

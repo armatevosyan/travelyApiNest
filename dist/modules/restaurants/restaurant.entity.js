@@ -13,12 +13,14 @@ exports.Restaurant = void 0;
 const typeorm_1 = require("typeorm");
 const place_entity_1 = require("../places/place.entity");
 const file_entity_1 = require("../files/entities/file.entity");
+const restaurant_special_dish_entity_1 = require("./restaurant-special-dish.entity");
 let Restaurant = class Restaurant {
     id;
     placeId;
     place;
     menuImages;
     dishImages;
+    specialDishes;
     cuisineTypes;
     dietaryOptions;
     createdAt;
@@ -57,6 +59,10 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Restaurant.prototype, "dishImages", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => restaurant_special_dish_entity_1.RestaurantSpecialDish, (d) => d.restaurant),
+    __metadata("design:type", Array)
+], Restaurant.prototype, "specialDishes", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'simple-array', nullable: true }),
     __metadata("design:type", Object)

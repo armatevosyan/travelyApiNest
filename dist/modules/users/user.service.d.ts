@@ -27,6 +27,7 @@ export declare class UserService {
         language: string;
         isActive: boolean;
         verifiedAt: Date | null;
+        notificationsEnabled: boolean;
         createdAt: Date;
         updatedAt: Date;
     } | null>;
@@ -42,6 +43,23 @@ export declare class UserService {
         language: string;
         isActive: boolean;
         verifiedAt: Date | null;
+        notificationsEnabled: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    } | null>;
+    updateNotificationSetting(id: number, notificationsEnabled: boolean): Promise<{
+        id: number;
+        fullName: string;
+        email: string;
+        profileImage: import("../files/entities/file.entity").FileEntity;
+        phone: string;
+        website: string;
+        role: import("../roles/role.entity").Role;
+        description: string;
+        language: string;
+        isActive: boolean;
+        verifiedAt: Date | null;
+        notificationsEnabled: boolean;
         createdAt: Date;
         updatedAt: Date;
     } | null>;
@@ -57,6 +75,7 @@ export declare class UserService {
         language: string;
         isActive: boolean;
         verifiedAt: Date | null;
+        notificationsEnabled: boolean;
         createdAt: Date;
         updatedAt: Date;
     } | null;

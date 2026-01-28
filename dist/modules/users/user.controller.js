@@ -91,6 +91,13 @@ let UserController = class UserController {
             message: this.i18n.translate('t.ACCOUNT_DEACTIVATED_SUCCESSFULLY'),
         };
     }
+    async updateNotificationSetting(user, data) {
+        const updatedUser = await this.userService.updateNotificationSetting(user.id, data.notificationsEnabled);
+        return {
+            message: this.i18n.translate('t.NOTIFICATION_UPDATE_SUCCESS'),
+            data: updatedUser,
+        };
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -138,6 +145,17 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "deactivateAccount", null);
+__decorate([
+    (0, common_1.Post)('notification-setting'),
+    (0, roles_decorators_1.Roles)(role_types_1.ERoles.USER, role_types_1.ERoles.ADMIN, role_types_1.ERoles.SUPER_ADMIN),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, user_decorators_1.User)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User,
+        user_dto_1.UpdateNotificationSettingDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateNotificationSetting", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users'),
     (0, common_1.UseGuards)(roles_guard_1.RolesGuard),

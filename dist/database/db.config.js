@@ -43,7 +43,7 @@ exports.databaseConfig = {
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    synchronize: process.env.NODE_ENV === 'development',
+    synchronize: true,
     entities: [__dirname + '/../modules/**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/migrations/*{.ts,.js}'],
 };

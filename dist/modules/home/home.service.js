@@ -123,10 +123,10 @@ let HomeService = class HomeService {
                 ? {
                     id: loc.image.id,
                     full: {
-                        url: this.filesService.generatePublicUrl(loc.image.bucketPath),
+                        url: loc.image.url,
                     },
                     thumb: {
-                        url: this.filesService.generatePublicUrl(loc.image.bucketPath),
+                        url: loc.image.url,
                     },
                 }
                 : undefined,

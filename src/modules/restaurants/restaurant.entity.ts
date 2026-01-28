@@ -9,9 +9,11 @@ import {
   JoinColumn,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 import { Place } from '../places/place.entity';
 import { FileEntity } from '../files/entities/file.entity';
+import { RestaurantSpecialDish } from './restaurant-special-dish.entity';
 
 @Entity('restaurants')
 export class Restaurant {
@@ -43,6 +45,9 @@ export class Restaurant {
     inverseJoinColumn: { name: 'fileId', referencedColumnName: 'id' },
   })
   dishImages: FileEntity[];
+
+  @OneToMany(() => RestaurantSpecialDish, (d) => d.restaurant)
+  specialDishes: RestaurantSpecialDish[];
 
   // Cuisine Information
   @Column({ type: 'simple-array', nullable: true })

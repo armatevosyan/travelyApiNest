@@ -23,6 +23,7 @@ export declare class User {
     verifiedAt: Date | null;
     deletedAt: Date | null;
     deactivatedAt: Date | null;
+    notificationsEnabled: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

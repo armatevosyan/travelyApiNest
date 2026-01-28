@@ -31,6 +31,7 @@ export declare class AuthController {
             language: string;
             isActive: boolean;
             verifiedAt: Date | null;
+            notificationsEnabled: boolean;
             createdAt: Date;
             updatedAt: Date;
         } | null;
@@ -53,6 +54,7 @@ export declare class AuthController {
             language: string;
             isActive: boolean;
             verifiedAt: Date | null;
+            notificationsEnabled: boolean;
             createdAt: Date;
             updatedAt: Date;
         } | null;
@@ -80,6 +82,7 @@ export declare class AuthController {
             language: string;
             isActive: boolean;
             verifiedAt: Date | null;
+            notificationsEnabled: boolean;
             createdAt: Date;
             updatedAt: Date;
         } | null;
@@ -100,6 +103,7 @@ export declare class AuthController {
             language: string;
             isActive: boolean;
             verifiedAt: Date | null;
+            notificationsEnabled: boolean;
             createdAt: Date;
             updatedAt: Date;
         } | null;

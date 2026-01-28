@@ -46,6 +46,68 @@ exports.PlaceQueryDto = exports.UpdatePlaceDto = exports.CreatePlaceDto = void 0
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const placeTypes = __importStar(require("./place.types"));
+class RestaurantSpecialDishInputDto {
+    imageId;
+    title;
+    description;
+}
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        const num = Number(value);
+        return Number.isFinite(num) ? num : value;
+    }),
+    __metadata("design:type", Number)
+], RestaurantSpecialDishInputDto.prototype, "imageId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 't.PLACE_NAME_INVALID' }),
+    (0, class_validator_1.MaxLength)(255, { message: 't.PLACE_NAME_MAX_LENGTH' }),
+    __metadata("design:type", Object)
+], RestaurantSpecialDishInputDto.prototype, "title", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 't.PLACE_DESCRIPTION_INVALID' }),
+    __metadata("design:type", Object)
+], RestaurantSpecialDishInputDto.prototype, "description", void 0);
+class RestaurantDataDto {
+    menuImageIds;
+    dishImageIds;
+    specialDishes;
+    cuisineTypes;
+    dietaryOptions;
+}
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)({ message: 't.PLACE_IMAGE_IDS_INVALID' }),
+    (0, class_validator_1.IsNumber)({}, { each: true, message: 't.PLACE_IMAGE_IDS_INVALID' }),
+    __metadata("design:type", Array)
+], RestaurantDataDto.prototype, "menuImageIds", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)({ message: 't.PLACE_IMAGE_IDS_INVALID' }),
+    (0, class_validator_1.IsNumber)({}, { each: true, message: 't.PLACE_IMAGE_IDS_INVALID' }),
+    __metadata("design:type", Array)
+], RestaurantDataDto.prototype, "dishImageIds", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)({ message: 't.PLACE_IMAGE_IDS_INVALID' }),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => RestaurantSpecialDishInputDto),
+    __metadata("design:type", Array)
+], RestaurantDataDto.prototype, "specialDishes", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
+], RestaurantDataDto.prototype, "cuisineTypes", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
+], RestaurantDataDto.prototype, "dietaryOptions", void 0);
 class CreatePlaceDto {
     name;
     description;
@@ -355,7 +417,9 @@ __decorate([
 ], CreatePlaceDto.prototype, "oldPrice", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
+    (0, class_validator_1.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => RestaurantDataDto),
+    __metadata("design:type", RestaurantDataDto)
 ], CreatePlaceDto.prototype, "restaurantData", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
@@ -690,7 +754,9 @@ __decorate([
 ], UpdatePlaceDto.prototype, "isPriceOnRequest", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
+    (0, class_validator_1.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => RestaurantDataDto),
+    __metadata("design:type", RestaurantDataDto)
 ], UpdatePlaceDto.prototype, "restaurantData", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
