@@ -99,6 +99,7 @@
   "PLACE_DELETED_SUCCESSFULLY": "Место успешно удалено",
   "PLACE_NOT_FOUND": "Место не найдено",
   "PLACE_NOT_OWNER": "Вы не являетесь владельцем этого места",
+  "PLACE_OPTIONS_RETRIEVED_SUCCESSFULLY": "Опции места успешно получены",
   "PROFILE_UPDATED_SUCCESSFULLY": "Профиль успешно обновлен",
   "EMAIL_ALREADY_EXISTS": "Email уже существует",
   "USER_FULL_NAME_INVALID": "Полное имя должно быть строкой",
@@ -168,5 +169,8 @@
   "FILE_RELATIONS_RETRIEVED_SUCCESSFULLY": "Связи с файлами получены успешно",
   "PROFILE_IMAGE_UPDATED_SUCCESSFULLY": "Изображение профиля успешно обновлено",
   "INVALID_IMAGE_TYPE": "Неверный тип изображения. Разрешены только JPEG, PNG, GIF, WebP и AVIF",
-  "IMAGE_TOO_LARGE": "Размер изображения превышает максимально допустимый размер 5MB"
+  "IMAGE_TOO_LARGE": "Размер изображения превышает максимально допустимый размер 5MB",
+  "NOTIFICATION_UPDATE_SUCCESS": "Уведомления успешно обновлены",
+  "NOTIFICATIONS_ENABLED_INVALID": "Статус уведомлений должен быть булевым",
+  "NOTIFICATIONS_ENABLED_REQUIRED": "Статус уведомлений обязателен"
 }

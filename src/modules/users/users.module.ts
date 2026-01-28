@@ -33,6 +33,7 @@ export class UsersModule implements NestModule {
         { path: 'users/profile-image', method: RequestMethod.POST },
         { path: 'users/change-password', method: RequestMethod.POST },
         { path: 'users/deactivate-account', method: RequestMethod.POST },
+        { path: 'users/notification-setting', method: RequestMethod.POST },
       );
   }
 }
