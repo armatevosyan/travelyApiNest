@@ -39,14 +39,19 @@ let UserController = class UserController {
         return this.userService.runUserData(user);
     }
     async updateProfile(user, data) {
-        const updatedUser = await this.userService.update(user.id, {
-            ...data,
-            description: data.description ?? undefined,
-        });
-        return {
-            message: this.i18n.translate('t.PROFILE_UPDATED_SUCCESSFULLY'),
-            data: updatedUser,
-        };
+        try {
+            const updatedUser = await this.userService.update(user.id, {
+                ...data,
+                description: data.description ?? undefined,
+            });
+            return {
+                message: this.i18n.translate('t.PROFILE_UPDATED_SUCCESSFULLY'),
+                data: updatedUser,
+            };
+        }
+        catch (e) {
+            console.log('Error while updating profile info', e);
+        }
     }
     async updateProfileImage(user, file) {
         if (!file) {
@@ -110,8 +115,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "me", null);
 __decorate([
-    (0, common_1.Patch)('profile'),
-    (0, roles_decorators_1.Roles)(role_types_1.ERoles.USER, role_types_1.ERoles.ADMIN, role_types_1.ERoles.SUPER_ADMIN),
+    (0, common_1.Post)('profile'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, user_decorators_1.User)()),
     __param(1, (0, common_1.Body)()),

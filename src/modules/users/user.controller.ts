@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Patch,
   Body,
   UseGuards,
   HttpCode,
@@ -39,19 +38,23 @@ export class UserController {
     return this.userService.runUserData(user);
   }
 
-  @Patch('profile')
-  @Roles(ERoles.USER, ERoles.ADMIN, ERoles.SUPER_ADMIN)
+  @Post('profile')
+  // @Roles(ERoles.USER, ERoles.ADMIN, ERoles.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   async updateProfile(@User() user: IUser, @Body() data: UpdateProfileDto) {
-    const updatedUser = await this.userService.update(user.id, {
-      ...data,
-      description: data.description ?? undefined,
-    });
+    try {
+      const updatedUser = await this.userService.update(user.id, {
+        ...data,
+        description: data.description ?? undefined,
+      });
 
-    return {
-      message: this.i18n.translate('t.PROFILE_UPDATED_SUCCESSFULLY'),
-      data: updatedUser,
-    };
+      return {
+        message: this.i18n.translate('t.PROFILE_UPDATED_SUCCESSFULLY'),
+        data: updatedUser,
+      };
+    } catch (e) {
+      console.log('Error while updating profile info', e);
+    }
   }
 
   @Post('profile-image')

@@ -15,13 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HomeController = void 0;
 const common_1 = require("@nestjs/common");
 const home_service_1 = require("./home.service");
+const optional_jwt_auth_guard_1 = require("../auth/optional-jwt-auth.guard");
+const user_decorators_1 = require("../../common/decorators/user.decorators");
 let HomeController = class HomeController {
     homeService;
     constructor(homeService) {
         this.homeService = homeService;
     }
-    async getInit(country) {
-        const data = await this.homeService.getInit(country);
+    async getInit(user, country) {
+        const data = await this.homeService.getInit(country, user?.id ?? null);
         return {
             success: true,
             data,
@@ -31,9 +33,11 @@ let HomeController = class HomeController {
 exports.HomeController = HomeController;
 __decorate([
     (0, common_1.Get)('init'),
-    __param(0, (0, common_1.Query)('country')),
+    (0, common_1.UseGuards)(optional_jwt_auth_guard_1.OptionalJwtAuthGuard),
+    __param(0, (0, user_decorators_1.User)()),
+    __param(1, (0, common_1.Query)('country')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], HomeController.prototype, "getInit", null);
 exports.HomeController = HomeController = __decorate([

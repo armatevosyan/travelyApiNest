@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull } from 'typeorm';
+import { Repository, IsNull, In } from 'typeorm';
 import { Category } from '../categories/category.entity';
 import { Location, LocationType } from '../locations/location.entity';
 import { Place } from '../places/place.entity';
 import { Blog } from '../blog/blog.entity';
+import { Wishlist } from '../wishlist/wishlist.entity';
 import { FilesService } from '../files/files.service';
 import { FileRelationType } from '../files/entities/file-relation.entity';
 import { FileEntity } from '../files/entities/file.entity';
@@ -20,10 +21,12 @@ export class HomeService {
     private readonly placeRepository: Repository<Place>,
     @InjectRepository(Blog)
     private readonly blogRepository: Repository<Blog>,
+    @InjectRepository(Wishlist)
+    private readonly wishlistRepository: Repository<Wishlist>,
     private readonly filesService: FilesService,
   ) {}
 
-  async getInit(country?: string) {
+  async getInit(country?: string, userId?: number | null) {
     let location: Location | null = null;
     if (country) {
       location = await this.locationRepository.findOne({
@@ -46,7 +49,6 @@ export class HomeService {
         sortOrder: 'ASC',
         name: 'ASC',
       },
-      take: 10,
     });
 
     const locations = await this.locationRepository.find({
@@ -57,8 +59,30 @@ export class HomeService {
       order: {
         name: 'ASC',
       },
-      take: 10,
     });
+
+    const locationIds = locations.map((l) => l.id);
+    const placesCountByCountryId = new Map<number, number>();
+    if (locationIds.length > 0) {
+      const rows = await this.placeRepository
+        .createQueryBuilder('place')
+        .select('place.countryId', 'countryId')
+        .addSelect('COUNT(place.id)', 'count')
+        .where('place.countryId IN (:...countryIds)', {
+          countryIds: locationIds,
+        })
+        .andWhere('place.isActive = :isActive', { isActive: true })
+        .groupBy('place.countryId')
+        .getRawMany<{ countryId: string; count: string }>();
+
+      for (const row of rows) {
+        const countryId = Number(row.countryId);
+        const count = Number(row.count);
+        if (!Number.isNaN(countryId) && !Number.isNaN(count)) {
+          placesCountByCountryId.set(countryId, count);
+        }
+      }
+    }
 
     const recentPostsQuery = this.placeRepository
       .createQueryBuilder('place')
@@ -75,6 +99,19 @@ export class HomeService {
     }
 
     const recentPosts = await recentPostsQuery.getMany();
+
+    const wishlistedPlaceIds = new Set<number>();
+    if (userId && recentPosts.length > 0) {
+      const ids = recentPosts.map((p) => p.id);
+      const rows = await this.wishlistRepository.find({
+        select: ['placeId'],
+        where: {
+          userId,
+          placeId: In(ids),
+        },
+      });
+      for (const row of rows) wishlistedPlaceIds.add(row.placeId);
+    }
 
     const relatedBlogs = await this.blogRepository.find({
       relations: ['user', 'category'],
@@ -117,7 +154,7 @@ export class HomeService {
     const formattedLocations = locations.map((loc) => ({
       termId: loc.id,
       name: loc.name,
-      count: 0,
+      count: placesCountByCountryId.get(loc.id) ?? 0,
       image: loc.image
         ? {
             id: loc.image.id,
@@ -166,7 +203,7 @@ export class HomeService {
           postDate: place.createdAt,
           ratingAvg: place.averageRating,
           ratingCount: place.reviewCount,
-          wishlist: false,
+          wishlist: wishlistedPlaceIds.has(place.id),
           image: placeImage
             ? {
                 id: placeImage.id,
@@ -294,12 +331,12 @@ export class HomeService {
     );
 
     const formattedWidgets: any[] = [];
-    console.log('formattedRecentPosts', formattedRecentPosts);
     return {
       sliders: formattedSliders,
       categories: formattedCategories,
       locations: formattedLocations,
       recent_posts: formattedRecentPosts,
+      wishlist_places: formattedRecentPosts.filter((p) => p.wishlist),
       widgets: formattedWidgets,
       news: formattedNews,
     };

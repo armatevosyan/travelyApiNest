@@ -44,7 +44,7 @@ export declare class UserController {
             createdAt: Date;
             updatedAt: Date;
         } | null;
-    }>;
+    } | undefined>;
     updateProfileImage(user: IUser, file: Express.Multer.File): Promise<{
         message: string;
         data: {

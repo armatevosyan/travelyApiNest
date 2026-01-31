@@ -15,6 +15,7 @@ const category_entity_1 = require("../categories/category.entity");
 const location_entity_1 = require("../locations/location.entity");
 const place_entity_1 = require("../places/place.entity");
 const blog_entity_1 = require("../blog/blog.entity");
+const wishlist_entity_1 = require("../wishlist/wishlist.entity");
 const blog_module_1 = require("../blog/blog.module");
 const files_module_1 = require("../files/files.module");
 let HomeModule = class HomeModule {
@@ -23,7 +24,7 @@ exports.HomeModule = HomeModule;
 exports.HomeModule = HomeModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([category_entity_1.Category, location_entity_1.Location, place_entity_1.Place, blog_entity_1.Blog]),
+            typeorm_1.TypeOrmModule.forFeature([category_entity_1.Category, location_entity_1.Location, place_entity_1.Place, blog_entity_1.Blog, wishlist_entity_1.Wishlist]),
             blog_module_1.BlogModule,
             files_module_1.FilesModule,
         ],

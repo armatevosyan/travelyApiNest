@@ -1,8 +1,9 @@
 import { HomeService } from './home.service';
+import { User as IUser } from '@/modules/users/user.entity';
 export declare class HomeController {
     private readonly homeService;
     constructor(homeService: HomeService);
-    getInit(country?: string): Promise<{
+    getInit(user: IUser | null, country?: string): Promise<{
         success: boolean;
         data: {
             sliders: string[];
@@ -97,7 +98,93 @@ export declare class HomeController {
                 subcategoryId: number | null;
                 subcategory: import("../categories/category.entity").Category | null;
                 userId: number;
-                user: import("../users/user.entity").User;
+                user: IUser;
+                imageIds: number[] | null;
+                averageRating: number;
+                reviewCount: number;
+                isActive: boolean;
+                isVerified: boolean;
+                isFeatured: boolean;
+                openingHours: Record<string, any> | null;
+                social: {
+                    facebook?: string | null;
+                    instagram?: string | null;
+                    twitter?: string | null;
+                    linkedin?: string | null;
+                } | null;
+                slug: string | null;
+                tags: import("../tags/tag.entity").Tag[];
+                facilities: import("../facilities/facility.entity").Facility[];
+                restaurant?: import("../restaurants").Restaurant | null;
+                accommodation?: import("../accommodations").Accommodation | null;
+                shopping?: import("../shopping").Shopping | null;
+                transport?: import("../transport").Transport | null;
+                healthWellness?: import("../health-wellness").HealthWellness | null;
+                natureOutdoors?: import("../nature-outdoors").NatureOutdoors | null;
+                entertainment?: import("../entertainment").Entertainment | null;
+                priceType: string | null;
+                price: number | null;
+                minPrice: number | null;
+                maxPrice: number | null;
+                oldPrice: number | null;
+                isPriceOnRequest: boolean;
+                viewCount: number;
+                favoriteCount: number;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
+            }[];
+            wishlist_places: {
+                useViewPhone: string | null;
+                id: number;
+                postTitle: string;
+                postDate: Date;
+                ratingAvg: number;
+                ratingCount: number;
+                wishlist: boolean;
+                image: {
+                    id: number;
+                    full: {
+                        url: string;
+                    };
+                    thumb: {
+                        url: string;
+                    };
+                } | undefined;
+                author: {
+                    id: number;
+                    name: string;
+                    userPhoto: string | null;
+                } | undefined;
+                category: {
+                    termId: number;
+                    name: string;
+                    taxonomy: string;
+                } | undefined;
+                priceMin: number | null;
+                priceMax: number | null;
+                address: string | null;
+                bookingUse: boolean;
+                bookingPriceDisplay: string;
+                name: string;
+                description: string | null;
+                countryId: number | null;
+                country: import("../locations/location.entity").Location | null;
+                stateId: number | null;
+                state: import("../locations/location.entity").Location | null;
+                cityId: number | null;
+                city: import("../locations/location.entity").Location | null;
+                postalCode: string | null;
+                latitude: number | null;
+                longitude: number | null;
+                phone: string | null;
+                email: string | null;
+                website: string | null;
+                categoryId: number;
+                subcategoryId: number | null;
+                subcategory: import("../categories/category.entity").Category | null;
+                userId: number;
+                user: IUser;
                 imageIds: number[] | null;
                 averageRating: number;
                 reviewCount: number;

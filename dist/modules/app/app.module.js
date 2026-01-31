@@ -71,6 +71,7 @@ const nature_outdoors_module_1 = require("../nature-outdoors/nature-outdoors.mod
 const entertainment_module_1 = require("../entertainment/entertainment.module");
 const home_module_1 = require("../home/home.module");
 const place_option_module_1 = require("../place-options/place-option.module");
+const wishlist_module_1 = require("../wishlist/wishlist.module");
 const db_config_1 = require("../../database/db.config");
 const email_config_1 = __importDefault(require("../../config/email.config"));
 let AppModule = class AppModule {
@@ -121,6 +122,7 @@ exports.AppModule = AppModule = __decorate([
             entertainment_module_1.EntertainmentModule,
             home_module_1.HomeModule,
             place_option_module_1.PlaceOptionModule,
+            wishlist_module_1.WishlistModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

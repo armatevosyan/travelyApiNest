@@ -20,6 +20,7 @@ const category_entity_1 = require("../categories/category.entity");
 const location_entity_1 = require("../locations/location.entity");
 const place_entity_1 = require("../places/place.entity");
 const blog_entity_1 = require("../blog/blog.entity");
+const wishlist_entity_1 = require("../wishlist/wishlist.entity");
 const files_service_1 = require("../files/files.service");
 const file_relation_entity_1 = require("../files/entities/file-relation.entity");
 let HomeService = class HomeService {
@@ -27,15 +28,17 @@ let HomeService = class HomeService {
     locationRepository;
     placeRepository;
     blogRepository;
+    wishlistRepository;
     filesService;
-    constructor(categoryRepository, locationRepository, placeRepository, blogRepository, filesService) {
+    constructor(categoryRepository, locationRepository, placeRepository, blogRepository, wishlistRepository, filesService) {
         this.categoryRepository = categoryRepository;
         this.locationRepository = locationRepository;
         this.placeRepository = placeRepository;
         this.blogRepository = blogRepository;
+        this.wishlistRepository = wishlistRepository;
         this.filesService = filesService;
     }
-    async getInit(country) {
+    async getInit(country, userId) {
         let location = null;
         if (country) {
             location = await this.locationRepository.findOne({
@@ -56,7 +59,6 @@ let HomeService = class HomeService {
                 sortOrder: 'ASC',
                 name: 'ASC',
             },
-            take: 10,
         });
         const locations = await this.locationRepository.find({
             where: {
@@ -66,8 +68,28 @@ let HomeService = class HomeService {
             order: {
                 name: 'ASC',
             },
-            take: 10,
         });
+        const locationIds = locations.map((l) => l.id);
+        const placesCountByCountryId = new Map();
+        if (locationIds.length > 0) {
+            const rows = await this.placeRepository
+                .createQueryBuilder('place')
+                .select('place.countryId', 'countryId')
+                .addSelect('COUNT(place.id)', 'count')
+                .where('place.countryId IN (:...countryIds)', {
+                countryIds: locationIds,
+            })
+                .andWhere('place.isActive = :isActive', { isActive: true })
+                .groupBy('place.countryId')
+                .getRawMany();
+            for (const row of rows) {
+                const countryId = Number(row.countryId);
+                const count = Number(row.count);
+                if (!Number.isNaN(countryId) && !Number.isNaN(count)) {
+                    placesCountByCountryId.set(countryId, count);
+                }
+            }
+        }
         const recentPostsQuery = this.placeRepository
             .createQueryBuilder('place')
             .leftJoinAndSelect('place.category', 'category')
@@ -82,6 +104,19 @@ let HomeService = class HomeService {
             });
         }
         const recentPosts = await recentPostsQuery.getMany();
+        const wishlistedPlaceIds = new Set();
+        if (userId && recentPosts.length > 0) {
+            const ids = recentPosts.map((p) => p.id);
+            const rows = await this.wishlistRepository.find({
+                select: ['placeId'],
+                where: {
+                    userId,
+                    placeId: (0, typeorm_2.In)(ids),
+                },
+            });
+            for (const row of rows)
+                wishlistedPlaceIds.add(row.placeId);
+        }
         const relatedBlogs = await this.blogRepository.find({
             relations: ['user', 'category'],
             order: {
@@ -118,7 +153,7 @@ let HomeService = class HomeService {
         const formattedLocations = locations.map((loc) => ({
             termId: loc.id,
             name: loc.name,
-            count: 0,
+            count: placesCountByCountryId.get(loc.id) ?? 0,
             image: loc.image
                 ? {
                     id: loc.image.id,
@@ -153,7 +188,7 @@ let HomeService = class HomeService {
                 postDate: place.createdAt,
                 ratingAvg: place.averageRating,
                 ratingCount: place.reviewCount,
-                wishlist: false,
+                wishlist: wishlistedPlaceIds.has(place.id),
                 image: placeImage
                     ? {
                         id: placeImage.id,
@@ -265,12 +300,12 @@ let HomeService = class HomeService {
             };
         }));
         const formattedWidgets = [];
-        console.log('formattedRecentPosts', formattedRecentPosts);
         return {
             sliders: formattedSliders,
             categories: formattedCategories,
             locations: formattedLocations,
             recent_posts: formattedRecentPosts,
+            wishlist_places: formattedRecentPosts.filter((p) => p.wishlist),
             widgets: formattedWidgets,
             news: formattedNews,
         };
@@ -283,7 +318,9 @@ exports.HomeService = HomeService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(location_entity_1.Location)),
     __param(2, (0, typeorm_1.InjectRepository)(place_entity_1.Place)),
     __param(3, (0, typeorm_1.InjectRepository)(blog_entity_1.Blog)),
+    __param(4, (0, typeorm_1.InjectRepository)(wishlist_entity_1.Wishlist)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

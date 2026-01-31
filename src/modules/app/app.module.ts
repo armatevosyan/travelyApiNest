@@ -33,6 +33,7 @@ import { NatureOutdoorsModule } from '@/modules/nature-outdoors/nature-outdoors.
 import { EntertainmentModule } from '@/modules/entertainment/entertainment.module';
 import { HomeModule } from '@/modules/home/home.module';
 import { PlaceOptionModule } from '@/modules/place-options/place-option.module';
+import { WishlistModule } from '@/modules/wishlist/wishlist.module';
 
 import { databaseConfig } from 'database/db.config';
 import emailConfig from 'config/email.config';
@@ -79,6 +80,7 @@ import emailConfig from 'config/email.config';
     EntertainmentModule,
     HomeModule,
     PlaceOptionModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
