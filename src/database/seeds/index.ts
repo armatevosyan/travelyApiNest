@@ -3,6 +3,11 @@ import { runSeeder } from 'typeorm-extension';
 import { DataSource } from 'typeorm';
 
 import RoleSeeder from './roles.seed';
+import UserSeeder from './users.seed';
+import CategorySeeder from './category.seed';
+import LocationSeeder from './location.seed';
+import FacilitySeeder from './facility.seed';
+import PlaceOptionSeeder from './place-option.seed';
 import { databaseConfig } from '../db.config';
 
 async function bootstrap() {
@@ -16,9 +21,11 @@ async function bootstrap() {
 
     // Run all seeders here
     await runSeeder(AppDataSource, RoleSeeder);
-    // Example for additional seeders:
-    // await runSeeder(AppDataSource, UserSeeder);
-    // await runSeeder(AppDataSource, ProductSeeder);
+    await runSeeder(AppDataSource, UserSeeder);
+    await runSeeder(AppDataSource, CategorySeeder);
+    await runSeeder(AppDataSource, LocationSeeder);
+    await runSeeder(AppDataSource, FacilitySeeder);
+    await runSeeder(AppDataSource, PlaceOptionSeeder);
   } catch (err) {
     console.error('❌ Error seeding database:', err);
     process.exit(1); // Exit with error code

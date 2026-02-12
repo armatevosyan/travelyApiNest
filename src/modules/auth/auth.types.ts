@@ -1,11 +1,8 @@
-export interface SignUpData {
-  fullName: string;
+export interface SignupData {
   email: string;
   password: string;
-  roleId?: number;
-}
-
-export interface SignInData {
-  email: string;
-  password: string;
+  roleId: number;
+  verifyCode: string;
+  otpExpiration: Date;
+  isActive: boolean;
 }
