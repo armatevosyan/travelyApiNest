@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Category } from './category.entity';
 import { Location, LocationType } from '../locations/location.entity';
 import {
@@ -12,6 +12,11 @@ import {
   UpdateCategoryDto,
   CategoryQueryDto,
 } from './category.dto';
+import {
+  FileRelation,
+  FileRelationType,
+} from '../files/entities/file-relation.entity';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class CategoryService {
@@ -20,6 +25,9 @@ export class CategoryService {
     private readonly categoryRepo: Repository<Category>,
     @InjectRepository(Location)
     private readonly locationRepo: Repository<Location>,
+    @InjectRepository(FileRelation)
+    private readonly fileRelationRepo: Repository<FileRelation>,
+    private readonly filesService: FilesService,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
@@ -226,7 +234,10 @@ export class CategoryService {
     return this.categoryRepo.save(category);
   }
 
-  async getDiscoveryCategories(country?: string): Promise<any[]> {
+  async getDiscoveryCategories(
+    country?: string,
+    search?: string,
+  ): Promise<any[]> {
     let location: Location | null = null;
     if (country) {
       location = await this.locationRepo.findOne({
@@ -237,7 +248,7 @@ export class CategoryService {
       });
     }
 
-    const categories = await this.categoryRepo
+    const qb = this.categoryRepo
       .createQueryBuilder('category')
       .leftJoinAndSelect('category.places', 'featuredProducts')
       .leftJoinAndSelect('featuredProducts.user', 'author')
@@ -250,12 +261,67 @@ export class CategoryService {
           countryId: location?.id || null,
           isActive: true,
         },
-      )
+      );
+
+    if (search?.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      qb.andWhere(
+        '(featuredProducts.id IS NOT NULL AND (featuredProducts.name ILIKE :searchTerm OR featuredProducts.description ILIKE :searchTerm))',
+        { searchTerm },
+      );
+    }
+
+    const categories = await qb
       .orderBy('category.sortOrder', 'ASC')
       .addOrderBy('category.name', 'ASC')
       .getMany();
 
+    const placeIds = categories.flatMap((c) =>
+      (c.places || []).map((p) => p.id),
+    );
+    const placeImagesMap = await this.loadPlaceImagesMap(placeIds);
+
+    for (const category of categories) {
+      for (const place of category.places || []) {
+        place.placeImages = placeImagesMap.get(place.id) ?? [];
+      }
+    }
+
     return categories.slice(0, 10);
+  }
+
+  private async loadPlaceImagesMap(
+    placeIds: number[],
+  ): Promise<
+    Map<
+      number,
+      Array<{ id: number; full: { url: string }; thumb: { url: string } }>
+    >
+  > {
+    if (placeIds.length === 0) return new Map();
+
+    const relations = await this.fileRelationRepo.find({
+      where: {
+        entityType: FileRelationType.PLACE,
+        entityId: In(placeIds),
+      },
+      relations: ['file'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const map = new Map<
+      number,
+      Array<{ id: number; full: { url: string }; thumb: { url: string } }>
+    >();
+    for (const rel of relations) {
+      if (!rel.file) continue;
+      if (map.has(rel.entityId)) continue;
+      const url = this.filesService.generatePublicUrl(rel.file.bucketPath);
+      map.set(rel.entityId, [
+        { id: rel.file.id, full: { url }, thumb: { url } },
+      ]);
+    }
+    return map;
   }
 
   private async wouldCreateCircularReference(
