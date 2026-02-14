@@ -7,11 +7,13 @@ import {
   DeleteDateColumn,
   ManyToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 import { Role } from 'modules/roles/role.entity';
 import { FileEntity } from '@/modules/files/entities/file.entity';
 
 @Entity('users')
+@Unique(['email', 'provider'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -19,10 +21,10 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   fullName: string;
 
-  @Column({ unique: true })
+  @Column()
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', nullable: true })
   password: string;
 
   @Column({ type: 'varchar', nullable: true })
@@ -51,6 +53,9 @@ export class User {
 
   @Column({ type: 'varchar', nullable: true })
   appleId: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  provider: string | null;
 
   @ManyToOne(() => Role, { eager: true })
   role: Role;

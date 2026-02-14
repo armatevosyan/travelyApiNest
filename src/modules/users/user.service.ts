@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from './user.entity';
 import { FilesService } from '@/modules/files/files.service';
 
@@ -25,6 +25,23 @@ export class UserService {
     });
   }
 
+  async createSocialUser(data: {
+    email: string;
+    fullName?: string | null;
+    googleId?: string | null;
+    appleId?: string | null;
+    provider: string;
+    roleId: number;
+  }): Promise<User> {
+    const user = this.userRepo.create({
+      ...data,
+      fullName: data.fullName ?? data.email.split('@')[0],
+      verifiedAt: new Date(),
+      isActive: true,
+    });
+    return this.userRepo.save(user);
+  }
+
   private createBaseQueryBuilder(): SelectQueryBuilder<User> {
     return this.userRepo
       .createQueryBuilder('user')
@@ -41,6 +58,45 @@ export class UserService {
   async findByEmail(email: string): Promise<User | null> {
     return this.createBaseQueryBuilder()
       .where('user.email = :email', { email })
+      .getOne();
+  }
+
+  /** Find user by email and provider (for sign-up check and social create check) */
+  async findByEmailAndProvider(
+    email: string,
+    provider: string,
+  ): Promise<User | null> {
+    return this.createBaseQueryBuilder()
+      .where('user.email = :email', { email })
+      .andWhere('user.provider = :provider', { provider })
+      .getOne();
+  }
+
+  /** Find the email/password user for sign-in (provider = email or legacy null) */
+  async findByEmailForEmailLogin(email: string): Promise<User | null> {
+    return this.createBaseQueryBuilder()
+      .where('user.email = :email', { email })
+      .andWhere(
+        new Brackets((qb) =>
+          qb
+            .where('user.provider = :provider')
+            .orWhere('user.provider IS NULL'),
+        ),
+        { provider: 'email' },
+      )
+      .orderBy('user.provider', 'DESC') // prefer 'email' over null
+      .getOne();
+  }
+
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    return this.createBaseQueryBuilder()
+      .where('user.googleId = :googleId', { googleId })
+      .getOne();
+  }
+
+  async findByAppleId(appleId: string): Promise<User | null> {
+    return this.createBaseQueryBuilder()
+      .where('user.appleId = :appleId', { appleId })
       .getOne();
   }
 
@@ -85,6 +141,7 @@ export class UserService {
       isActive: user.isActive,
       verifiedAt: user.verifiedAt,
       notificationsEnabled: user.notificationsEnabled,
+      provider: user.provider,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

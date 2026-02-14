@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
+import * as crypto from 'crypto';
 import { AuthService } from './auth.service';
 import { UserService } from 'modules/users/user.service';
 import { RoleService } from 'modules/roles/role.service';
@@ -16,6 +17,7 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
   VerifyOtpDto,
+  SocialLoginDto,
 } from './auth.dto';
 
 @Controller('auth')
@@ -29,7 +31,10 @@ export class AuthController {
 
   @Post('sign-up')
   async signUp(@Body() data: SignUpDto) {
-    const existingUser = await this.userService.findByEmail(data.email);
+    const existingUser = await this.userService.findByEmailAndProvider(
+      data.email,
+      'email',
+    );
     if (existingUser) {
       throw new BadRequestException(
         this.i18n.translate('t.USER_ALREADY_EXISTS'),
@@ -52,6 +57,7 @@ export class AuthController {
       verifyCode: otp,
       otpExpiration,
       isActive: false,
+      provider: 'email',
     });
 
     await this.authService.sendVerificationEmail(data.email, otp);
@@ -67,9 +73,54 @@ export class AuthController {
     };
   }
 
+  @Post('social-login')
+  async socialLogin(@Body() data: SocialLoginDto) {
+    const { provider, providerId, email, name } = data;
+
+    let user =
+      provider === 'google'
+        ? await this.userService.findByGoogleId(providerId)
+        : await this.userService.findByAppleId(providerId);
+
+    if (!user) {
+      if (!email) {
+        throw new BadRequestException(
+          this.i18n.translate('t.EMAIL_REQUIRED_FOR_NEW_ACCOUNT'),
+        );
+      }
+      const role = await this.roleService.findByName(ERoles.USER);
+      if (!role) {
+        throw new BadRequestException(
+          this.i18n.translate('t.DEFAULT_ROLE_NOT_FOUND'),
+        );
+      }
+      const newUser = await this.userService.createSocialUser({
+        email,
+        fullName: name || email.split('@')[0],
+        googleId: provider === 'google' ? providerId : null,
+        appleId: provider === 'apple' ? providerId : null,
+        provider,
+        roleId: role.id,
+      });
+      user = await this.userService.findById(newUser.id);
+    }
+
+    if (!user?.isActive) {
+      throw new UnauthorizedException(
+        this.i18n.translate('t.ACCOUNT_DEACTIVATED'),
+      );
+    }
+
+    const token = this.authService.accessToken(String(user.id), user.role);
+    return {
+      user: this.userService.runUserData(user),
+      token,
+    };
+  }
+
   @Post('sign-in')
   async signIn(@Body() data: SignInDto) {
-    const user = await this.userService.findByEmail(data.email);
+    const user = await this.userService.findByEmailForEmailLogin(data.email);
     if (!user) {
       throw new UnauthorizedException(
         this.i18n.translate('t.INVALID_EMAIL_OR_PASSWORD'),
@@ -108,7 +159,7 @@ export class AuthController {
 
   @Post('verify-email')
   async verifyEmail(@Body() data: { email: string; code: string }) {
-    const user = await this.userService.findByEmail(data.email);
+    const user = await this.userService.findByEmailForEmailLogin(data.email);
     if (!user) {
       throw new BadRequestException(this.i18n.translate('t.USER_NOT_FOUND'));
     }
@@ -150,7 +201,7 @@ export class AuthController {
 
   @Post('resend-verification')
   async resendVerification(@Body() data: { email: string }) {
-    const user = await this.userService.findByEmail(data.email);
+    const user = await this.userService.findByEmailForEmailLogin(data.email);
     if (!user) {
       throw new BadRequestException(this.i18n.translate('t.USER_NOT_FOUND'));
     }
@@ -176,7 +227,7 @@ export class AuthController {
 
   @Post('forgot-password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
-    const user = await this.userService.findByEmail(data.email);
+    const user = await this.userService.findByEmailForEmailLogin(data.email);
     if (!user) {
       return {
         message: this.i18n.translate('t.PASSWORD_RESET_EMAIL_SENT'),
@@ -210,7 +261,7 @@ export class AuthController {
 
   @Post('verify-otp')
   async verifyOtp(@Body() data: VerifyOtpDto) {
-    const user = await this.userService.findByEmail(data.email);
+    const user = await this.userService.findByEmailForEmailLogin(data.email);
     if (!user) {
       throw new BadRequestException(
         this.i18n.translate('t.INVALID_RESET_TOKEN'),
@@ -246,7 +297,7 @@ export class AuthController {
 
   @Post('reset-password')
   async resetPassword(@Body() data: ResetPasswordDto) {
-    const user = await this.userService.findByEmail(data.email);
+    const user = await this.userService.findByEmailForEmailLogin(data.email);
     if (!user) {
       throw new BadRequestException(
         this.i18n.translate('t.INVALID_RESET_TOKEN'),
