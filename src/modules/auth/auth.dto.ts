@@ -1,4 +1,28 @@
-import { IsEmail, IsNotEmpty, MinLength, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  IsString,
+  IsIn,
+  IsOptional,
+} from 'class-validator';
+
+export class SocialLoginDto {
+  @IsIn(['google', 'apple'], { message: 't.INVALID_PROVIDER' })
+  provider: 'google' | 'apple';
+
+  @IsNotEmpty({ message: 't.PROVIDER_ID_REQUIRED' })
+  @IsString()
+  providerId: string;
+
+  @IsOptional()
+  @IsEmail({}, { message: 't.EMAIL_INVALID' })
+  email?: string | null;
+
+  @IsOptional()
+  @IsString()
+  name?: string | null;
+}
 
 export class EmailPasswordDto {
   @IsEmail({}, { message: 't.EMAIL_INVALID' })
