@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
 import {
+  IsArray,
   IsNumber,
   IsOptional,
   IsString,
@@ -40,4 +41,17 @@ export class UpdateBlogDto {
   })
   @IsNumber({}, { message: 't.BLOG_FILE_ID_INVALID' })
   fileId?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    if (!Array.isArray(value)) return undefined;
+    const nums = value
+      .map((v) => Number(v))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    return nums;
+  })
+  @IsArray({ message: 't.BLOG_IMAGE_IDS_INVALID' })
+  @IsNumber({}, { each: true, message: 't.BLOG_IMAGE_IDS_INVALID' })
+  imageIds?: number[];
 }

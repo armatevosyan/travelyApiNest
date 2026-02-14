@@ -1,4 +1,7 @@
 import {
+  ArrayMinSize,
+  IsArray,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -32,6 +35,25 @@ export class CreateBlogDto {
   @IsString({ message: 't.BLOG_IMAGE_INVALID' })
   @MaxLength(500, { message: 't.BLOG_IMAGE_MAX_LENGTH' })
   image?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    if (Array.isArray(value)) {
+      return value.map((v) => Number(v)).filter((n) => !isNaN(n));
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((v) => Number(v.trim()))
+        .filter((n) => !isNaN(n));
+    }
+    return undefined;
+  })
+  @IsArray({ message: 't.BLOG_IMAGE_IDS_INVALID' })
+  @ArrayMinSize(2, { message: 't.BLOG_MIN_IMAGES_REQUIRED' })
+  @IsInt({ each: true, message: 't.BLOG_IMAGE_ID_INVALID' })
+  imageIds?: number[];
 
   @IsOptional()
   @Transform(({ value }) => {

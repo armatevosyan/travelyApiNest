@@ -36,6 +36,102 @@ describe('HomeService.getInit (wishlist)', () => {
     generatePublicUrl: jest.fn((p: string) => `https://cdn.test/${p}`),
   });
 
+  it('includes author.userPhoto for related blog items when author has a profile image', async () => {
+    const placeRepository = {
+      createQueryBuilder: jest.fn().mockReturnValue(makeQueryBuilder([])),
+    } as any;
+
+    const blogRepository = {
+      find: jest.fn().mockResolvedValue([
+        {
+          id: 1,
+          title: 'Blog 1',
+          createdAt: new Date('2026-01-01T00:00:00.000Z'),
+          publishedAt: new Date('2026-01-01T00:00:00.000Z'),
+          description: 'Desc 1',
+          image: null,
+          category: null,
+          user: {
+            id: 101,
+            fullName: 'Alice Doe',
+            profileImageId: 999,
+            description: null,
+          },
+        },
+        {
+          id: 2,
+          title: 'Blog 2',
+          createdAt: new Date('2026-01-02T00:00:00.000Z'),
+          publishedAt: null,
+          description: 'Desc 2',
+          image: null,
+          category: null,
+          user: {
+            id: 102,
+            fullName: 'Bob Smith',
+            profileImageId: 888,
+            description: null,
+          },
+        },
+      ]),
+    } as any;
+
+    const filesService = {
+      getFileRelationsForEntity: jest
+        .fn()
+        .mockImplementation(async (_type: any, entityId: number) => {
+          if (entityId === 101) {
+            return [
+              {
+                file: {
+                  bucketPath: 'users/101.jpg',
+                },
+              },
+            ];
+          }
+          if (entityId === 102) {
+            return [
+              {
+                file: {
+                  bucketPath: 'users/102.jpg',
+                },
+              },
+            ];
+          }
+          return [];
+        }),
+      generatePublicUrl: jest.fn((p: string) => `https://cdn.test/${p}`),
+    } as any;
+
+    const homeService = new HomeService(
+      {
+        find: jest.fn().mockResolvedValue([]),
+      } as any,
+      {
+        findOne: jest.fn().mockResolvedValue(null),
+        find: jest.fn().mockResolvedValue([]),
+      } as any,
+      placeRepository,
+      blogRepository,
+      {
+        find: jest.fn().mockResolvedValue([]),
+      } as any,
+      filesService,
+    );
+
+    const res: any = await homeService.getInit(undefined, null);
+
+    expect(res.news).toHaveLength(2);
+    expect(res.news[0].related).toHaveLength(1);
+    expect(res.news[0].related[0].author.userPhoto).toBe(
+      'https://cdn.test/users/102.jpg',
+    );
+    expect(res.news[1].related).toHaveLength(1);
+    expect(res.news[1].related[0].author.userPhoto).toBe(
+      'https://cdn.test/users/101.jpg',
+    );
+  });
+
   it('sets wishlist=true for recent_posts that are in the user wishlist', async () => {
     const recentPlaces = [
       {

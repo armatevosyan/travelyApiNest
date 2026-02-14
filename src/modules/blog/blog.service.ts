@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '@/modules/users/user.service';
 import { CategoryService } from '@/modules/categories/category.service';
@@ -25,7 +26,8 @@ export class BlogService {
   ) {}
 
   async create(userDto: User, createBlogDto: CreateBlogDto): Promise<Blog> {
-    const { title, description, image, categoryId, fileId } = createBlogDto;
+    const { title, description, image, categoryId, fileId, imageIds } =
+      createBlogDto;
     const { id } = userDto;
 
     const currentUser = await this.userService.findById(id);
@@ -56,13 +58,21 @@ export class BlogService {
 
     const saved = await this.blogRepo.save(blog);
 
-    if (fileId) {
+    const idsToAttach =
+      (imageIds?.length ? imageIds : undefined) ?? (fileId ? [fileId] : []);
+
+    if (idsToAttach.length > 0) {
       try {
-        await this.filesService.attachFileToEntity(
-          fileId,
-          FileRelationType.BLOG,
-          saved.id,
-        );
+        const uniqueIds = Array.from(new Set(idsToAttach));
+
+        for (const id of uniqueIds) {
+          await this.filesService.attachFileToEntity(
+            id,
+            FileRelationType.BLOG,
+            saved.id,
+          );
+        }
+
         const files = await this.filesService.getFilesForEntity(
           FileRelationType.BLOG,
           saved.id,
@@ -72,7 +82,7 @@ export class BlogService {
           await this.blogRepo.save(saved);
         }
       } catch (e: any) {
-        console.log('Error attaching file to blog: ', e.message);
+        console.log('Error attaching files to blog: ', e.message);
       }
     }
 
@@ -84,6 +94,10 @@ export class BlogService {
     userDto: User,
     updateBlogDto: UpdateBlogDto,
   ): Promise<Blog> {
+    if (!userDto || !(userDto as any).id) {
+      throw new UnauthorizedException('t.UNAUTHORIZED');
+    }
+
     const { id } = userDto;
     const currentUser = await this.userService.findById(id);
     if (!currentUser) {
@@ -98,7 +112,8 @@ export class BlogService {
       throw new BadRequestException('t.BLOG_UPDATE_FORBIDDEN');
     }
 
-    const { title, description, image, categoryId, fileId } = updateBlogDto;
+    const { title, description, image, categoryId, fileId, imageIds } =
+      updateBlogDto;
 
     if (title && title !== blog.title) {
       const duplicate = await this.blogRepo.findOne({ where: { title } });
@@ -123,7 +138,56 @@ export class BlogService {
 
     const updated = await this.blogRepo.save(blog);
 
-    if (fileId) {
+    const desiredIds =
+      typeof imageIds !== 'undefined'
+        ? Array.from(
+            new Set([...(imageIds || []), ...(fileId ? [fileId] : [])]),
+          )
+        : undefined;
+
+    if (typeof desiredIds !== 'undefined') {
+      try {
+        const relations = await this.filesService.getFileRelationsForEntity(
+          FileRelationType.BLOG,
+          updated.id,
+        );
+        const currentIds = (relations || [])
+          .map((r: any) => r?.fileId)
+          .filter((n: any) => typeof n === 'number');
+
+        const toDetach = currentIds.filter(
+          (cid: number) => !desiredIds.includes(cid),
+        );
+        const toAttach = desiredIds.filter(
+          (did: number) => !currentIds.includes(did),
+        );
+
+        for (const fid of toDetach) {
+          await this.filesService.detachFileFromEntity(
+            fid,
+            FileRelationType.BLOG,
+            updated.id,
+          );
+        }
+        for (const fid of toAttach) {
+          await this.filesService.attachFileToEntity(
+            fid,
+            FileRelationType.BLOG,
+            updated.id,
+          );
+        }
+
+        const files = await this.filesService.getFilesForEntity(
+          FileRelationType.BLOG,
+          updated.id,
+        );
+
+        updated.image = files?.[0]?.url;
+        await this.blogRepo.save(updated);
+      } catch (e: any) {
+        console.log('Error syncing blog files: ', e.message);
+      }
+    } else if (fileId) {
       try {
         await this.filesService.attachFileToEntity(
           fileId,
@@ -382,17 +446,23 @@ export class BlogService {
       throw new NotFoundException('t.BLOG_NOT_FOUND');
     }
 
-    // Ensure image field populated from FilesService if missing
-    if (!blog.image) {
-      try {
-        const files = await this.filesService.getFilesForEntity(
-          FileRelationType.BLOG,
-          blog.id,
-        );
-        if (files?.[0]?.url) blog.image = files[0].url;
-      } catch (e: any) {
-        console.log('Error getting files for blog: ', e.message);
+    let imageUrls: string[] = [];
+    let imageIds: number[] = [];
+    try {
+      const files = await this.filesService.getFilesForEntity(
+        FileRelationType.BLOG,
+        blog.id,
+      );
+      imageUrls = (files || []).map((f) => f?.url).filter(Boolean);
+      imageIds = (files || [])
+        .map((f: any) => f?.id)
+        .filter((n: any) => typeof n === 'number');
+
+      if (!blog.image && imageUrls[0]) {
+        blog.image = imageUrls[0];
       }
+    } catch (e: any) {
+      console.log('Error getting files for blog: ', e.message);
     }
 
     const relatedQb = this.blogRepo
@@ -428,6 +498,8 @@ export class BlogService {
       description: blog.description,
       numComments: 0,
       link: undefined as any,
+      images: imageUrls,
+      imageIds,
       image: blog.image
         ? {
             id: blog.id,
@@ -484,5 +556,47 @@ export class BlogService {
       success: true,
       data: response,
     };
+  }
+
+  async remove(blogId: number, userDto: User): Promise<void> {
+    if (!userDto || !(userDto as any).id) {
+      throw new UnauthorizedException('t.UNAUTHORIZED');
+    }
+
+    const { id } = userDto;
+    const currentUser = await this.userService.findById(id);
+    if (!currentUser) {
+      throw new BadRequestException('t.USER_NOT_FOUND');
+    }
+
+    const blog = await this.blogRepo.findOne({ where: { id: blogId } });
+    if (!blog) {
+      throw new NotFoundException('t.BLOG_NOT_FOUND');
+    }
+    if (blog.userId !== currentUser.id) {
+      throw new BadRequestException('t.BLOG_UPDATE_FORBIDDEN');
+    }
+
+    try {
+      const relations = await this.filesService.getFileRelationsForEntity(
+        FileRelationType.BLOG,
+        blog.id,
+      );
+      const fileIds = (relations || [])
+        .map((r: any) => r?.fileId)
+        .filter((n: any) => typeof n === 'number');
+
+      for (const fid of fileIds) {
+        await this.filesService.detachFileFromEntity(
+          fid,
+          FileRelationType.BLOG,
+          blog.id,
+        );
+      }
+    } catch (e: any) {
+      console.log('Error detaching blog files: ', e.message);
+    }
+
+    await this.blogRepo.delete(blog.id);
   }
 }
