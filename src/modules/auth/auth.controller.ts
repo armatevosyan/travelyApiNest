@@ -6,7 +6,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
-import * as crypto from 'crypto';
 import { AuthService } from './auth.service';
 import { UserService } from 'modules/users/user.service';
 import { RoleService } from 'modules/roles/role.service';
