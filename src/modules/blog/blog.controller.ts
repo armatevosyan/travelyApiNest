@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   HttpStatus,
   Param,
@@ -20,6 +21,7 @@ import { User as IUser } from '@/modules/users/user.entity';
 import { CreateBlogDto } from '@/modules/blog/dto/create-blog.dto';
 import { UpdateBlogDto } from '@/modules/blog/dto/update-blog.dto';
 import { ParseIntPipe } from '@nestjs/common';
+import { JwtAuthGuard } from '@/modules/auth/jwt-auth.guard';
 
 @Controller('blog')
 export class BlogController {
@@ -29,8 +31,8 @@ export class BlogController {
   ) {}
 
   @Post()
-  // @UseGuards(RolesGuard)
-  // @Roles(ERoles.ADMIN, ERoles.SUPER_ADMIN, ERoles.USER)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ERoles.ADMIN, ERoles.SUPER_ADMIN, ERoles.USER)
   @HttpCode(HttpStatus.CREATED)
   async create(@User() user: IUser, @Body() data: CreateBlogDto) {
     const blog = await this.blogService.create(user, data);
@@ -63,8 +65,7 @@ export class BlogController {
   }
 
   @Patch(':id')
-  @UseGuards(RolesGuard)
-  @Roles(ERoles.ADMIN, ERoles.SUPER_ADMIN, ERoles.USER)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -85,6 +86,16 @@ export class BlogController {
     return {
       message: this.i18n.translate('t.BLOG_RETRIEVED_SUCCESSFULLY'),
       ...result,
+    };
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  async remove(@Param('id', ParseIntPipe) id: number, @User() user: IUser) {
+    await this.blogService.remove(id, user);
+    return {
+      message: this.i18n.translate('t.BLOG_DELETED_SUCCESSFULLY'),
     };
   }
 }

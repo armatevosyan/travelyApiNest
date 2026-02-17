@@ -121,6 +121,34 @@ export class HomeService {
       take: 5,
     });
 
+    const blogAuthorPhotoByUserId = new Map<number, string | null>();
+    const blogAuthorIdsNeedingPhoto = Array.from(
+      new Set(
+        relatedBlogs
+          .map((b) => b.user)
+          .filter((u): u is NonNullable<typeof u> => Boolean(u))
+          .filter((u) => Boolean(u.profileImageId))
+          .map((u) => u.id),
+      ),
+    );
+    await Promise.all(
+      blogAuthorIdsNeedingPhoto.map(async (blogAuthorId) => {
+        const userFileRelations =
+          await this.filesService.getFileRelationsForEntity(
+            FileRelationType.USER,
+            blogAuthorId,
+          );
+        const userImage: FileEntity | null =
+          userFileRelations.length > 0 ? userFileRelations[0].file : null;
+        blogAuthorPhotoByUserId.set(
+          blogAuthorId,
+          userImage
+            ? this.filesService.generatePublicUrl(userImage.bucketPath)
+            : null,
+        );
+      }),
+    );
+
     const formattedSliders = sliders;
 
     const formattedCategories = categories.map((category) => {
@@ -245,25 +273,13 @@ export class HomeService {
         };
       }),
     );
-
+    console.log('relatedBlogs', JSON.stringify(relatedBlogs, null, 2));
     const formattedNews = await Promise.all(
       relatedBlogs.map(async (blog) => {
         let blogImage: string | null = null;
         if (blog.image) {
           blogImage = blog.image;
         }
-
-        let userImage: FileEntity | null = null;
-        if (blog.user?.profileImageId) {
-          const userFileRelations =
-            await this.filesService.getFileRelationsForEntity(
-              FileRelationType.USER,
-              blog.user.id,
-            );
-          userImage =
-            userFileRelations.length > 0 ? userFileRelations[0].file : null;
-        }
-
         return {
           id: blog.id,
           postTitle: blog.title,
@@ -286,9 +302,7 @@ export class HomeService {
                 firstName: blog.user.fullName?.split(' ')[0] || '',
                 lastName:
                   blog.user.fullName?.split(' ').slice(1).join(' ') || '',
-                userPhoto: userImage
-                  ? this.filesService.generatePublicUrl(userImage.bucketPath)
-                  : null,
+                userPhoto: blog.user.profileImage,
                 description: blog.user.description || null,
               }
             : undefined,
@@ -322,7 +336,8 @@ export class HomeService {
                 ? {
                     id: related.user.id,
                     name: related.user.fullName,
-                    userPhoto: null,
+                    userPhoto:
+                      blogAuthorPhotoByUserId.get(related.user.id) ?? null,
                   }
                 : undefined,
             })),
