@@ -17,6 +17,7 @@ import { FilesService } from './files.service';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { User } from '@/common/decorators/user.decorators';
 import { I18nService } from 'nestjs-i18n';
+import type { MulterFile } from '@/types/upload';
 
 @Controller('files')
 export class FilesController {
@@ -31,7 +32,7 @@ export class FilesController {
   @HttpCode(HttpStatus.CREATED)
   async createFile(
     @User('id') userId: number,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() files: MulterFile[],
     @Query('folder') folder?: string,
   ) {
     if (!files || files.length === 0) {

@@ -21,6 +21,7 @@ import { AuthService } from '@/modules/auth/auth.service';
 import { I18nService } from 'nestjs-i18n';
 import { ChangePasswordDto } from '@/modules/auth/auth.dto';
 import { UpdateProfileDto, UpdateNotificationSettingDto } from './user.dto';
+import type { MulterFile } from '@/types/upload';
 
 @Controller('users')
 @UseGuards(RolesGuard) // Protect all routes in this controller
@@ -62,7 +63,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async updateProfileImage(
     @User() user: IUser,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: MulterFile,
   ) {
     if (!file) {
       throw new BadRequestException(this.i18n.translate('t.FILE_REQUIRED'));

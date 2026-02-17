@@ -1,4 +1,3 @@
-import type { User } from 'modules/users/user.entity';
 import type { ERoles } from 'modules/roles/role.types';
 
 declare global {
@@ -6,6 +5,20 @@ declare global {
     interface Request {
       user?: User;
       role?: ERoles;
+    }
+    namespace Multer {
+      interface File {
+        fieldname: string;
+        originalname: string;
+        encoding: string;
+        mimetype: string;
+        size: number;
+        destination?: string;
+        filename?: string;
+        path?: string;
+        buffer?: Buffer;
+        stream?: NodeJS.ReadableStream;
+      }
     }
   }
 }

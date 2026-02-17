@@ -14,6 +14,7 @@ import {
 import { createR2Client } from './r2.client';
 import { I18nService } from 'nestjs-i18n';
 import { randomUUID } from 'crypto';
+import type { MulterFile } from '@/types/upload';
 
 @Injectable()
 export class FilesService {
@@ -81,7 +82,7 @@ export class FilesService {
    * Handles the entire upload process server-side
    */
   async uploadFileDirectly(
-    file: Express.Multer.File,
+    file: MulterFile,
     userId: number,
     folder: string = 'uploads',
   ): Promise<FileEntity> {
