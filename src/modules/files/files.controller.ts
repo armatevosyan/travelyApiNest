@@ -18,6 +18,7 @@ import { FilesService } from './files.service';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { User } from '@/common/decorators/user.decorators';
 import { I18nService } from 'nestjs-i18n';
+import type { MulterFile } from '@/types/upload';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User as UserEntity } from '@/modules/users/user.entity';
@@ -38,7 +39,7 @@ export class FilesController {
   @HttpCode(HttpStatus.CREATED)
   async createFile(
     @User('id') userId: number,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() files: MulterFile[],
     @Query('folder') folder?: string,
   ) {
     const normalizedUserId = Number(userId);

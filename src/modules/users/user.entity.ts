@@ -21,8 +21,8 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   fullName: string;
 
-  @Column()
-  email: string;
+  @Column({ type: 'varchar', nullable: true })
+  email: string | null;
 
   @Column({ type: 'varchar', nullable: true })
   password: string;

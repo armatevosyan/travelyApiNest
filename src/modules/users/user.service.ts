@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { FilesService } from '@/modules/files/files.service';
 
 import { SignupData } from '@/modules/auth/auth.types';
+import type { MulterFile } from '@/types/upload';
 
 @Injectable()
 export class UserService {
@@ -105,7 +106,7 @@ export class UserService {
     return this.runUserData(await this.findById(id));
   }
 
-  async updateProfileImage(userId: number, file: Express.Multer.File) {
+  async updateProfileImage(userId: number, file: MulterFile) {
     const uploadedFile = await this.filesService.uploadFileDirectly(
       file,
       userId,
