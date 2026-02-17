@@ -10,6 +10,7 @@ import { AuthService } from './auth.service';
 import { UserService } from 'modules/users/user.service';
 import { RoleService } from 'modules/roles/role.service';
 import { ERoles } from 'modules/roles/role.types';
+import { EAuthProvider } from './auth.types';
 import {
   SignInDto,
   SignUpDto,
@@ -32,7 +33,7 @@ export class AuthController {
   async signUp(@Body() data: SignUpDto) {
     const existingUser = await this.userService.findByEmailAndProvider(
       data.email,
-      'email',
+      EAuthProvider.EMAIL,
     );
     if (existingUser) {
       throw new BadRequestException(
@@ -56,7 +57,7 @@ export class AuthController {
       verifyCode: otp,
       otpExpiration,
       isActive: false,
-      provider: 'email',
+      provider: EAuthProvider.EMAIL,
     });
 
     await this.authService.sendVerificationEmail(data.email, otp);
@@ -77,12 +78,12 @@ export class AuthController {
     const { provider, providerId, email, name } = data;
 
     let user =
-      provider === 'google'
+      provider === EAuthProvider.GOOGLE
         ? await this.userService.findByGoogleId(providerId)
         : await this.userService.findByAppleId(providerId);
 
     if (!user) {
-      if (!email) {
+      if (!email && provider === EAuthProvider.GOOGLE) {
         throw new BadRequestException(
           this.i18n.translate('t.EMAIL_REQUIRED_FOR_NEW_ACCOUNT'),
         );
@@ -94,10 +95,10 @@ export class AuthController {
         );
       }
       const newUser = await this.userService.createSocialUser({
-        email,
-        fullName: name || email.split('@')[0],
-        googleId: provider === 'google' ? providerId : null,
-        appleId: provider === 'apple' ? providerId : null,
+        email: email ?? null,
+        fullName: name || (email ? email.split('@')[0] : undefined),
+        googleId: provider === EAuthProvider.GOOGLE ? providerId : null,
+        appleId: provider === EAuthProvider.APPLE ? providerId : null,
         provider,
         roleId: role.id,
       });
