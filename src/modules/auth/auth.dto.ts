@@ -6,10 +6,13 @@ import {
   IsIn,
   IsOptional,
 } from 'class-validator';
+import { EAuthProvider } from './auth.types';
 
 export class SocialLoginDto {
-  @IsIn(['google', 'apple'], { message: 't.INVALID_PROVIDER' })
-  provider: 'google' | 'apple';
+  @IsIn([EAuthProvider.GOOGLE, EAuthProvider.APPLE], {
+    message: 't.INVALID_PROVIDER',
+  })
+  provider: EAuthProvider.GOOGLE | EAuthProvider.APPLE;
 
   @IsNotEmpty({ message: 't.PROVIDER_ID_REQUIRED' })
   @IsString()

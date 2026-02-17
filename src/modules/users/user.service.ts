@@ -4,7 +4,7 @@ import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from './user.entity';
 import { FilesService } from '@/modules/files/files.service';
 
-import { SignupData } from '@/modules/auth/auth.types';
+import { EAuthProvider, SignupData } from '@/modules/auth/auth.types';
 import type { MulterFile } from '@/types/upload';
 
 @Injectable()
@@ -27,16 +27,19 @@ export class UserService {
   }
 
   async createSocialUser(data: {
-    email: string;
+    email: string | null | undefined;
     fullName?: string | null;
     googleId?: string | null;
     appleId?: string | null;
-    provider: string;
+    provider: EAuthProvider;
     roleId: number;
   }): Promise<User> {
+    const fullName =
+      data.fullName ?? (data.email ? data.email.split('@')[0] : undefined);
     const user = this.userRepo.create({
       ...data,
-      fullName: data.fullName ?? data.email.split('@')[0],
+      email: data.email ?? null,
+      fullName: fullName ?? undefined,
       verifiedAt: new Date(),
       isActive: true,
     });
@@ -65,7 +68,7 @@ export class UserService {
   /** Find user by email and provider (for sign-up check and social create check) */
   async findByEmailAndProvider(
     email: string,
-    provider: string,
+    provider: EAuthProvider,
   ): Promise<User | null> {
     return this.createBaseQueryBuilder()
       .where('user.email = :email', { email })
@@ -83,7 +86,7 @@ export class UserService {
             .where('user.provider = :provider')
             .orWhere('user.provider IS NULL'),
         ),
-        { provider: 'email' },
+        { provider: EAuthProvider.EMAIL },
       )
       .orderBy('user.provider', 'DESC') // prefer 'email' over null
       .getOne();

@@ -1,3 +1,9 @@
+export enum EAuthProvider {
+  GOOGLE = 'google',
+  APPLE = 'apple',
+  EMAIL = 'email',
+}
+
 export interface SignupData {
   email: string;
   password: string;
@@ -6,5 +12,5 @@ export interface SignupData {
   verifyCode: string;
   otpExpiration: Date;
   isActive: boolean;
-  provider?: string;
+  provider?: EAuthProvider;
 }
