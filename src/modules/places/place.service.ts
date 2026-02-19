@@ -278,11 +278,20 @@ export class PlaceService {
     query: PlaceQueryDto,
   ): Promise<{ places: Place[]; total: number }> {
     const {
-      categoryId,
+      categoryIds,
       subcategoryId,
       userId,
       cityId,
+      stateId,
       countryId,
+      sortBy = 'latest',
+      facilityIds,
+      minRating,
+      latitude,
+      longitude,
+      maxDistanceKm,
+      openTimeStart,
+      openTimeEnd,
       isActive,
       isFeatured,
       minPrice,
@@ -319,10 +328,11 @@ export class PlaceService {
       .leftJoinAndSelect('place.natureOutdoors', 'natureOutdoors')
       .leftJoinAndSelect('place.entertainment', 'entertainment');
 
-    if (categoryId) {
-      queryBuilder = queryBuilder.andWhere('place.categoryId = :categoryId', {
-        categoryId,
-      });
+    if (categoryIds?.length) {
+      queryBuilder = queryBuilder.andWhere(
+        'place.categoryId IN (:...categoryIds)',
+        { categoryIds },
+      );
     }
     if (subcategoryId) {
       queryBuilder = queryBuilder.andWhere(
@@ -342,10 +352,63 @@ export class PlaceService {
         cityId,
       });
     }
+    if (stateId) {
+      queryBuilder = queryBuilder.andWhere('place.stateId = :stateId', {
+        stateId,
+      });
+    }
     if (countryId) {
       queryBuilder = queryBuilder.andWhere('place.countryId = :countryId', {
         countryId,
       });
+    }
+    if (facilityIds?.length) {
+      queryBuilder = queryBuilder.andWhere(
+        `place.id IN (
+          SELECT pf."placeId" FROM place_facilities pf
+          WHERE pf."facilityId" IN (:...facilityIds)
+        )`,
+        { facilityIds },
+      );
+    }
+    if (minRating != null) {
+      queryBuilder = queryBuilder.andWhere(
+        'place.averageRating >= :minRating',
+        { minRating },
+      );
+    }
+    if (
+      latitude != null &&
+      longitude != null &&
+      maxDistanceKm != null &&
+      maxDistanceKm >= 0
+    ) {
+      queryBuilder = queryBuilder
+        .andWhere('place.latitude IS NOT NULL AND place.longitude IS NOT NULL')
+        .andWhere(
+          `(6371 * acos(least(1::double precision, cos(radians(:lat)) * cos(radians(place.latitude::double precision)) * cos(radians(place.longitude::double precision) - radians(:lng)) + sin(radians(:lat)) * sin(radians(place.latitude::double precision))))) <= :maxDistanceKm`,
+          {
+            lat: latitude,
+            lng: longitude,
+            maxDistanceKm,
+          },
+        );
+    }
+    if (openTimeStart && openTimeEnd) {
+      // Filter places open during [openTimeStart, openTimeEnd]: at least one day's schedule overlaps the window
+      queryBuilder = queryBuilder
+        .andWhere('place."openingHours" IS NOT NULL')
+        .andWhere(
+          `EXISTS (
+            SELECT 1 FROM jsonb_each(place."openingHours"::jsonb) AS _day(key, schedule)
+            WHERE (schedule->>'isClosed') IS DISTINCT FROM 'true'
+              AND schedule->>'open' IS NOT NULL
+              AND schedule->>'close' IS NOT NULL
+              AND (schedule->>'open')::time < CAST(:openTimeEnd AS time)
+              AND (schedule->>'close')::time > CAST(:openTimeStart AS time)
+          )`,
+          { openTimeStart, openTimeEnd },
+        );
     }
     if (isActive !== undefined) {
       queryBuilder = queryBuilder.andWhere('place.isActive = :isActive', {
@@ -378,10 +441,13 @@ export class PlaceService {
       );
     }
 
-    queryBuilder = queryBuilder
-      .orderBy('place.createdAt', 'DESC')
-      .skip(page * limit)
-      .take(limit);
+    if (sortBy === 'rating') {
+      queryBuilder = queryBuilder.orderBy('place.averageRating', 'DESC');
+    } else {
+      queryBuilder = queryBuilder.orderBy('place.createdAt', 'DESC');
+    }
+
+    queryBuilder = queryBuilder.skip(page * limit).take(limit);
 
     const [places, total] = await queryBuilder.getManyAndCount();
 

@@ -199,3 +199,10 @@ export interface DaySchedule {
   close: string | null; // Format: "HH:MM" or null
   isClosed?: boolean;
 }
+
+/** Sort options for filter places (e.g. "Sort By" in filter UI) */
+export enum PlaceSortBy {
+  LATEST = 'latest',
+  RATING = 'rating',
+  DISTANCE = 'distance',
+}

@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsBoolean,
   IsArray,
+  IsIn,
   MinLength,
   MaxLength,
   IsLatitude,
@@ -741,14 +742,26 @@ export class UpdatePlaceDto {
 }
 
 export class PlaceQueryDto {
+  /** Category filter: multiple categories (e.g. Accommodation, Event, Food) */
   @IsOptional()
-  @Transform(({ value }) => {
+  @Transform(({ value }): number[] | undefined => {
     if (value === '' || value === null || value === undefined) return undefined;
-    const num = Number(value);
-    return isNaN(num) ? undefined : num;
+    if (Array.isArray(value)) {
+      const nums = value.map((v) => Number(v)).filter((n) => !isNaN(n));
+      return nums.length ? nums : undefined;
+    }
+    if (typeof value === 'string') {
+      const nums = value
+        .split(',')
+        .map((v) => Number(v.trim()))
+        .filter((n) => !isNaN(n));
+      return nums.length ? nums : undefined;
+    }
+    return undefined;
   })
-  @IsNumber()
-  categoryId?: number;
+  @IsArray()
+  @IsNumber({}, { each: true })
+  categoryIds?: number[];
 
   @IsOptional()
   @Transform(({ value }) => {
@@ -784,7 +797,93 @@ export class PlaceQueryDto {
     return isNaN(num) ? undefined : num;
   })
   @IsNumber()
+  stateId?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
   countryId?: number;
+
+  /** Sort By: latest (default), rating, or distance (requires latitude, longitude) */
+  @IsOptional()
+  @IsIn(['latest', 'rating', 'distance'], {
+    message: 't.PLACE_SORT_BY_INVALID',
+  })
+  sortBy?: 'latest' | 'rating' | 'distance';
+
+  /** Facilities: places that have ALL selected facilities */
+  @IsOptional()
+  @Transform(({ value }): number[] | undefined => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    if (Array.isArray(value)) {
+      const nums = value.map((v) => Number(v)).filter((n) => !isNaN(n));
+      return nums.length ? nums : undefined;
+    }
+    if (typeof value === 'string') {
+      const nums = value
+        .split(',')
+        .map((v) => Number(v.trim()))
+        .filter((n) => !isNaN(n));
+      return nums.length ? nums : undefined;
+    }
+    return undefined;
+  })
+  @IsArray()
+  @IsNumber({}, { each: true })
+  facilityIds?: number[];
+
+  /** Minimum rating (e.g. 5.0, 4.0). Filter places with averageRating >= minRating */
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  minRating?: number;
+
+  /** Search center for distance filter (with maxDistanceKm) */
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  latitude?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  longitude?: number;
+
+  /** Max distance in km from latitude/longitude (e.g. 0–30 slider) */
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+  })
+  @IsNumber()
+  maxDistanceKm?: number;
+
+  /** Open time window: start time (HH:mm or HH:mm:ss) */
+  @IsOptional()
+  @IsString()
+  openTimeStart?: string;
+
+  /** Open time window: end time (HH:mm or HH:mm:ss) */
+  @IsOptional()
+  @IsString()
+  openTimeEnd?: string;
 
   @IsOptional()
   @Transform(({ value }): boolean => {
