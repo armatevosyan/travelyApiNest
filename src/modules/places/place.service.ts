@@ -278,6 +278,7 @@ export class PlaceService {
     query: PlaceQueryDto,
   ): Promise<{ places: Place[]; total: number }> {
     const {
+      search,
       categoryIds,
       subcategoryId,
       userId,
@@ -328,6 +329,13 @@ export class PlaceService {
       .leftJoinAndSelect('place.natureOutdoors', 'natureOutdoors')
       .leftJoinAndSelect('place.entertainment', 'entertainment');
 
+    if (search) {
+      const escaped = search.replace(/[%_\\]/g, '\\$&');
+      queryBuilder = queryBuilder.andWhere(
+        "place.name ILIKE :search ESCAPE '\\'",
+        { search: `%${escaped}%` },
+      );
+    }
     if (categoryIds?.length) {
       queryBuilder = queryBuilder.andWhere(
         'place.categoryId IN (:...categoryIds)',

@@ -742,6 +742,16 @@ export class UpdatePlaceDto {
 }
 
 export class PlaceQueryDto {
+  /** Search by place name/title (case-insensitive, partial match) */
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const s = typeof value === 'string' ? value.trim() : String(value).trim();
+    return s.length ? s : undefined;
+  })
+  @IsString()
+  search?: string;
+
   /** Category filter: multiple categories (e.g. Accommodation, Event, Food) */
   @IsOptional()
   @Transform(({ value }): number[] | undefined => {
