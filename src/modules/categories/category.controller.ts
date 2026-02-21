@@ -108,7 +108,7 @@ export class CategoryController {
   @Get('list_discover')
   async listDiscover(
     @Query('country') country?: string,
-    @Query('search') search?: string,
+    @Query('q') search?: string,
   ) {
     const categories = await this.categoryService.getDiscoveryCategories(
       country,

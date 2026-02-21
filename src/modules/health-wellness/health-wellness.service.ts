@@ -28,7 +28,6 @@ export class HealthWellnessService {
     const place = await this.placeRepository.findOne({
       where: { id: createHealthWellnessDto.placeId },
     });
-    console.log(1111);
     if (!place) {
       throw new NotFoundException(
         `Place with ID ${createHealthWellnessDto.placeId} not found`,

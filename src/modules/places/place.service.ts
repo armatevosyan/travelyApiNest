@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Place } from './place.entity';
 import { PlaceQueryDto, UpdatePlaceDto } from './place.dto';
 import { I18nService } from 'nestjs-i18n';
@@ -26,6 +26,7 @@ import { HealthWellnessService } from '@/modules/health-wellness/health-wellness
 import { NatureOutdoorsService } from '@/modules/nature-outdoors/nature-outdoors.service';
 import { EntertainmentService } from '@/modules/entertainment/entertainment.service';
 import { MainCategoryEnum } from '@/modules/categories/category.enum';
+import { Wishlist } from '@/modules/wishlist/wishlist.entity';
 
 @Injectable()
 export class PlaceService {
@@ -34,6 +35,8 @@ export class PlaceService {
     private readonly placeRepository: Repository<Place>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(Wishlist)
+    private readonly wishlistRepository: Repository<Wishlist>,
     private readonly i18n: I18nService,
     private readonly locationService: LocationService,
     private readonly tagService: TagService,
@@ -162,6 +165,18 @@ export class PlaceService {
     return Promise.all(places.map((place) => this.filterRelationFields(place)));
   }
 
+  private async isWishlisted(placeId: number, userId?: number | null) {
+    if (!userId) return false;
+    const row = await this.wishlistRepository.findOne({
+      select: ['id'],
+      where: {
+        userId,
+        placeId,
+      },
+    });
+    return Boolean(row);
+  }
+
   async create(userId: number, data: CreatePlaceData): Promise<Place> {
     await this.locationService.validateLocationHierarchy(
       data.countryId,
@@ -235,7 +250,6 @@ export class PlaceService {
       );
     }
 
-    // Create category-specific record based on parent category slug
     await this.createCategorySpecificRecord(savedPlace.id, {
       restaurantData,
       accommodationData,
@@ -276,12 +290,13 @@ export class PlaceService {
 
   async findAll(
     query: PlaceQueryDto,
+    userId?: number | null,
   ): Promise<{ places: Place[]; total: number }> {
     const {
       search,
       categoryIds,
       subcategoryId,
-      userId,
+      userId: queryUserId,
       cityId,
       stateId,
       countryId,
@@ -300,7 +315,20 @@ export class PlaceService {
       isPriceOnRequest,
       page = 0,
       limit = 10,
+      country,
     } = query;
+
+    let resolvedCountryId = countryId;
+    if (!resolvedCountryId && country) {
+      const countryLocation =
+        await this.locationService.findCountryByName(country);
+      if (!countryLocation) {
+        throw new NotFoundException(
+          this.i18n.translate('t.LOCATION_NOT_FOUND'),
+        );
+      }
+      resolvedCountryId = countryLocation.id;
+    }
 
     let queryBuilder = this.placeRepository.createQueryBuilder('place');
 
@@ -350,9 +378,9 @@ export class PlaceService {
         },
       );
     }
-    if (userId) {
+    if (queryUserId) {
       queryBuilder = queryBuilder.andWhere('place.userId = :userId', {
-        userId,
+        userId: queryUserId,
       });
     }
     if (cityId) {
@@ -365,9 +393,9 @@ export class PlaceService {
         stateId,
       });
     }
-    if (countryId) {
+    if (resolvedCountryId) {
       queryBuilder = queryBuilder.andWhere('place.countryId = :countryId', {
-        countryId,
+        countryId: resolvedCountryId,
       });
     }
     if (facilityIds?.length) {
@@ -403,7 +431,6 @@ export class PlaceService {
         );
     }
     if (openTimeStart && openTimeEnd) {
-      // Filter places open during [openTimeStart, openTimeEnd]: at least one day's schedule overlaps the window
       queryBuilder = queryBuilder
         .andWhere('place."openingHours" IS NOT NULL')
         .andWhere(
@@ -461,10 +488,36 @@ export class PlaceService {
 
     const filteredPlaces = await this.filterPlacesRelations(places);
 
-    return { places: filteredPlaces, total };
+    if (!userId || filteredPlaces.length === 0) {
+      return {
+        places: filteredPlaces.map((p) => ({
+          ...(p as any),
+          wishlist: false,
+        })) as any,
+        total,
+      };
+    }
+
+    const ids = filteredPlaces.map((p) => p.id);
+    const rows = await this.wishlistRepository.find({
+      select: ['placeId'],
+      where: {
+        userId,
+        placeId: In(ids),
+      },
+    });
+    const wishlistedPlaceIds = new Set<number>(rows.map((r) => r.placeId));
+
+    return {
+      places: filteredPlaces.map((p) => ({
+        ...(p as any),
+        wishlist: wishlistedPlaceIds.has(p.id),
+      })) as any,
+      total,
+    };
   }
 
-  async findOne(id: number): Promise<Place> {
+  async findOne(id: number, userId?: number | null): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { id },
       relations: [
@@ -498,10 +551,14 @@ export class PlaceService {
     place.viewCount += 1;
     await this.placeRepository.save(place);
 
-    return this.filterRelationFields(place);
+    const filtered = await this.filterRelationFields(place);
+    return {
+      ...(filtered as any),
+      wishlist: await this.isWishlisted(filtered.id, userId),
+    };
   }
 
-  async findBySlug(slug: string): Promise<Place> {
+  async findBySlug(slug: string, userId?: number | null): Promise<Place> {
     const place = await this.placeRepository.findOne({
       where: { slug },
       relations: [
@@ -535,7 +592,11 @@ export class PlaceService {
     place.viewCount += 1;
     await this.placeRepository.save(place);
 
-    return await this.filterRelationFields(place);
+    const filtered = await this.filterRelationFields(place);
+    return {
+      ...(filtered as any),
+      wishlist: await this.isWishlisted(filtered.id, userId),
+    };
   }
 
   async update(

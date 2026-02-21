@@ -15,10 +15,11 @@ import { TransportModule } from '@/modules/transport/transport.module';
 import { HealthWellnessModule } from '@/modules/health-wellness/health-wellness.module';
 import { NatureOutdoorsModule } from '@/modules/nature-outdoors/nature-outdoors.module';
 import { EntertainmentModule } from '@/modules/entertainment/entertainment.module';
+import { Wishlist } from '@/modules/wishlist/wishlist.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Place, Category]),
+    TypeOrmModule.forFeature([Place, Category, Wishlist]),
     CategoryModule,
     LocationModule,
     TagModule,

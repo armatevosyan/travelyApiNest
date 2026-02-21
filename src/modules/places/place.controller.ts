@@ -16,6 +16,7 @@ import {
 import { PlaceService } from './place.service';
 import { CreatePlaceDto, UpdatePlaceDto, PlaceQueryDto } from './place.dto';
 import { JwtAuthGuard } from '@/modules/auth/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@/modules/auth/optional-jwt-auth.guard';
 import { User } from '@/common/decorators/user.decorators';
 import { User as IUser } from '@/modules/users/user.entity';
 import { I18nService } from 'nestjs-i18n';
@@ -49,8 +50,9 @@ export class PlaceController {
   }
 
   @Get()
-  async findAll(@Query() query: PlaceQueryDto) {
-    const { places, total } = await this.placeService.findAll(query);
+  @UseGuards(OptionalJwtAuthGuard)
+  async findAll(@Query() query: PlaceQueryDto, @User() user: IUser | null) {
+    const { places, total } = await this.placeService.findAll(query, user?.id);
     return {
       message: this.i18n.translate('t.PLACES_RETRIEVED_SUCCESSFULLY'),
       data: places,
@@ -74,8 +76,9 @@ export class PlaceController {
   }
 
   @Get('slug/:slug')
-  async findBySlug(@Param('slug') slug: string) {
-    const place = await this.placeService.findBySlug(slug);
+  @UseGuards(OptionalJwtAuthGuard)
+  async findBySlug(@Param('slug') slug: string, @User() user: IUser | null) {
+    const place = await this.placeService.findBySlug(slug, user?.id);
     return {
       message: this.i18n.translate('t.PLACE_RETRIEVED_SUCCESSFULLY'),
       data: place,
@@ -83,8 +86,12 @@ export class PlaceController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    const place = await this.placeService.findOne(id);
+  @UseGuards(OptionalJwtAuthGuard)
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: IUser | null,
+  ) {
+    const place = await this.placeService.findOne(id, user?.id);
     return {
       message: this.i18n.translate('t.PLACE_RETRIEVED_SUCCESSFULLY'),
       data: place,

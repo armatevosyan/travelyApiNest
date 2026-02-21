@@ -17,6 +17,17 @@ export class LocationService {
     private readonly i18n: I18nService,
   ) {}
 
+  async findCountryByName(name: string): Promise<Location | null> {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return null;
+
+    return this.locationRepo
+      .createQueryBuilder('location')
+      .where('location.type = :type', { type: LocationType.COUNTRY })
+      .andWhere('LOWER(location.name) = LOWER(:name)', { name: trimmed })
+      .getOne();
+  }
+
   private async loadNestedChildren(location: Location): Promise<Location> {
     if (location.type === LocationType.COUNTRY) {
       const states = await this.locationRepo.find({

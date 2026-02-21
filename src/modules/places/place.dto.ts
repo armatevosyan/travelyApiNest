@@ -818,6 +818,15 @@ export class PlaceQueryDto {
   @IsNumber()
   countryId?: number;
 
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const s = typeof value === 'string' ? value.trim() : String(value).trim();
+    return s.length ? s : undefined;
+  })
+  @IsString()
+  country?: string;
+
   /** Sort By: latest (default), rating, or distance (requires latitude, longitude) */
   @IsOptional()
   @IsIn(['latest', 'rating', 'distance'], {

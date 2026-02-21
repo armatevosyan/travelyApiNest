@@ -273,7 +273,6 @@ export class HomeService {
         };
       }),
     );
-    console.log('relatedBlogs', JSON.stringify(relatedBlogs, null, 2));
     const formattedNews = await Promise.all(
       relatedBlogs.map(async (blog) => {
         let blogImage: string | null = null;
