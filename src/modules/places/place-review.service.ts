@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -8,7 +9,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PlaceReview } from './place-review.entity';
 import { Place } from './place.entity';
-import { CreatePlaceReviewDto, PlaceReviewQueryDto } from './place-review.dto';
+import {
+  CreatePlaceReviewDto,
+  PlaceReviewQueryDto,
+  UpdatePlaceReviewDto,
+} from './place-review.dto';
 import { I18nService } from 'nestjs-i18n';
 
 export interface PlaceReviewWithUser {
@@ -79,6 +84,36 @@ export class PlaceReviewService {
       throw new NotFoundException(this.i18n.translate('t.REVIEW_NOT_FOUND'));
 
     return this.mapToReviewWithUser(withUser);
+  }
+
+  async update(
+    placeId: number,
+    reviewId: number,
+    userId: number,
+    dto: UpdatePlaceReviewDto,
+  ): Promise<PlaceReviewWithUser> {
+    if (dto.rating === undefined && dto.comment === undefined) {
+      throw new BadRequestException(
+        this.i18n.translate('t.REVIEW_UPDATE_EMPTY'),
+      );
+    }
+    const review = await this.placeReviewRepository.findOne({
+      where: { id: reviewId, placeId },
+      relations: ['place', 'user', 'user.profileImage'],
+    });
+    if (!review) {
+      throw new NotFoundException(this.i18n.translate('t.REVIEW_NOT_FOUND'));
+    }
+    if (review.userId !== userId) {
+      throw new ForbiddenException(this.i18n.translate('t.REVIEW_NOT_OWNER'));
+    }
+
+    if (dto.rating !== undefined) review.rating = dto.rating;
+    if (dto.comment !== undefined) review.comment = dto.comment;
+    const saved = await this.placeReviewRepository.save(review);
+    await this.recalculatePlaceAggregates(placeId);
+
+    return this.mapToReviewWithUser(saved);
   }
 
   async findByPlace(

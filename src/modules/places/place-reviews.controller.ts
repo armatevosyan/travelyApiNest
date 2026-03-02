@@ -6,12 +6,17 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { PlaceReviewService } from './place-review.service';
-import { CreatePlaceReviewDto, PlaceReviewQueryDto } from './place-review.dto';
+import {
+  CreatePlaceReviewDto,
+  PlaceReviewQueryDto,
+  UpdatePlaceReviewDto,
+} from './place-review.dto';
 import { JwtAuthGuard } from '@/modules/auth/jwt-auth.guard';
 import { User } from '@/common/decorators/user.decorators';
 import { User as IUser } from '@/modules/users/user.entity';
@@ -59,6 +64,27 @@ export class PlaceReviewsController {
         limit: usedLimit,
         totalPages: Math.ceil(total / usedLimit),
       },
+    };
+  }
+
+  @Patch(':reviewId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Param('placeId', ParseIntPipe) placeId: number,
+    @Param('reviewId', ParseIntPipe) reviewId: number,
+    @User() user: IUser,
+    @Body() dto: UpdatePlaceReviewDto,
+  ) {
+    const review = await this.placeReviewService.update(
+      placeId,
+      reviewId,
+      user.id,
+      dto,
+    );
+    return {
+      message: this.i18n.translate('t.REVIEW_UPDATED_SUCCESSFULLY'),
+      data: review,
     };
   }
 }
