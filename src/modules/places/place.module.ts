@@ -3,6 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlaceService } from './place.service';
 import { PlaceController } from './place.controller';
 import { Place } from './place.entity';
+import { PlaceReview } from './place-review.entity';
+import { PlaceReviewService } from './place-review.service';
+import { PlaceReviewsController } from './place-reviews.controller';
 import { Category } from '@/modules/categories/category.entity';
 import { CategoryModule } from '@/modules/categories/category.module';
 import { LocationModule } from '@/modules/locations/location.module';
@@ -16,10 +19,11 @@ import { HealthWellnessModule } from '@/modules/health-wellness/health-wellness.
 import { NatureOutdoorsModule } from '@/modules/nature-outdoors/nature-outdoors.module';
 import { EntertainmentModule } from '@/modules/entertainment/entertainment.module';
 import { Wishlist } from '@/modules/wishlist/wishlist.entity';
+import { FilesModule } from '@/modules/files/files.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Place, Category, Wishlist]),
+    TypeOrmModule.forFeature([Place, PlaceReview, Category, Wishlist]),
     CategoryModule,
     LocationModule,
     TagModule,
@@ -31,9 +35,10 @@ import { Wishlist } from '@/modules/wishlist/wishlist.entity';
     HealthWellnessModule,
     NatureOutdoorsModule,
     EntertainmentModule,
+    FilesModule,
   ],
-  providers: [PlaceService],
-  controllers: [PlaceController],
-  exports: [PlaceService, TypeOrmModule],
+  providers: [PlaceService, PlaceReviewService],
+  controllers: [PlaceController, PlaceReviewsController],
+  exports: [PlaceService, PlaceReviewService, TypeOrmModule],
 })
 export class PlaceModule {}

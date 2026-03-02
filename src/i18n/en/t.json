@@ -102,6 +102,20 @@
   "PLACE_DELETED_SUCCESSFULLY": "Place deleted successfully",
   "PLACE_NOT_FOUND": "Place not found",
   "PLACE_NOT_OWNER": "You are not the owner of this place",
+  "REVIEW_RATING_REQUIRED": "Rating is required",
+  "REVIEW_RATING_INVALID": "Rating must be a number between 1 and 5",
+  "REVIEW_RATING_MIN": "Rating must be at least 1",
+  "REVIEW_RATING_MAX": "Rating cannot exceed 5",
+  "REVIEW_COMMENT_INVALID": "Comment must be a string",
+  "REVIEW_COMMENT_MAX_LENGTH": "Comment cannot exceed 2000 characters",
+  "REVIEW_ALREADY_EXISTS": "You have already reviewed this place",
+  "REVIEW_NOT_FOUND": "Review not found",
+  "REVIEW_NOT_OWNER": "You can only edit or delete your own review",
+  "REVIEW_UPDATE_EMPTY": "Provide at least rating or comment to update",
+  "REVIEWS_RETRIEVED_SUCCESSFULLY": "Reviews retrieved successfully",
+  "REVIEW_CREATED_SUCCESSFULLY": "Review created successfully",
+  "REVIEW_UPDATED_SUCCESSFULLY": "Review updated successfully",
+  "REVIEW_DELETED_SUCCESSFULLY": "Review deleted successfully",
   "PLACE_OPTIONS_RETRIEVED_SUCCESSFULLY": "Place options retrieved successfully",
   "PROFILE_UPDATED_SUCCESSFULLY": "Profile updated successfully",
   "EMAIL_ALREADY_EXISTS": "Email already exists",
@@ -175,5 +189,6 @@
   "IMAGE_TOO_LARGE": "Image size exceeds the maximum allowed size of 5MB",
   "NOTIFICATION_UPDATE_SUCCESS": "Notification updated successfully",
   "NOTIFICATIONS_ENABLED_INVALID": "Notifications enabled must be a boolean",
-  "NOTIFICATIONS_ENABLED_REQUIRED": "Notifications enabled is required"
+  "NOTIFICATIONS_ENABLED_REQUIRED": "Notifications enabled is required",
+  "REVIEW_OWN_PLACE_NOT_ALLOWED": "You cannot review your own place"
 }
