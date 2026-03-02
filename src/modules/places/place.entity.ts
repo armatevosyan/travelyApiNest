@@ -8,11 +8,13 @@ import {
   ManyToOne,
   ManyToMany,
   OneToOne,
+  OneToMany,
   JoinColumn,
   JoinTable,
   Index,
 } from 'typeorm';
 import { User } from '../users/user.entity';
+import { PlaceReview } from './place-review.entity';
 import { Category } from '../categories/category.entity';
 import { Location } from '../locations/location.entity';
 import { Tag } from '../tags/tag.entity';
@@ -118,6 +120,9 @@ export class Place {
 
   @Column({ type: 'int', default: 0 })
   reviewCount: number;
+
+  @OneToMany(() => PlaceReview, (review) => review.place)
+  reviews: PlaceReview[];
 
   // Status & Visibility
   @Column({ default: true })

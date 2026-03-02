@@ -102,6 +102,20 @@
   "PLACE_DELETED_SUCCESSFULLY": "Место успешно удалено",
   "PLACE_NOT_FOUND": "Место не найдено",
   "PLACE_NOT_OWNER": "Вы не являетесь владельцем этого места",
+  "REVIEW_RATING_REQUIRED": "Оценка обязательна",
+  "REVIEW_RATING_INVALID": "Оценка должна быть числом от 1 до 5",
+  "REVIEW_RATING_MIN": "Оценка должна быть не менее 1",
+  "REVIEW_RATING_MAX": "Оценка не может превышать 5",
+  "REVIEW_COMMENT_INVALID": "Комментарий должен быть строкой",
+  "REVIEW_COMMENT_MAX_LENGTH": "Комментарий не может превышать 2000 символов",
+  "REVIEW_ALREADY_EXISTS": "Вы уже оставили отзыв об этом месте",
+  "REVIEW_NOT_FOUND": "Отзыв не найден",
+  "REVIEW_NOT_OWNER": "Вы можете редактировать или удалять только свой отзыв",
+  "REVIEW_UPDATE_EMPTY": "Укажите оценку или комментарий для обновления",
+  "REVIEWS_RETRIEVED_SUCCESSFULLY": "Отзывы успешно получены",
+  "REVIEW_CREATED_SUCCESSFULLY": "Отзыв успешно создан",
+  "REVIEW_UPDATED_SUCCESSFULLY": "Отзыв успешно обновлен",
+  "REVIEW_DELETED_SUCCESSFULLY": "Отзыв успешно удален",
   "PLACE_OPTIONS_RETRIEVED_SUCCESSFULLY": "Опции места успешно получены",
   "PROFILE_UPDATED_SUCCESSFULLY": "Профиль успешно обновлен",
   "EMAIL_ALREADY_EXISTS": "Email уже существует",
@@ -175,5 +189,6 @@
   "IMAGE_TOO_LARGE": "Размер изображения превышает максимально допустимый размер 5MB",
   "NOTIFICATION_UPDATE_SUCCESS": "Уведомления успешно обновлены",
   "NOTIFICATIONS_ENABLED_INVALID": "Статус уведомлений должен быть булевым",
-  "NOTIFICATIONS_ENABLED_REQUIRED": "Статус уведомлений обязателен"
+  "NOTIFICATIONS_ENABLED_REQUIRED": "Статус уведомлений обязателен",
+  "REVIEW_OWN_PLACE_NOT_ALLOWED": "Вы не можете оставлять отзыв о собственном месте"
 }
