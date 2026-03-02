@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -85,6 +86,20 @@ export class PlaceReviewsController {
     return {
       message: this.i18n.translate('t.REVIEW_UPDATED_SUCCESSFULLY'),
       data: review,
+    };
+  }
+
+  @Delete(':reviewId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async remove(
+    @Param('placeId', ParseIntPipe) placeId: number,
+    @Param('reviewId', ParseIntPipe) reviewId: number,
+    @User() user: IUser,
+  ) {
+    await this.placeReviewService.remove(placeId, reviewId, user.id);
+    return {
+      message: this.i18n.translate('t.REVIEW_DELETED_SUCCESSFULLY'),
     };
   }
 }

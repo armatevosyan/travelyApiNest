@@ -150,6 +150,24 @@ export class PlaceReviewService {
     return { reviews: reviewsWithUser, total, limit };
   }
 
+  async remove(
+    placeId: number,
+    reviewId: number,
+    userId: number,
+  ): Promise<void> {
+    const review = await this.placeReviewRepository.findOne({
+      where: { id: reviewId, placeId },
+    });
+    if (!review) {
+      throw new NotFoundException(this.i18n.translate('t.REVIEW_NOT_FOUND'));
+    }
+    if (review.userId !== userId) {
+      throw new ForbiddenException(this.i18n.translate('t.REVIEW_NOT_OWNER'));
+    }
+    await this.placeReviewRepository.remove(review);
+    await this.recalculatePlaceAggregates(placeId);
+  }
+
   private async recalculatePlaceAggregates(placeId: number): Promise<void> {
     const result = await this.placeReviewRepository
       .createQueryBuilder('r')
