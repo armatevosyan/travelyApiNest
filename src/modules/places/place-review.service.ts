@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PlaceReview } from './place-review.entity';
 import { Place } from './place.entity';
-import { CreatePlaceReviewDto } from './place-review.dto';
+import { CreatePlaceReviewDto, PlaceReviewQueryDto } from './place-review.dto';
 import { I18nService } from 'nestjs-i18n';
 
 export interface PlaceReviewWithUser {
@@ -79,6 +79,40 @@ export class PlaceReviewService {
       throw new NotFoundException(this.i18n.translate('t.REVIEW_NOT_FOUND'));
 
     return this.mapToReviewWithUser(withUser);
+  }
+
+  async findByPlace(
+    placeId: number,
+    query: PlaceReviewQueryDto,
+  ): Promise<{
+    reviews: PlaceReviewWithUser[];
+    total: number;
+    limit: number;
+  }> {
+    const place = await this.placeRepository.findOne({
+      where: { id: placeId },
+    });
+    if (!place) {
+      throw new NotFoundException(this.i18n.translate('t.PLACE_NOT_FOUND'));
+    }
+
+    const page = query.page ?? 0;
+    const limit = Math.min(query.limit ?? 20, 50);
+    const skip = page * limit;
+
+    const [reviews, total] = await this.placeReviewRepository.findAndCount({
+      where: { placeId },
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+      skip,
+      take: limit,
+    });
+
+    const reviewsWithUser: PlaceReviewWithUser[] = reviews.map((r) =>
+      this.mapToReviewWithUser(r),
+    );
+
+    return { reviews: reviewsWithUser, total, limit };
   }
 
   private async recalculatePlaceAggregates(placeId: number): Promise<void> {

@@ -1,15 +1,17 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { PlaceReviewService } from './place-review.service';
-import { CreatePlaceReviewDto } from './place-review.dto';
+import { CreatePlaceReviewDto, PlaceReviewQueryDto } from './place-review.dto';
 import { JwtAuthGuard } from '@/modules/auth/jwt-auth.guard';
 import { User } from '@/common/decorators/user.decorators';
 import { User as IUser } from '@/modules/users/user.entity';
@@ -34,6 +36,29 @@ export class PlaceReviewsController {
     return {
       message: this.i18n.translate('t.REVIEW_CREATED_SUCCESSFULLY'),
       data: review,
+    };
+  }
+
+  @Get()
+  async findAll(
+    @Param('placeId', ParseIntPipe) placeId: number,
+    @Query() query: PlaceReviewQueryDto,
+  ) {
+    const {
+      reviews,
+      total,
+      limit: usedLimit,
+    } = await this.placeReviewService.findByPlace(placeId, query);
+    const page = query.page ?? 0;
+    return {
+      message: this.i18n.translate('t.REVIEWS_RETRIEVED_SUCCESSFULLY'),
+      data: reviews,
+      pagination: {
+        total,
+        page,
+        limit: usedLimit,
+        totalPages: Math.ceil(total / usedLimit),
+      },
     };
   }
 }

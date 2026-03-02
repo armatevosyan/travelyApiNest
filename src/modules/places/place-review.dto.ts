@@ -26,3 +26,23 @@ export class CreatePlaceReviewDto {
   @MaxLength(2000, { message: 't.REVIEW_COMMENT_MAX_LENGTH' })
   comment?: string | null;
 }
+
+export class PlaceReviewQueryDto {
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return Number.isFinite(num) ? num : undefined;
+  })
+  @IsNumber()
+  page?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return Number.isFinite(num) ? num : undefined;
+  })
+  @IsNumber()
+  limit?: number;
+}
