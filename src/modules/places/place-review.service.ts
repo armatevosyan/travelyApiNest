@@ -150,6 +150,28 @@ export class PlaceReviewService {
     return { reviews: reviewsWithUser, total, limit };
   }
 
+  async findByPlaceAndUser(
+    placeId: number,
+    userId: number,
+  ): Promise<PlaceReviewWithUser> {
+    const place = await this.placeRepository.findOne({
+      where: { id: placeId },
+    });
+    if (!place) {
+      throw new NotFoundException(this.i18n.translate('t.PLACE_NOT_FOUND'));
+    }
+
+    const review = await this.placeReviewRepository.findOne({
+      where: { placeId, userId },
+      relations: ['user', 'user.profileImage'],
+    });
+    if (!review) {
+      throw new NotFoundException(this.i18n.translate('t.REVIEW_NOT_FOUND'));
+    }
+
+    return this.mapToReviewWithUser(review);
+  }
+
   async remove(
     placeId: number,
     reviewId: number,
@@ -200,7 +222,7 @@ export class PlaceReviewService {
       user: {
         id: user?.id ?? r.userId,
         fullName: user?.fullName ?? null,
-        profileImage: user?.profileImage.url ?? null,
+        profileImage: user?.profileImage?.url ?? null,
       },
     };
   }

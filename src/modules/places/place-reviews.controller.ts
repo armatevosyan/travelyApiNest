@@ -68,6 +68,21 @@ export class PlaceReviewsController {
     };
   }
 
+  @Get('/:userId')
+  async findByUser(
+    @Param('placeId', ParseIntPipe) placeId: number,
+    @Param('userId', ParseIntPipe) userId: number,
+  ) {
+    const review = await this.placeReviewService.findByPlaceAndUser(
+      placeId,
+      userId,
+    );
+    return {
+      message: this.i18n.translate('t.REVIEWS_RETRIEVED_SUCCESSFULLY'),
+      data: review,
+    };
+  }
+
   @Patch(':reviewId')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
