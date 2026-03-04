@@ -66,6 +66,9 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   otp: string | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  deviceToken: string | null;
+
   @Column({ type: 'timestamp', nullable: true })
   otpExpiration: Date | null;
 

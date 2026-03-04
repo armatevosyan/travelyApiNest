@@ -25,4 +25,6 @@ export class UpdateProfileDto {
 export class UpdateNotificationSettingDto {
   @IsBoolean({ message: 't.NOTIFICATIONS_ENABLED_INVALID' })
   notificationsEnabled: boolean;
+  @IsString({ message: 't.DEVICE_TOKEN_INVALID' })
+  deviceToken: string;
 }

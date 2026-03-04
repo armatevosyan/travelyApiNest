@@ -136,6 +136,7 @@ export class UserController {
     const updatedUser = await this.userService.updateNotificationSetting(
       user.id,
       data.notificationsEnabled,
+      data.deviceToken,
     );
 
     return {

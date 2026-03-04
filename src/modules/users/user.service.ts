@@ -122,8 +122,12 @@ export class UserService {
     return this.runUserData(await this.findById(userId));
   }
 
-  async updateNotificationSetting(id: number, notificationsEnabled: boolean) {
-    await this.userRepo.update(id, { notificationsEnabled });
+  async updateNotificationSetting(
+    id: number,
+    notificationsEnabled: boolean,
+    deviceToken?: string,
+  ) {
+    await this.userRepo.update(id, { notificationsEnabled, deviceToken });
     return this.runUserData(await this.findById(id));
   }
 
