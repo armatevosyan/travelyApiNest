@@ -137,7 +137,7 @@ export class PlaceReviewService {
 
     const [reviews, total] = await this.placeReviewRepository.findAndCount({
       where: { placeId },
-      relations: ['user'],
+      relations: ['user', 'user.profileImage'],
       order: { createdAt: 'DESC' },
       skip,
       take: limit,
@@ -189,6 +189,7 @@ export class PlaceReviewService {
 
   private mapToReviewWithUser(r: PlaceReview): PlaceReviewWithUser {
     const user = (r as any).user;
+    const isDeactivated = !!user?.deactivatedAt;
     return {
       id: r.id,
       placeId: r.placeId,
@@ -199,8 +200,10 @@ export class PlaceReviewService {
       updatedAt: r.updatedAt,
       user: {
         id: user?.id ?? r.userId,
-        fullName: user?.fullName ?? null,
-        profileImage: user?.profileImage.url ?? null,
+        fullName: isDeactivated
+          ? this.i18n.translate('t.DEACTIVATED_USER')
+          : (user?.fullName ?? null),
+        profileImage: isDeactivated ? null : (user?.profileImage?.url ?? null),
       },
     };
   }

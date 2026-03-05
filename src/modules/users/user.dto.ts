@@ -26,3 +26,11 @@ export class UpdateNotificationSettingDto {
   @IsBoolean({ message: 't.NOTIFICATIONS_ENABLED_INVALID' })
   notificationsEnabled: boolean;
 }
+
+/** Admin: optional reason when deactivating a user */
+export class DeactivateUserDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000, { message: 't.DEACTIVATION_REASON_MAX_LENGTH' })
+  reason?: string;
+}

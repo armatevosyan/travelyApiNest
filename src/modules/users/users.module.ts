@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
+import { AdminUsersController } from './admin-users.controller';
 
 import { AuthMiddleware } from 'common/middleware/auth.middleware';
 import { JwtService } from '@nestjs/jwt';
@@ -20,7 +21,7 @@ import { EmailModule } from '@/modules/email/email.module';
 @Module({
   imports: [TypeOrmModule.forFeature([User, Role]), EmailModule],
   providers: [UserService, JwtService, AuthService],
-  controllers: [UserController],
+  controllers: [UserController, AdminUsersController],
   exports: [TypeOrmModule, UserService],
 })
 export class UsersModule implements NestModule {

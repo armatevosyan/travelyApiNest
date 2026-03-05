@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, In } from 'typeorm';
+import { In, IsNull, Repository } from 'typeorm';
 import { Category } from '../categories/category.entity';
 import { Location, LocationType } from '../locations/location.entity';
 import { Place } from '../places/place.entity';
@@ -66,12 +66,15 @@ export class HomeService {
     if (locationIds.length > 0) {
       const rows = await this.placeRepository
         .createQueryBuilder('place')
+        .leftJoin('place.user', 'user')
         .select('place.countryId', 'countryId')
         .addSelect('COUNT(place.id)', 'count')
         .where('place.countryId IN (:...countryIds)', {
           countryIds: locationIds,
         })
         .andWhere('place.isActive = :isActive', { isActive: true })
+        .andWhere("place.status = 'approved'")
+        .andWhere('user.deactivatedAt IS NULL')
         .groupBy('place.countryId')
         .getRawMany<{ countryId: string; count: string }>();
 
@@ -90,6 +93,8 @@ export class HomeService {
       .leftJoinAndSelect('place.user', 'user')
       .leftJoinAndSelect('place.country', 'country')
       .where('place.isActive = :isActive', { isActive: true })
+      .andWhere("place.status = 'approved'")
+      .andWhere('user.deactivatedAt IS NULL')
       .orderBy('place.createdAt', 'DESC')
       .take(10);
     if (location) {
@@ -274,7 +279,7 @@ export class HomeService {
       }),
     );
     const formattedNews = await Promise.all(
-      relatedBlogs.map(async (blog) => {
+      relatedBlogs.map((blog) => {
         let blogImage: string | null = null;
         if (blog.image) {
           blogImage = blog.image;

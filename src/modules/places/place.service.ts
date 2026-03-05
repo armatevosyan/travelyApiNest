@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Place } from './place.entity';
+import { AdminPlaceQueryDto } from './place-admin.dto';
 import { PlaceQueryDto, UpdatePlaceDto } from './place.dto';
 import { I18nService } from 'nestjs-i18n';
 import { CreatePlaceData } from '@/modules/places/place.types';
@@ -228,6 +229,7 @@ export class PlaceService {
       ...placeData,
       userId,
       slug,
+      status: 'pending',
       tags,
       facilities,
     });
@@ -291,6 +293,7 @@ export class PlaceService {
   async findAll(
     query: PlaceQueryDto,
     userId?: number | null,
+    options?: { allowAllStatuses?: boolean },
   ): Promise<{ places: Place[]; total: number }> {
     const {
       search,
@@ -445,6 +448,16 @@ export class PlaceService {
           { openTimeStart, openTimeEnd },
         );
     }
+    const statusFromQuery = (query as AdminPlaceQueryDto).status;
+    const allowAllStatuses = options?.allowAllStatuses === true;
+    if (statusFromQuery !== undefined && statusFromQuery !== null) {
+      queryBuilder = queryBuilder.andWhere('place.status = :status', {
+        status: statusFromQuery,
+      });
+    } else if (!allowAllStatuses) {
+      queryBuilder = queryBuilder.andWhere("place.status = 'approved'");
+      queryBuilder = queryBuilder.andWhere('user.deactivatedAt IS NULL');
+    }
     if (isActive !== undefined) {
       queryBuilder = queryBuilder.andWhere('place.isActive = :isActive', {
         isActive,
@@ -548,6 +561,10 @@ export class PlaceService {
       throw new NotFoundException(this.i18n.translate('t.PLACE_NOT_FOUND'));
     }
 
+    if ((place as any).user?.deactivatedAt) {
+      throw new NotFoundException(this.i18n.translate('t.PLACE_NOT_FOUND'));
+    }
+
     place.viewCount += 1;
     await this.placeRepository.save(place);
 
@@ -556,6 +573,31 @@ export class PlaceService {
       ...(filtered as any),
       wishlist: await this.isWishlisted(filtered.id, userId),
     };
+  }
+
+  async approve(id: number): Promise<Place> {
+    const place = await this.placeRepository.findOne({ where: { id } });
+    if (!place) {
+      throw new NotFoundException(this.i18n.translate('t.PLACE_NOT_FOUND'));
+    }
+    place.status = 'approved';
+    place.isActive = true;
+    place.isVerified = true;
+    place.rejectionReason = null;
+    await this.placeRepository.save(place);
+    return this.findOne(id, undefined);
+  }
+
+  async reject(id: number, reason?: string): Promise<Place> {
+    const place = await this.placeRepository.findOne({ where: { id } });
+    if (!place) {
+      throw new NotFoundException(this.i18n.translate('t.PLACE_NOT_FOUND'));
+    }
+    place.status = 'rejected';
+    place.isActive = false;
+    place.rejectionReason = reason ?? null;
+    await this.placeRepository.save(place);
+    return this.findOne(id, undefined);
   }
 
   async findBySlug(slug: string, userId?: number | null): Promise<Place> {

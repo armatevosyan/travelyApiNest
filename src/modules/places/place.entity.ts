@@ -124,7 +124,18 @@ export class Place {
   @OneToMany(() => PlaceReview, (review) => review.place)
   reviews: PlaceReview[];
 
-  // Status & Visibility
+  // Status & Visibility (admin moderation)
+  /** pending = awaiting review, approved = visible, rejected = hidden. Default 'approved' for existing rows; new places set to 'pending' in service. */
+  @Column({
+    type: 'enum',
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'approved',
+  })
+  status: 'pending' | 'approved' | 'rejected';
+
+  @Column({ type: 'text', nullable: true })
+  rejectionReason: string | null;
+
   @Column({ default: true })
   isActive: boolean;
 

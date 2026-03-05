@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlaceService } from './place.service';
 import { PlaceController } from './place.controller';
+import { AdminPlacesController } from './admin-places.controller';
 import { Place } from './place.entity';
 import { PlaceReview } from './place-review.entity';
 import { PlaceReviewService } from './place-review.service';
@@ -38,7 +39,7 @@ import { FilesModule } from '@/modules/files/files.module';
     FilesModule,
   ],
   providers: [PlaceService, PlaceReviewService],
-  controllers: [PlaceController, PlaceReviewsController],
+  controllers: [PlaceController, PlaceReviewsController, AdminPlacesController],
   exports: [PlaceService, PlaceReviewService, TypeOrmModule],
 })
 export class PlaceModule {}
