@@ -612,7 +612,7 @@ const Products = () => {
         className: 'cell-right',
         Cell: ({ row }) => (
           <Stack direction="row" spacing={1}>
-            <NumberFormat value={row.values?.priceMin} displayType="text" thousandSeparator prefix="$" />
+            <NumberFormat value={row?.values?.priceMin} displayType="text" thousandSeparator prefix="$" />
             <Typography>-</Typography>
             <NumberFormat value={row?.values?.priceMax} displayType="text" thousandSeparator prefix="$" />
           </Stack>

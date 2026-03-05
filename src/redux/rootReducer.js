@@ -9,6 +9,7 @@ import menu from './menu/reducer';
 import auth from './auth/reducer';
 import users from './users/reducer';
 import products from '@/redux/products/reducer';
+import places from '@/redux/places/reducer';
 
 const rootReducer = combineReducers({
   snackbar,
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   menu,
   auth,
   users,
-  products
+  products,
+  places
 });
 
 export default rootReducer;

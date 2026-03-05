@@ -1,15 +1,35 @@
 import { handleActions } from 'redux-actions';
-import { loginRequest, loginSuccess, loginFailure, enterAccountRequest, enterAccountSuccess, enterAccountFailure } from './actions';
+import {
+  loginRequest,
+  loginSuccess,
+  loginFailure,
+  enterAccountRequest,
+  enterAccountSuccess,
+  enterAccountFailure,
+  logoutSuccess
+} from './actions';
+
+function parseUserFromStorage() {
+  try {
+    const raw = JSON.parse(localStorage.getItem('userData') || '{}');
+    if (raw && raw.role && typeof raw.role === 'object' && raw.role.name) {
+      return { ...raw, role: raw.role.name };
+    }
+    return raw || {};
+  } catch {
+    return {};
+  }
+}
 
 const initialState = {
   isUserLoggingIn: false,
   isUserLoggedInSuccess: false,
   isUserLoggedInFailure: false,
-  user: JSON.parse(localStorage.getItem('userData') || JSON.stringify({})) || {},
+  user: parseUserFromStorage(),
   errorMessage: '',
   successMessage: '',
   isLoggingOut: false,
-  userData: JSON.parse(localStorage.getItem('userData') || JSON.stringify({})) || {}
+  userData: parseUserFromStorage()
 };
 
 const reducer = handleActions(
@@ -18,11 +38,13 @@ const reducer = handleActions(
       ...state,
       isUserLoggingIn: true,
       isUserLoggedInSuccess: false,
-      isUserLoggedInFailure: false
+      isUserLoggedInFailure: false,
+      errorMessage: ''
     }),
     [loginSuccess]: (state, { payload }) => ({
       ...state,
-      user: payload.data,
+      user: payload.data || state.user,
+      userData: payload.data || state.userData,
       isUserLoggingIn: false,
       isUserLoggedInSuccess: true,
       successMessage: payload.message
@@ -62,6 +84,16 @@ const reducer = handleActions(
       isUserLoggingIn: false,
       isUserLoggedInFailure: true,
       errorMessage: payload
+    }),
+    [logoutSuccess]: () => ({
+      isUserLoggingIn: false,
+      isUserLoggedInSuccess: false,
+      isUserLoggedInFailure: false,
+      user: {},
+      userData: {},
+      errorMessage: '',
+      successMessage: '',
+      isLoggingOut: false
     })
   },
   initialState

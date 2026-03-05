@@ -1,11 +1,14 @@
 import { lazy } from 'react';
+import { Navigate } from 'react-router-dom';
 
 // project import
 import MainLayout from 'layout/MainLayout';
+import { APP_DEFAULT_PATH } from 'config';
 import CommonLayout from 'layout/CommonLayout';
 import Loadable from 'components/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
 import Products from '@/pages/apps/products/products';
+import Places from '@/pages/apps/places/places';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -134,12 +137,20 @@ const MainRoutes = {
           path: 'dashboard',
           children: [
             {
+              index: true,
+              element: <Navigate to={APP_DEFAULT_PATH} replace />
+            },
+            {
               path: 'users',
               element: <AppUsers />
             },
             {
               path: 'products',
               element: <Products />
+            },
+            {
+              path: 'places',
+              element: <Places />
             },
             {
               path: 'default',

@@ -2,11 +2,14 @@
   "name": "mantis-material-react",
   "version": "2.0.0",
   "private": true,
+  "proxy": "http://localhost:8000",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src --ext .js,.jsx",
+    "lint:fix": "eslint src --ext .js,.jsx --fix"
   },
   "dependencies": {
     "@ant-design/colors": "^6.0.0",

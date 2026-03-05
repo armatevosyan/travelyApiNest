@@ -24,8 +24,11 @@ export const isUserLoggedIn = () => {
 
 export const catchResponseMessages = (e) => {
   if (e?.response?.data) {
-    return !Array.isArray(e?.response?.data.message) ? [e?.response?.data.message] : e?.response?.data.message;
+    const data = e.response.data;
+    const msg = data?.message;
+    if (msg != null) {
+      return Array.isArray(msg) ? msg : [msg];
+    }
   }
-
   return [];
 };

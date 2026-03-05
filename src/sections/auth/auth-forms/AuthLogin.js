@@ -30,6 +30,7 @@ import AnimateButton from 'components/@extended/AnimateButton';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import { loginRequest } from '@/redux/auth/actions';
 import { dispatch } from '@/redux/store';
 
@@ -38,6 +39,7 @@ import { dispatch } from '@/redux/store';
 const AuthLogin = () => {
   const [checked, setChecked] = React.useState(false);
   const [capsWarning, setCapsWarning] = React.useState(false);
+  const { isUserLoggedInFailure, errorMessage } = useSelector((state) => state.auth || {});
 
   // const isLoggedIn = useAuth();
   const scriptedRef = useScriptRef();
@@ -184,14 +186,24 @@ const AuthLogin = () => {
                   {/*</Link>*/}
                 </Stack>
               </Grid>
-              {errors.submit && (
+              {(errors.submit || (isUserLoggedInFailure && errorMessage)) && (
                 <Grid item xs={12}>
-                  <FormHelperText error>{errors.submit}</FormHelperText>
+                  <FormHelperText error>
+                    {errors.submit || (Array.isArray(errorMessage) ? errorMessage.join(' ') : errorMessage)}
+                  </FormHelperText>
                 </Grid>
               )}
               <Grid item xs={12}>
                 <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
+                  <Button
+                    disableElevation
+                    disabled={isSubmitting && !isUserLoggedInFailure}
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                  >
                     Login
                   </Button>
                 </AnimateButton>

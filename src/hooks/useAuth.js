@@ -1,21 +1,28 @@
-// auth provider
-// import AuthContext from 'contexts/FirebaseContext';
-// import AuthContext from 'contexts/AWSCognitoContext';
-// import AuthContext from 'contexts/JWTContext';
-// import AuthContext from 'contexts/Auth0Context';
-
 // ==============================|| AUTH HOOKS ||============================== //
 
-// import { useSelector } from 'react-redux';
-
+import { useDispatch } from 'react-redux';
 import { isUserLoggedIn } from '@/utils/methods';
+import { logoutSuccess } from '@/redux/auth/actions';
 
 const useAuth = () => {
-  const user = isUserLoggedIn();
-  console.log(user, 'user');
-  // if (!user.isLoggedIn) throw new Error('context must be use inside provider');
+  const dispatch = useDispatch();
+  const { isLoggedIn, user } = isUserLoggedIn();
 
-  return user;
+  const logout = () => {
+    try {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userData');
+    } catch (e) {
+      // ignore
+    }
+    dispatch(logoutSuccess());
+  };
+
+  return {
+    isLoggedIn,
+    user,
+    logout
+  };
 };
 
 export default useAuth;

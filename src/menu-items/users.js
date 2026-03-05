@@ -2,31 +2,13 @@
 import { FormattedMessage } from 'react-intl';
 
 // assets
-import {
-  BuildOutlined,
-  CalendarOutlined,
-  CustomerServiceOutlined,
-  FileTextOutlined,
-  MessageOutlined,
-  ShoppingCartOutlined,
-  UserOutlined,
-  AppstoreAddOutlined,
-  TeamOutlined,
-  AppstoreOutlined
-} from '@ant-design/icons';
+import { AppstoreAddOutlined, EnvironmentOutlined, TeamOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
   TeamOutlined,
-  BuildOutlined,
-  CalendarOutlined,
-  CustomerServiceOutlined,
-  MessageOutlined,
-  ShoppingCartOutlined,
-  UserOutlined,
   AppstoreAddOutlined,
-  FileTextOutlined,
-  AppstoreOutlined
+  EnvironmentOutlined
 };
 // ==============================|| MENU ITEMS - APPLICATIONS ||============================== //
 
@@ -45,11 +27,11 @@ const users = {
       breadcrumbs: false
     },
     {
-      id: 'products',
-      title: <FormattedMessage id="Products" />,
+      id: 'places',
+      title: <FormattedMessage id="Places" />,
       type: 'item',
-      url: '/dashboard/products',
-      icon: icons.AppstoreOutlined,
+      url: '/dashboard/places',
+      icon: icons.EnvironmentOutlined,
       breadcrumbs: false
     }
   ]

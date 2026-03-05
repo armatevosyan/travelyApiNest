@@ -7,3 +7,5 @@ export const loginFailure = createAction('LOGIN_FAILURE');
 export const enterAccountRequest = createAction('ENTER_ACCOUNT_REQUEST');
 export const enterAccountSuccess = createAction('ENTER_ACCOUNT_SUCCESS');
 export const enterAccountFailure = createAction('ENTER_ACCOUNT_FAILURE');
+
+export const logoutSuccess = createAction('LOGOUT_SUCCESS');

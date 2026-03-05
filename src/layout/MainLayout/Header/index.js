@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { AppBar, Toolbar, useMediaQuery } from '@mui/material';
+import { AppBar, Box, Toolbar, useMediaQuery } from '@mui/material';
 
 // project import
 import AppBarStyled from './AppBarStyled';
@@ -32,7 +32,7 @@ const Header = ({ open, handleDrawerToggle }) => {
 
   // common header
   const mainHeader = (
-    <Toolbar>
+    <Toolbar sx={{ display: 'flex', width: '100%' }}>
       {!isHorizontal ? (
         <IconButton
           aria-label="open drawer"
@@ -45,6 +45,7 @@ const Header = ({ open, handleDrawerToggle }) => {
           {!open ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </IconButton>
       ) : null}
+      <Box sx={{ flexGrow: 1 }} />
       {headerContent}
     </Toolbar>
   );

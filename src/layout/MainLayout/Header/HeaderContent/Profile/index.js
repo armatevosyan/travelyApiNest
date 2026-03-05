@@ -49,17 +49,10 @@ const Profile = () => {
 
   const { logout, user } = useAuth();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate(`/login`, {
-        state: {
-          from: ''
-        }
-      });
-    } catch (err) {
-      console.error(err);
-    }
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
+    navigate('/login', { replace: true });
   };
 
   const anchorRef = useRef(null);
@@ -82,6 +75,8 @@ const Profile = () => {
   };
 
   const iconBackColorOpen = theme.palette.mode === 'dark' ? 'grey.200' : 'grey.300';
+  const displayName = user?.fullName || user?.name || '—';
+  const displayRole = user?.role ? String(user.role).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '—';
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -104,7 +99,6 @@ const Profile = () => {
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="xs" />
-          <Typography variant="subtitle1">{user?.name}</Typography>
         </Stack>
       </ButtonBase>
       <Popper
@@ -140,15 +134,17 @@ const Profile = () => {
             >
               <ClickAwayListener onClickAway={handleClose}>
                 <MainCard elevation={0} border={false} content={false}>
-                  <CardContent sx={{ px: 2.5, pt: 3 }}>
-                    <Grid container justifyContent="space-between" alignItems="center">
-                      <Grid item>
-                        <Stack direction="row" spacing={1.25} alignItems="center">
-                          <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-                          <Stack>
-                            <Typography variant="h6">{user?.name}</Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              UI/UX Designer
+                  <CardContent sx={{ px: 2.5, pt: 3, pb: 2 }}>
+                    <Grid container justifyContent="space-between" alignItems="flex-start">
+                      <Grid item xs>
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                          <Avatar alt="profile user" src={avatar1} sx={{ width: 40, height: 40 }} />
+                          <Stack spacing={0.25} sx={{ minWidth: 0 }}>
+                            <Typography variant="subtitle1" fontWeight={600} noWrap title={displayName}>
+                              {displayName}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {displayRole}
                             </Typography>
                           </Stack>
                         </Stack>

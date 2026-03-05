@@ -9,21 +9,20 @@ axiosApiInstance.interceptors.request.use(
   (config) => {
     try {
       const access_token = localStorage.getItem('accessToken');
-
+      // Merge with existing headers so Content-Type etc. are preserved (avoids CORS preflight issues)
       config.headers = {
-        Authorization: `Bearer ${access_token}`
+        ...config.headers,
+        ...(access_token && { Authorization: `Bearer ${access_token}` })
       };
       if (isObjectHasLength(userData) || window.location) {
-        config.headers.Hostname =
-          (window.location.hostname === 'localhost' && 'localhost') ||
-          window.location.hostname.split('.').slice(0, -1).join('.').replace('-', '').replace('portal.', '') ||
-          window.location.host.split('.').slice(0, -1).join('.').replace('-', '').replace('portal.', '');
-        config.headers.Location = window.location.origin;
-        // We don't need to set the Origin header
-        // config.headers.Origin = window.location.origin;
-        config.headers.Protocol = window.location.protocol;
         const subDomain = window.location.host.split('.')[0];
-        if (subDomain && subDomain === 'portal') {
+        if (subDomain === 'portal') {
+          config.headers.Hostname =
+            (window.location.hostname === 'localhost' && 'localhost') ||
+            window.location.hostname.split('.').slice(0, -1).join('.').replace('-', '').replace('portal.', '') ||
+            window.location.host.split('.').slice(0, -1).join('.').replace('-', '').replace('portal.', '');
+          config.headers.Location = window.location.origin;
+          config.headers.Protocol = window.location.protocol;
           config.headers.subDomain = window.location.hostname;
           config.headers.subDomainProtocol = subDomain;
         }
@@ -62,7 +61,9 @@ axiosApiInstance.interceptors.response.use(
         // OPEN IF NEEDED
         // return axiosApiInstance(originalRequest);
       }
-      if (error?.response?.status === 401) {
+      // Don't clear session and reload on 401 for login/sign-in (let the form show the error)
+      const isLoginRequest = originalRequest?.url && String(originalRequest.url).includes('/auth/sign-in');
+      if (error?.response?.status === 401 && !isLoginRequest) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('userData');
         window.location.reload();

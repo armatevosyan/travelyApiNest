@@ -17,17 +17,24 @@ import IconButton from 'components/@extended/IconButton';
 import { HeaderSort, SortingSelect, TablePagination, TableRowSelection, IndeterminateCheckbox } from 'components/third-party/ReactTable';
 
 import CustomerView from 'sections/apps/customer/CustomerView';
-import AlertCustomerDelete from 'sections/apps/customer/AlertCustomerDelete';
 
 import { GlobalFilter } from 'utils/react-table';
 
 // assets
-import { DeleteTwoTone, LoginOutlined } from '@ant-design/icons';
+import { StopOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { dispatch } from '@/redux/store';
-import { findAllRequest } from '@/redux/users/actions';
+import { findAllRequest, deactivateUserRequest, activateUserRequest, clearUserMessages } from '@/redux/users/actions';
 import { useSelector } from 'react-redux';
-import { enterAccountRequest } from '@/redux/auth/actions';
-import { roles } from '@/utils/constants';
+
+// material-ui
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -200,13 +207,16 @@ const SelectionHeader = ({ getToggleAllPageRowsSelectedProps }) => (
 
 const CustomCell = ({ row }) => {
   const { values } = row;
+  // API returns avatar as profileImage id (e.g. 46); assets only have avatar-1.png, avatar-2.png, etc.
+  const avatarIndex = typeof values.avatar === 'number' && values.avatar >= 1 && values.avatar <= 20 ? values.avatar : 1;
+  const avatarSrc = avatarImage(`./avatar-${avatarIndex}.png`);
   return (
     <Stack direction="row" spacing={1.5} alignItems="center">
-      <Avatar alt="Avatar 1" size="sm" src={avatarImage(`./avatar-${!values.avatar ? 1 : values.avatar}.png`)} />
+      <Avatar alt={values.name || values.fullName || 'User'} size="sm" src={avatarSrc} />
       <Stack spacing={0}>
-        <Typography variant="subtitle1">{values.name}</Typography>
+        <Typography variant="subtitle1">{values.name ?? values.fullName ?? '—'}</Typography>
         <Typography variant="caption" color="textSecondary">
-          {values.email}
+          {values.email ?? '—'}
         </Typography>
       </Stack>
     </Stack>
@@ -215,43 +225,55 @@ const CustomCell = ({ row }) => {
 
 const NumberFormatCell = ({ value }) => <NumberFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={value} />;
 
-const StatusCell = (deactivatedAt, verifiedAt) => {
+const StatusCell = (deactivatedAt, verifiedAt, deactivationReason) => {
   if (deactivatedAt) {
-    return <Chip color="error" label="Deactivated" size="small" variant="light" />;
-  } else if (!verifiedAt) {
-    return <Chip color="info" label="Not verifed" size="small" variant="light" />;
-  } else {
-    return <Chip color="success" label="Verified" size="small" variant="light" />;
+    return (
+      <Stack spacing={0.5}>
+        <Chip color="error" label="Deactivated" size="small" variant="light" />
+        {deactivationReason && (
+          <Typography variant="caption" color="textSecondary" sx={{ maxWidth: 160 }} noWrap title={deactivationReason}>
+            {deactivationReason}
+          </Typography>
+        )}
+      </Stack>
+    );
   }
+  if (!verifiedAt) {
+    return <Chip color="info" label="Not verifed" size="small" variant="light" />;
+  }
+  return <Chip color="success" label="Verified" size="small" variant="light" />;
 };
 
-const ActionCell = (row, setCustomerDeleteId, handleClose, theme, role) => {
-  const onLogin = (e) => {
-    e.stopPropagation();
-    dispatch(enterAccountRequest(row.values?.id));
-  };
+const ActionCell = (row, onOpenDeactivateModal) => {
+  const isDeactivated = !!row.original?.deactivatedAt;
 
   return (
     <Stack direction="row" alignItems="center" justifyContent="center" spacing={0}>
-      {role !== roles.MODERATOR && (
-        <Tooltip title="Login">
-          <IconButton color="primary" onClick={onLogin}>
-            <LoginOutlined />
+      {isDeactivated ? (
+        <Tooltip title="Activate user">
+          <IconButton
+            color="success"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenDeactivateModal({ id: row.values.id, name: row.values.name ?? row.original?.fullName, action: 'activate' });
+            }}
+          >
+            <CheckCircleOutlined />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Tooltip title="Deactivate user">
+          <IconButton
+            color="error"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenDeactivateModal({ id: row.values.id, name: row.values.name ?? row.original?.fullName, action: 'deactivate' });
+            }}
+          >
+            <StopOutlined />
           </IconButton>
         </Tooltip>
       )}
-      <Tooltip title="Delete">
-        <IconButton
-          color="error"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClose();
-            setCustomerDeleteId(row.values.name);
-          }}
-        >
-          <DeleteTwoTone twoToneColor={theme.palette.error.main} />
-        </IconButton>
-      </Tooltip>
     </Stack>
   );
 };
@@ -277,22 +299,47 @@ SelectionHeader.propTypes = {
 };
 
 const UsersPage = () => {
-  const theme = useTheme();
+  const { usersList, usersCount, success, successMessage, error, errorMessage } = useSelector((state) => state.users);
 
-  const { usersList, usersCount } = useSelector((state) => state.users);
-  const { user } = useSelector((state) => state.auth);
-
-  const [open, setOpen] = useState(false);
-  const [customerDeleteId, setCustomerDeleteId] = useState();
   const [params, setParams] = useState(defaultParams);
+  const [confirmModal, setConfirmModal] = useState({ open: false, id: null, name: '', action: null, reason: '' });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
     dispatch(findAllRequest(params));
   }, [params]);
 
-  const handleClose = () => {
-    setOpen(!open);
-  };
+  useEffect(() => {
+    if (success && successMessage) {
+      setSnackbar({ open: true, message: successMessage, severity: 'success' });
+      dispatch(clearUserMessages());
+      dispatch(findAllRequest(params));
+    }
+  }, [success, successMessage, dispatch, params]);
+
+  useEffect(() => {
+    if (error && errorMessage) {
+      setSnackbar({ open: true, message: errorMessage, severity: 'error' });
+      dispatch(clearUserMessages());
+    }
+  }, [error, errorMessage, dispatch]);
+
+  const handleOpenConfirm = useCallback((payload) => {
+    setConfirmModal({ open: true, id: payload.id, name: payload.name ?? 'this user', action: payload.action, reason: '' });
+  }, []);
+
+  const handleCloseConfirm = useCallback(() => {
+    setConfirmModal({ open: false, id: null, name: '', action: null, reason: '' });
+  }, []);
+
+  const handleConfirmAction = useCallback(() => {
+    if (confirmModal.action === 'deactivate' && confirmModal.id) {
+      dispatch(deactivateUserRequest({ id: confirmModal.id, reason: confirmModal.reason || undefined }));
+    } else if (confirmModal.action === 'activate' && confirmModal.id) {
+      dispatch(activateUserRequest({ id: confirmModal.id }));
+    }
+    handleCloseConfirm();
+  }, [confirmModal.id, confirmModal.action, confirmModal.reason, handleCloseConfirm]);
 
   const columns = useMemo(
     () => [
@@ -340,20 +387,23 @@ const UsersPage = () => {
         Header: 'Status',
         accessor: 'status',
         disableSortBy: true,
-        Cell: ({ row }) => StatusCell(row?.original?.deactivatedAt, row?.original?.verifiedAt)
+        Cell: ({ row }) =>
+          StatusCell(row?.original?.deactivatedAt, row?.original?.verifiedAt, row?.original?.deactivationReason)
       },
       {
         Header: 'Actions',
         className: 'cell-center',
         disableSortBy: true,
-        Cell: ({ row }) => ActionCell(row, setCustomerDeleteId, handleClose, theme, user.role)
+        Cell: ({ row }) => ActionCell(row, handleOpenConfirm)
       }
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [theme]
+    [handleOpenConfirm]
   );
 
-  const renderRowSubComponent = useCallback(({ row }) => <CustomerView data={data[row.id]} />, []);
+  const renderRowSubComponent = useCallback(
+    ({ row }) => <CustomerView data={usersList.find((u) => u.id === row.values.id)} />,
+    [usersList]
+  );
 
   return (
     <MainCard content={false}>
@@ -367,7 +417,53 @@ const UsersPage = () => {
           renderRowSubComponent={renderRowSubComponent}
         />
       </ScrollX>
-      <AlertCustomerDelete title={customerDeleteId} open={open} handleClose={handleClose} />
+      <Dialog open={confirmModal.open} onClose={handleCloseConfirm} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {confirmModal.action === 'deactivate' ? 'Deactivate user' : 'Activate user'}
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ mb: 2 }}>
+            {confirmModal.action === 'deactivate'
+              ? `Deactivate "${confirmModal.name}"? The user will not be able to sign in until reactivated.`
+              : `Activate "${confirmModal.name}"? The user will be able to sign in again.`}
+          </Typography>
+          {confirmModal.action === 'deactivate' && (
+            <TextField
+              fullWidth
+              multiline
+              minRows={2}
+              maxRows={4}
+              placeholder="Reason for deactivation (optional)"
+              value={confirmModal.reason}
+              onChange={(e) => setConfirmModal((prev) => ({ ...prev, reason: e.target.value }))}
+              inputProps={{ maxLength: 1000 }}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirm}>Cancel</Button>
+          <Button
+            onClick={handleConfirmAction}
+            color={confirmModal.action === 'deactivate' ? 'error' : 'primary'}
+            variant="contained"
+          >
+            {confirmModal.action === 'deactivate' ? 'Deactivate' : 'Activate'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </MainCard>
   );
 };
