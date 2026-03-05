@@ -14,9 +14,9 @@ const sendPushNotification = async (
     {
       to: token,
       sound: 'notification_main.wav',
-      title: 'New Booking',
-      subtitle: 'Place your booking here!',
-      body: 'You have a new booking request!',
+      title: 'Place approved',
+      subtitle: 'Place listed successfully!',
+      body: 'See there!',
       data: { type: 'booking' },
     },
   ];
