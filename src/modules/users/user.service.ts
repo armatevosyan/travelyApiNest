@@ -127,7 +127,10 @@ export class UserService {
     notificationsEnabled: boolean,
     deviceToken?: string,
   ) {
-    await this.userRepo.update(id, { notificationsEnabled, deviceToken });
+    await this.userRepo.update(id, {
+      notificationsEnabled,
+      deviceToken: !notificationsEnabled ? null : deviceToken,
+    });
     return this.runUserData(await this.findById(id));
   }
 
